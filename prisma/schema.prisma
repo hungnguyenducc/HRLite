@@ -1,0 +1,214 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// Auth module models
+// ============================================================
+
+model User {
+  id          String    @id @default(uuid()) @map("USER_ID")
+  email       String    @unique @map("EML_ADDR")
+  passwdHash  String    @map("PASSWD_HASH")
+  displayName String?   @map("INDCT_NM")
+  phone       String?   @map("TELNO")
+  photoUrl    String?   @map("PHOTO_URL")
+  roleCd      String    @default("USER") @map("ROLE_CD")
+  sttsCd      String    @default("ACTIVE") @map("STTS_CD")
+  lastLoginDt DateTime? @map("LAST_LOGIN_DT")
+  withdrawDt  DateTime? @map("WHDWL_DT")
+  deleteDt    DateTime? @map("DEL_DT")
+  creatDt     DateTime  @default(now()) @map("CREAT_DT")
+  creatBy     String?   @map("CREAT_BY")
+  updtDt      DateTime? @updatedAt @map("UPDT_DT")
+  updtBy      String?   @map("UPDT_BY")
+  delYn       String    @default("N") @map("DEL_YN")
+
+  refreshTokens RefreshToken[]
+  agreements    UserAgreement[]
+
+  // Relation to HR Employee table
+  employee Employee?
+
+  @@map("TB_COMM_USER")
+}
+
+model Terms {
+  id      String   @id @default(uuid()) @map("TRMS_ID")
+  typeCd  String   @map("TY_CD")
+  verNo   String   @map("VER_NO")
+  title   String   @map("TTL")
+  content String   @map("CN")
+  reqYn   String   @default("Y") @map("REQD_YN")
+  enfcDt  DateTime @map("ENFC_DT")
+  actvYn  String   @default("Y") @map("ACTV_YN")
+  creatDt DateTime @default(now()) @map("CREAT_DT")
+  creatBy String?  @map("CREAT_BY")
+  updtDt  DateTime? @updatedAt @map("UPDT_DT")
+  updtBy  String?  @map("UPDT_BY")
+
+  agreements UserAgreement[]
+
+  @@unique([typeCd, verNo])
+  @@map("TB_COMM_TRMS")
+}
+
+model UserAgreement {
+  id      String   @id @default(uuid()) @map("AGRE_ID")
+  userId  String   @map("USER_ID")
+  trmsId  String   @map("TRMS_ID")
+  agreYn  String   @default("Y") @map("AGRE_YN")
+  agreDt  DateTime @map("AGRE_DT")
+  ipAddr  String?  @map("IP_ADDR")
+  dvcInfo String?  @map("DVC_INFO")
+  creatDt DateTime @default(now()) @map("CREAT_DT")
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  terms Terms @relation(fields: [trmsId], references: [id])
+
+  @@unique([userId, trmsId])
+  @@map("TH_COMM_USER_AGRE")
+}
+
+model RefreshToken {
+  id      String    @id @default(uuid()) @map("TKN_ID")
+  userId  String    @map("USER_ID")
+  tknHash String    @unique @map("TKN_HASH")
+  dvcId   String?   @map("DVC_ID")
+  dvcInfo String?   @map("DVC_INFO")
+  expryDt DateTime  @map("EXPRY_DT")
+  dscdDt  DateTime? @map("DSCD_DT")
+  creatDt DateTime  @default(now()) @map("CREAT_DT")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("TB_COMM_RFRSH_TKN")
+}
+
+// ============================================================
+// HR module models
+// ============================================================
+
+model Department {
+  id         String  @id @default(uuid()) @map("DEPT_ID")
+  deptCd     String  @unique @map("DEPT_CD")
+  deptNm     String  @map("DEPT_NM")
+  upperDeptId String? @map("UPPER_DEPT_ID")
+  deptHeadId String? @map("DEPT_HEAD_ID")
+  sortOrd    Int?    @map("SORT_ORD")
+  useYn      String  @default("Y") @map("USE_YN")
+  creatDt    DateTime @default(now()) @map("CREAT_DT")
+  creatBy    String  @map("CREAT_BY")
+  updtDt     DateTime? @updatedAt @map("UPDT_DT")
+  updtBy     String?  @map("UPDT_BY")
+  delYn      String  @default("N") @map("DEL_YN")
+
+  // Self-relation for parent department
+  upperDept   Department?  @relation("DeptHierarchy", fields: [upperDeptId], references: [id])
+  childDepts  Department[] @relation("DeptHierarchy")
+
+  // Head of department
+  deptHead    Employee? @relation("DeptHead", fields: [deptHeadId], references: [id])
+
+  // Employees in this department
+  employees   Employee[] @relation("DeptEmployees")
+
+  @@map("TB_DEPT")
+}
+
+model Employee {
+  id         String    @id @default(uuid()) @map("EMPL_ID")
+  emplNo     String    @unique @map("EMPL_NO")
+  emplNm     String    @map("EMPL_NM")
+  email      String    @unique @map("EMAIL")
+  phoneNo    String?   @map("PHONE_NO")
+  deptId     String?   @map("DEPT_ID")
+  posiNm     String?   @map("POSI_NM")
+  joinDt     DateTime  @map("JOIN_DT")
+  resignDt   DateTime? @map("RESIGN_DT")
+  emplSttsCd String    @map("EMPL_STTS_CD")
+  userId     String?   @unique @map("USER_ID")
+  creatDt    DateTime  @default(now()) @map("CREAT_DT")
+  creatBy    String    @map("CREAT_BY")
+  updtDt     DateTime? @updatedAt @map("UPDT_DT")
+  updtBy     String?   @map("UPDT_BY")
+  delYn      String    @default("N") @map("DEL_YN")
+
+  // Relation to User account
+  user       User?     @relation(fields: [userId], references: [id])
+
+  // Department relation
+  department Department? @relation("DeptEmployees", fields: [deptId], references: [id])
+
+  // Departments this employee heads
+  headOfDepts Department[] @relation("DeptHead")
+
+  // Attendance records
+  attendances Attendance[]
+
+  // Leave requests (as requester)
+  leaveRequests LeaveRequest[] @relation("LeaveRequester")
+
+  // Leave requests (as approver)
+  approvedLeaves LeaveRequest[] @relation("LeaveApprover")
+
+  @@map("TB_EMPL")
+}
+
+model Attendance {
+  id         String    @id @default(uuid()) @map("ATND_ID")
+  emplId     String    @map("EMPL_ID")
+  atndDt     DateTime  @map("ATND_DT") @db.Date
+  chkInTm    DateTime? @map("CHK_IN_TM")
+  chkOutTm   DateTime? @map("CHK_OUT_TM")
+  workHour   Decimal?  @map("WORK_HOUR") @db.Decimal(4, 2)
+  atndSttsCd String    @map("ATND_STTS_CD")
+  rmk        String?   @map("RMK")
+  creatDt    DateTime  @default(now()) @map("CREAT_DT")
+  creatBy    String    @map("CREAT_BY")
+  updtDt     DateTime? @updatedAt @map("UPDT_DT")
+  updtBy     String?   @map("UPDT_BY")
+
+  employee Employee @relation(fields: [emplId], references: [id])
+
+  @@map("TH_ATND")
+}
+
+model LeaveRequest {
+  id          String    @id @default(uuid()) @map("LV_REQ_ID")
+  emplId      String    @map("EMPL_ID")
+  lvTypeCd    String    @map("LV_TYPE_CD")
+  startDt     DateTime  @map("START_DT") @db.Date
+  endDt       DateTime  @map("END_DT") @db.Date
+  lvDays      Decimal   @map("LV_DAYS") @db.Decimal(3, 1)
+  rsn         String    @map("RSN")
+  aprvlSttsCd String    @map("APRVL_STTS_CD")
+  aprvrId     String?   @map("APRVR_ID")
+  aprvlDt     DateTime? @map("APRVL_DT")
+  creatDt     DateTime  @default(now()) @map("CREAT_DT")
+  creatBy     String    @map("CREAT_BY")
+  updtDt      DateTime? @updatedAt @map("UPDT_DT")
+  updtBy      String?   @map("UPDT_BY")
+
+  employee Employee    @relation("LeaveRequester", fields: [emplId], references: [id])
+  approver Employee?   @relation("LeaveApprover", fields: [aprvrId], references: [id])
+  leaveType LeaveType  @relation(fields: [lvTypeCd], references: [lvTypeCd])
+
+  @@map("TB_LV_REQ")
+}
+
+model LeaveType {
+  lvTypeCd String @id @map("LV_TYPE_CD")
+  lvTypeNm String @map("LV_TYPE_NM")
+  maxDays  Int?   @map("MAX_DAYS")
+  useYn    String @default("Y") @map("USE_YN")
+
+  leaveRequests LeaveRequest[]
+
+  @@map("TC_LV_TYPE")
+}

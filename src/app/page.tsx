@@ -1,3 +1,6 @@
+import Link from 'next/link';
+import { Button } from '@/components/ui';
+
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
@@ -5,6 +8,9 @@ export default function Home() {
       <p className="mt-4 text-lg text-[var(--color-text-secondary)]">
         Công cụ quản lý nhân sự nội bộ
       </p>
+      <Button asChild variant="primary" size="lg" className="mt-8">
+        <Link href="/login">Đăng nhập</Link>
+      </Button>
     </main>
   );
 }

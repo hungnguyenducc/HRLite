@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { z } from 'zod';
+import { Shield, User as UserIcon, FileText } from 'lucide-react';
 import {
   Tabs,
   TabsList,
@@ -138,55 +139,111 @@ function PersonalInfoTab() {
     }
   };
 
+  const initial = user?.displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U';
+
   return (
-    <Card variant="default">
-      <CardContent>
-        <form onSubmit={handleSave} className="flex flex-col gap-4" noValidate>
-          <Input
-            label="Tên hiển thị"
-            type="text"
-            placeholder="Nguyễn Văn A"
-            value={form.displayName ?? ''}
-            onChange={handleChange('displayName')}
-            error={errors.displayName}
-            autoComplete="name"
-          />
-
-          <Input
-            label="Email"
-            type="email"
-            value={user?.email ?? ''}
-            disabled
-            helperText="Email không thể thay đổi"
-          />
-
-          <Input
-            label="Số điện thoại"
-            type="tel"
-            placeholder="0912345678"
-            value={form.phone ?? ''}
-            onChange={handleChange('phone')}
-            error={errors.phone}
-            autoComplete="tel"
-          />
-
-          <Input
-            label="URL ảnh đại diện"
-            type="url"
-            placeholder="https://example.com/photo.jpg"
-            value={form.photoUrl ?? ''}
-            onChange={handleChange('photoUrl')}
-            error={errors.photoUrl}
-          />
-
-          <div className="flex justify-end">
-            <Button type="submit" variant="primary" loading={saving}>
-              Lưu thay đổi
-            </Button>
+    <div className="animate-fade-up flex flex-col gap-6">
+      {/* Profile header card */}
+      <Card variant="default">
+        <CardContent>
+          <div className="flex items-center gap-5">
+            <div
+              className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full"
+              style={{
+                background: 'var(--color-brand-100)',
+                color: 'var(--color-brand-700)',
+                fontFamily: 'var(--font-family-serif)',
+                fontSize: 'var(--font-size-2xl)',
+                fontWeight: 'var(--font-weight-bold)',
+                fontStyle: 'italic',
+              }}
+            >
+              {initial}
+            </div>
+            <div>
+              <p
+                className="text-[var(--color-text-primary)]"
+                style={{ fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-semibold)' }}
+              >
+                {user?.displayName || 'Chưa đặt tên'}
+              </p>
+              <p
+                className="text-[var(--color-text-secondary)] mt-0.5"
+                style={{ fontSize: 'var(--font-size-sm)' }}
+              >
+                {user?.email}
+              </p>
+              <Badge
+                variant={user?.role === 'ADMIN' ? 'brand' : 'default'}
+                size="sm"
+              >
+                {user?.role === 'ADMIN' ? 'Quản trị viên' : 'Người dùng'}
+              </Badge>
+            </div>
           </div>
-        </form>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      {/* Form card */}
+      <Card variant="default">
+        <CardContent>
+          <h3
+            className="text-[var(--color-text-primary)] mb-5 pb-3 border-b"
+            style={{
+              fontSize: 'var(--font-size-base)',
+              fontWeight: 'var(--font-weight-semibold)',
+              borderColor: 'var(--color-border)',
+            }}
+          >
+            Chỉnh sửa thông tin
+          </h3>
+          <form onSubmit={handleSave} className="flex flex-col gap-4" noValidate>
+            <Input
+              label="Tên hiển thị"
+              type="text"
+              placeholder="Nguyễn Văn A"
+              value={form.displayName ?? ''}
+              onChange={handleChange('displayName')}
+              error={errors.displayName}
+              autoComplete="name"
+            />
+
+            <Input
+              label="Email"
+              type="email"
+              value={user?.email ?? ''}
+              disabled
+              helperText="Email không thể thay đổi"
+            />
+
+            <Input
+              label="Số điện thoại"
+              type="tel"
+              placeholder="0912345678"
+              value={form.phone ?? ''}
+              onChange={handleChange('phone')}
+              error={errors.phone}
+              autoComplete="tel"
+            />
+
+            <Input
+              label="URL ảnh đại diện"
+              type="url"
+              placeholder="https://example.com/photo.jpg"
+              value={form.photoUrl ?? ''}
+              onChange={handleChange('photoUrl')}
+              error={errors.photoUrl}
+            />
+
+            <div className="flex justify-end pt-2">
+              <Button type="submit" variant="primary" loading={saving}>
+                Lưu thay đổi
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -261,54 +318,65 @@ function SecurityTab() {
   };
 
   return (
-    <Card variant="default">
-      <CardContent>
-        <h3 className="text-[var(--font-size-base)] font-[var(--font-weight-semibold)] text-[var(--color-text-primary)] mb-4">
-          Đổi mật khẩu
-        </h3>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-          <Input
-            label="Mật khẩu hiện tại"
-            type="password"
-            value={form.currentPassword}
-            onChange={handleChange('currentPassword')}
-            error={errors.currentPassword}
-            autoComplete="current-password"
-            required
-            aria-required="true"
-          />
+    <div className="animate-fade-up flex flex-col gap-6">
+      <Card variant="default">
+        <CardContent>
+          <h3
+            className="text-[var(--color-text-primary)] mb-5 pb-3 border-b"
+            style={{
+              fontSize: 'var(--font-size-base)',
+              fontWeight: 'var(--font-weight-semibold)',
+              borderColor: 'var(--color-border)',
+            }}
+          >
+            Đổi mật khẩu
+          </h3>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
+            <Input
+              label="Mật khẩu hiện tại"
+              type="password"
+              value={form.currentPassword}
+              onChange={handleChange('currentPassword')}
+              error={errors.currentPassword}
+              autoComplete="current-password"
+              required
+              aria-required="true"
+            />
 
-          <Input
-            label="Mật khẩu mới"
-            type="password"
-            placeholder="Tối thiểu 8 ký tự"
-            value={form.newPassword}
-            onChange={handleChange('newPassword')}
-            error={errors.newPassword}
-            autoComplete="new-password"
-            required
-            aria-required="true"
-          />
+            <Input
+              label="Mật khẩu mới"
+              type="password"
+              placeholder="Tối thiểu 8 ký tự"
+              value={form.newPassword}
+              onChange={handleChange('newPassword')}
+              error={errors.newPassword}
+              autoComplete="new-password"
+              required
+              aria-required="true"
+            />
 
-          <Input
-            label="Xác nhận mật khẩu mới"
-            type="password"
-            value={form.confirmNewPassword}
-            onChange={handleChange('confirmNewPassword')}
-            error={errors.confirmNewPassword}
-            autoComplete="new-password"
-            required
-            aria-required="true"
-          />
+            <Input
+              label="Xác nhận mật khẩu mới"
+              type="password"
+              value={form.confirmNewPassword}
+              onChange={handleChange('confirmNewPassword')}
+              error={errors.confirmNewPassword}
+              autoComplete="new-password"
+              required
+              aria-required="true"
+            />
 
-          <div className="flex justify-end">
-            <Button type="submit" variant="primary" loading={saving}>
-              Đổi mật khẩu
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+            <div className="flex justify-end pt-2">
+              <Button type="submit" variant="primary" loading={saving}>
+                Đổi mật khẩu
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      <DangerZone />
+    </div>
   );
 }
 
@@ -337,51 +405,79 @@ function TermsTab() {
 
   if (loading) {
     return (
-      <Card variant="default">
-        <CardContent>
-          <p className="text-[var(--font-size-sm)] text-[var(--color-text-secondary)]">
-            Đang tải...
-          </p>
-        </CardContent>
-      </Card>
+      <div className="animate-fade-up">
+        <Card variant="default">
+          <CardContent>
+            <div className="flex items-center justify-center py-8">
+              <div
+                className="h-6 w-6 animate-spin rounded-full border-2 border-t-transparent"
+                style={{ borderColor: 'var(--color-brand-300)', borderTopColor: 'transparent' }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   if (agreedTerms.length === 0) {
     return (
-      <Card variant="default">
-        <CardContent>
-          <p className="text-[var(--font-size-sm)] text-[var(--color-text-secondary)] text-center py-8">
-            Chưa có điều khoản nào được đồng ý.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="animate-fade-up">
+        <Card variant="default">
+          <CardContent>
+            <div className="flex flex-col items-center py-12 gap-3">
+              <FileText className="h-10 w-10 text-[var(--color-text-tertiary)]" />
+              <p
+                className="text-[var(--color-text-secondary)] text-center"
+                style={{ fontSize: 'var(--font-size-sm)' }}
+              >
+                Chưa có điều khoản nào được đồng ý.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      {agreedTerms.map((term) => (
-        <Card key={term.id} variant="default">
-          <CardContent>
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-[var(--font-size-sm)] font-[var(--font-weight-semibold)] text-[var(--color-text-primary)]">
-                  {term.termTitle}
-                </p>
-                <p className="text-[var(--font-size-xs)] text-[var(--color-text-secondary)] mt-1">
-                  {term.termType} &middot; Phiên bản {term.termVersion}
-                </p>
+    <div className="animate-fade-up flex flex-col gap-3">
+      {agreedTerms.map((term, index) => (
+        <div
+          key={term.id}
+          className="animate-fade-up"
+          style={{ animationDelay: `${index * 60}ms` }}
+        >
+          <Card variant="default">
+            <CardContent>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p
+                    className="text-[var(--color-text-primary)]"
+                    style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)' }}
+                  >
+                    {term.termTitle}
+                  </p>
+                  <p
+                    className="text-[var(--color-text-secondary)] mt-1"
+                    style={{ fontSize: 'var(--font-size-xs)' }}
+                  >
+                    {term.termType} &middot; Phiên bản {term.termVersion}
+                  </p>
+                </div>
+                <div className="text-right shrink-0">
+                  <Badge variant="success" size="sm">Đã đồng ý</Badge>
+                  <p
+                    className="text-[var(--color-text-tertiary)] mt-1"
+                    style={{ fontSize: 'var(--font-size-xs)' }}
+                  >
+                    {new Date(term.agreedAt).toLocaleDateString('vi-VN')}
+                  </p>
+                </div>
               </div>
-              <div className="text-right shrink-0">
-                <Badge variant="success" size="sm">Đã đồng ý</Badge>
-                <p className="text-[var(--font-size-xs)] text-[var(--color-text-tertiary)] mt-1">
-                  {new Date(term.agreedAt).toLocaleDateString('vi-VN')}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       ))}
     </div>
   );
@@ -428,40 +524,60 @@ function DangerZone() {
   return (
     <Card variant="outlined">
       <CardContent>
-        <h3 className="text-[var(--font-size-base)] font-[var(--font-weight-semibold)] text-[var(--color-error-500)] mb-2">
-          Vùng nguy hiểm
-        </h3>
-        <p className="text-[var(--font-size-sm)] text-[var(--color-text-secondary)] mb-4">
-          Sau khi xóa tài khoản, tất cả dữ liệu sẽ bị mất và không thể khôi phục.
-        </p>
-        <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-          <DialogTrigger asChild>
-            <Button variant="danger" size="sm">
-              Xóa tài khoản
-            </Button>
-          </DialogTrigger>
-          <DialogContent size="sm">
-            <DialogHeader>
-              <DialogTitle>Xác nhận xóa tài khoản</DialogTitle>
-              <DialogDescription>
-                Hành động này không thể hoàn tác. Tất cả dữ liệu của bạn sẽ bị xóa vĩnh viễn.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogBody>
-              <p className="text-[var(--font-size-sm)] text-[var(--color-text-primary)]">
-                Bạn có chắc chắn muốn xóa tài khoản?
-              </p>
-            </DialogBody>
-            <DialogFooter>
-              <Button variant="secondary" onClick={() => setDeleteOpen(false)}>
-                Hủy
-              </Button>
-              <Button variant="danger" loading={deleting} onClick={handleDelete}>
-                Xóa tài khoản
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <div
+          className="flex items-start gap-4 p-4 rounded-[var(--radius-lg)] border"
+          style={{
+            borderColor: 'var(--color-error-500)',
+            background: 'var(--color-error-50)',
+          }}
+        >
+          <Shield className="h-5 w-5 shrink-0 text-[var(--color-error-500)] mt-0.5" />
+          <div className="flex-1">
+            <h3
+              className="text-[var(--color-error-700)]"
+              style={{ fontSize: 'var(--font-size-base)', fontWeight: 'var(--font-weight-semibold)' }}
+            >
+              Vùng nguy hiểm
+            </h3>
+            <p
+              className="text-[var(--color-text-secondary)] mt-1 mb-4"
+              style={{ fontSize: 'var(--font-size-sm)' }}
+            >
+              Sau khi xóa tài khoản, tất cả dữ liệu sẽ bị mất và không thể khôi phục.
+            </p>
+            <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+              <DialogTrigger asChild>
+                <Button variant="danger" size="sm">
+                  Xóa tài khoản
+                </Button>
+              </DialogTrigger>
+              <DialogContent size="sm">
+                <DialogHeader>
+                  <DialogTitle>Xác nhận xóa tài khoản</DialogTitle>
+                  <DialogDescription>
+                    Hành động này không thể hoàn tác. Tất cả dữ liệu của bạn sẽ bị xóa vĩnh viễn.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogBody>
+                  <p
+                    className="text-[var(--color-text-primary)]"
+                    style={{ fontSize: 'var(--font-size-sm)' }}
+                  >
+                    Bạn có chắc chắn muốn xóa tài khoản?
+                  </p>
+                </DialogBody>
+                <DialogFooter>
+                  <Button variant="secondary" onClick={() => setDeleteOpen(false)}>
+                    Hủy
+                  </Button>
+                  <Button variant="danger" loading={deleting} onClick={handleDelete}>
+                    Xóa tài khoản
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
@@ -470,20 +586,41 @@ function DangerZone() {
 export default function ProfilePage() {
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
-      <div>
-        <h1 className="text-[var(--font-size-2xl)] font-[var(--font-weight-bold)] text-[var(--color-text-primary)]">
+      {/* Page heading */}
+      <div className="animate-fade-up">
+        <h1
+          className="text-[var(--color-text-primary)]"
+          style={{
+            fontFamily: 'var(--font-family-serif)',
+            fontSize: 'var(--font-size-3xl)',
+            fontWeight: 'var(--font-weight-bold)',
+            fontStyle: 'italic',
+          }}
+        >
           Hồ sơ cá nhân
         </h1>
-        <p className="text-[var(--font-size-sm)] text-[var(--color-text-secondary)] mt-1">
+        <p
+          className="text-[var(--color-text-secondary)] mt-1"
+          style={{ fontSize: 'var(--font-size-sm)' }}
+        >
           Quản lý thông tin tài khoản của bạn
         </p>
       </div>
 
       <Tabs defaultValue="info">
         <TabsList>
-          <TabsTrigger value="info">Thông tin cá nhân</TabsTrigger>
-          <TabsTrigger value="security">Bảo mật</TabsTrigger>
-          <TabsTrigger value="terms">Điều khoản</TabsTrigger>
+          <TabsTrigger value="info">
+            <UserIcon className="h-4 w-4 mr-1.5" />
+            Thông tin cá nhân
+          </TabsTrigger>
+          <TabsTrigger value="security">
+            <Shield className="h-4 w-4 mr-1.5" />
+            Bảo mật
+          </TabsTrigger>
+          <TabsTrigger value="terms">
+            <FileText className="h-4 w-4 mr-1.5" />
+            Điều khoản
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="info">
@@ -491,10 +628,7 @@ export default function ProfilePage() {
         </TabsContent>
 
         <TabsContent value="security">
-          <div className="flex flex-col gap-6">
-            <SecurityTab />
-            <DangerZone />
-          </div>
+          <SecurityTab />
         </TabsContent>
 
         <TabsContent value="terms">

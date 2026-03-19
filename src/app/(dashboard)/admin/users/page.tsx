@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Search } from 'lucide-react';
+import { Search, Users as UsersIcon } from 'lucide-react';
 import {
   DataTable,
   Badge,
@@ -214,6 +214,7 @@ export default function AdminUsersPage() {
             setDetailOpen(true);
           }}
           className="text-left text-[var(--color-text-brand)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] rounded-[var(--radius-sm)]"
+          style={{ fontWeight: 'var(--font-weight-medium)' }}
         >
           {row.displayName || row.email.split('@')[0]}
         </button>
@@ -246,87 +247,143 @@ export default function AdminUsersPage() {
       key: 'createdAt',
       header: 'Ngày tạo',
       sortable: true,
-      render: (row) => new Date(row.createdAt).toLocaleDateString('vi-VN'),
+      render: (row) => (
+        <span
+          className="text-[var(--color-text-secondary)]"
+          style={{ fontSize: 'var(--font-size-sm)' }}
+        >
+          {new Date(row.createdAt).toLocaleDateString('vi-VN')}
+        </span>
+      ),
     },
   ];
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-[var(--font-size-2xl)] font-[var(--font-weight-bold)] text-[var(--color-text-primary)]">
-          Quản lý người dùng
-        </h1>
-        <p className="text-[var(--font-size-sm)] text-[var(--color-text-secondary)] mt-1">
-          Xem và quản lý tài khoản người dùng trong hệ thống
-        </p>
+    <div className="flex flex-col gap-6 max-w-[1200px]">
+      {/* Page heading */}
+      <div className="animate-fade-up flex items-start gap-4">
+        <div
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-xl)]"
+          style={{ background: 'var(--color-brand-50)', color: 'var(--color-brand-600)' }}
+        >
+          <UsersIcon className="h-6 w-6" />
+        </div>
+        <div>
+          <h1
+            className="text-[var(--color-text-primary)]"
+            style={{
+              fontFamily: 'var(--font-family-serif)',
+              fontSize: 'var(--font-size-3xl)',
+              fontWeight: 'var(--font-weight-bold)',
+              fontStyle: 'italic',
+            }}
+          >
+            Quản lý người dùng
+          </h1>
+          <p
+            className="text-[var(--color-text-secondary)] mt-1"
+            style={{ fontSize: 'var(--font-size-sm)' }}
+          >
+            Xem và quản lý tài khoản người dùng trong hệ thống
+          </p>
+        </div>
       </div>
 
-      <Card variant="default">
-        <CardContent>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-            <form onSubmit={handleSearchSubmit} className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-tertiary)]" />
-                <input
-                  type="search"
-                  placeholder="Tìm kiếm theo tên hoặc email..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className={cn(
-                    'flex h-10 w-full rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-bg-primary)] pl-9 pr-3 py-2',
-                    'text-[var(--font-size-sm)] text-[var(--color-text-primary)]',
-                    'placeholder:text-[var(--color-text-tertiary)]',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:border-transparent',
-                  )}
-                  aria-label="Tìm kiếm người dùng"
-                />
+      {/* Filter bar */}
+      <div className="animate-fade-up-delay-1">
+        <Card variant="default">
+          <CardContent>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+              <form onSubmit={handleSearchSubmit} className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-tertiary)]" />
+                  <input
+                    type="search"
+                    placeholder="Tìm kiếm theo tên hoặc email..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className={cn(
+                      'flex h-10 w-full rounded-[var(--radius-lg)] border pl-9 pr-3 py-2',
+                      'placeholder:text-[var(--color-text-tertiary)]',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:border-transparent',
+                      'transition-all duration-[var(--transition-fast)]',
+                    )}
+                    style={{
+                      borderColor: 'var(--color-border)',
+                      background: 'var(--color-bg-primary)',
+                      fontSize: 'var(--font-size-sm)',
+                      color: 'var(--color-text-primary)',
+                    }}
+                    aria-label="Tìm kiếm người dùng"
+                  />
+                </div>
+              </form>
+
+              <div className="flex gap-2">
+                <Select
+                  value={roleFilter}
+                  onValueChange={(v) => {
+                    setRoleFilter(v);
+                    setPage(1);
+                  }}
+                >
+                  <SelectTrigger className="w-[150px]" aria-label="Lọc theo vai trò">
+                    <SelectValue placeholder="Vai trò" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tất cả vai trò</SelectItem>
+                    <SelectItem value="ADMIN">Quản trị viên</SelectItem>
+                    <SelectItem value="USER">Người dùng</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={statusFilter}
+                  onValueChange={(v) => {
+                    setStatusFilter(v);
+                    setPage(1);
+                  }}
+                >
+                  <SelectTrigger className="w-[150px]" aria-label="Lọc theo trạng thái">
+                    <SelectValue placeholder="Trạng thái" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tất cả</SelectItem>
+                    <SelectItem value="ACTIVE">Hoạt động</SelectItem>
+                    <SelectItem value="SUSPENDED">Tạm khóa</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </form>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-            <div className="flex gap-2">
-              <Select value={roleFilter} onValueChange={(v) => { setRoleFilter(v); setPage(1); }}>
-                <SelectTrigger className="w-[150px]" aria-label="Lọc theo vai trò">
-                  <SelectValue placeholder="Vai trò" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả vai trò</SelectItem>
-                  <SelectItem value="ADMIN">Quản trị viên</SelectItem>
-                  <SelectItem value="USER">Người dùng</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
-                <SelectTrigger className="w-[150px]" aria-label="Lọc theo trạng thái">
-                  <SelectValue placeholder="Trạng thái" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả</SelectItem>
-                  <SelectItem value="ACTIVE">Hoạt động</SelectItem>
-                  <SelectItem value="SUSPENDED">Tạm khóa</SelectItem>
-                </SelectContent>
-              </Select>
+      {/* Data table */}
+      <div className="animate-fade-up-delay-2">
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <div className="flex flex-col items-center gap-3">
+              <div
+                className="h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
+                style={{ borderColor: 'var(--color-brand-300)', borderTopColor: 'transparent' }}
+              />
+              <p
+                className="text-[var(--color-text-secondary)]"
+                style={{ fontSize: 'var(--font-size-sm)' }}
+              >
+                Đang tải dữ liệu...
+              </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        ) : (
+          <DataTable columns={columns} data={users} keyExtractor={(row) => row.id} />
+        )}
+      </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <div
-            className="h-6 w-6 animate-spin rounded-full border-2 border-t-transparent"
-            style={{ borderColor: 'var(--color-brand-600)', borderTopColor: 'transparent' }}
-          />
-        </div>
-      ) : (
-        <DataTable
-          columns={columns}
-          data={users}
-          keyExtractor={(row) => row.id}
-        />
-      )}
-
+      {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2">
+        <div className="animate-fade-up-delay-3 flex items-center justify-center gap-3">
           <Button
             variant="outline"
             size="sm"
@@ -335,8 +392,11 @@ export default function AdminUsersPage() {
           >
             Trang trước
           </Button>
-          <span className="text-[var(--font-size-sm)] text-[var(--color-text-secondary)]">
-            Trang {page} / {totalPages}
+          <span
+            className="text-[var(--color-text-secondary)] px-2"
+            style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}
+          >
+            {page} / {totalPages}
           </span>
           <Button
             variant="outline"
@@ -349,38 +409,82 @@ export default function AdminUsersPage() {
         </div>
       )}
 
+      {/* User detail dialog */}
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
         <DialogContent size="md">
           <DialogHeader>
             <DialogTitle>Chi tiết người dùng</DialogTitle>
-            <DialogDescription>
-              Xem và quản lý thông tin tài khoản
-            </DialogDescription>
+            <DialogDescription>Xem và quản lý thông tin tài khoản</DialogDescription>
           </DialogHeader>
           {selectedUser && (
             <DialogBody>
-              <div className="flex flex-col gap-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-[var(--font-size-xs)] text-[var(--color-text-secondary)] mb-1">Tên</p>
-                    <p className="text-[var(--font-size-sm)] text-[var(--color-text-primary)] font-[var(--font-weight-medium)]">
-                      {selectedUser.displayName || '—'}
-                    </p>
+              <div className="flex flex-col gap-5">
+                {/* User avatar header in dialog */}
+                <div
+                  className="flex items-center gap-4 pb-4 border-b"
+                  style={{ borderColor: 'var(--color-border)' }}
+                >
+                  <div
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
+                    style={{
+                      background: 'var(--color-brand-100)',
+                      color: 'var(--color-brand-700)',
+                      fontFamily: 'var(--font-family-serif)',
+                      fontSize: 'var(--font-size-lg)',
+                      fontWeight: 'var(--font-weight-bold)',
+                      fontStyle: 'italic',
+                    }}
+                  >
+                    {selectedUser.displayName?.[0]?.toUpperCase() ||
+                      selectedUser.email[0].toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-[var(--font-size-xs)] text-[var(--color-text-secondary)] mb-1">Email</p>
-                    <p className="text-[var(--font-size-sm)] text-[var(--color-text-primary)]">
+                    <p
+                      className="text-[var(--color-text-primary)]"
+                      style={{
+                        fontSize: 'var(--font-size-base)',
+                        fontWeight: 'var(--font-weight-semibold)',
+                      }}
+                    >
+                      {selectedUser.displayName || selectedUser.email.split('@')[0]}
+                    </p>
+                    <p
+                      className="text-[var(--color-text-secondary)]"
+                      style={{ fontSize: 'var(--font-size-sm)' }}
+                    >
                       {selectedUser.email}
                     </p>
                   </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-[var(--font-size-xs)] text-[var(--color-text-secondary)] mb-1">Ngày tạo</p>
-                    <p className="text-[var(--font-size-sm)] text-[var(--color-text-primary)]">
+                    <p
+                      className="text-[var(--color-text-tertiary)] mb-1"
+                      style={{
+                        fontSize: 'var(--font-size-xs)',
+                        fontWeight: 'var(--font-weight-medium)',
+                      }}
+                    >
+                      Ngày tạo
+                    </p>
+                    <p
+                      className="text-[var(--color-text-primary)]"
+                      style={{ fontSize: 'var(--font-size-sm)' }}
+                    >
                       {new Date(selectedUser.createdAt).toLocaleDateString('vi-VN')}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[var(--font-size-xs)] text-[var(--color-text-secondary)] mb-1">Trạng thái</p>
+                    <p
+                      className="text-[var(--color-text-tertiary)] mb-1"
+                      style={{
+                        fontSize: 'var(--font-size-xs)',
+                        fontWeight: 'var(--font-weight-medium)',
+                      }}
+                    >
+                      Trạng thái
+                    </p>
                     <Badge variant={statusBadgeVariant[selectedUser.status]} size="sm" dot>
                       {statusLabel[selectedUser.status]}
                     </Badge>
@@ -388,7 +492,15 @@ export default function AdminUsersPage() {
                 </div>
 
                 <div>
-                  <p className="text-[var(--font-size-xs)] text-[var(--color-text-secondary)] mb-2">Vai trò</p>
+                  <p
+                    className="text-[var(--color-text-tertiary)] mb-2"
+                    style={{
+                      fontSize: 'var(--font-size-xs)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
+                  >
+                    Vai trò
+                  </p>
                   <Select
                     value={selectedUser.role}
                     onValueChange={(v) => handleRoleChange(selectedUser.id, v)}

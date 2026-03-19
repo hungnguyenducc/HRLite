@@ -4,13 +4,10 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
-import { Button, Input, Card, CardContent, useToast } from '@/components/ui';
+import { Button, Input, useToast } from '@/components/ui';
 
 const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'Email không được để trống')
-    .email('Email không hợp lệ'),
+  email: z.string().min(1, 'Email không được để trống').email('Email không hợp lệ'),
   password: z
     .string()
     .min(1, 'Mật khẩu không được để trống')
@@ -90,74 +87,95 @@ export default function LoginPage() {
   };
 
   return (
-    <Card variant="elevated">
-      <CardContent>
-        <div className="flex flex-col items-center mb-8">
-          <div
-            className="flex h-12 w-12 items-center justify-center rounded-[var(--radius-xl)] mb-4"
-            style={{ background: 'var(--color-brand-600)' }}
-          >
-            <span className="text-[var(--font-size-xl)] font-[var(--font-weight-bold)] text-[var(--color-text-inverse)]">
-              HR
-            </span>
+    <div>
+      {/* Header */}
+      <div className="mb-[var(--spacing-8)] animate-fade-up">
+        <h1
+          className="font-serif italic leading-[var(--line-height-tight)]"
+          style={{
+            fontSize: 'var(--font-size-4xl)',
+            color: 'var(--color-text-primary)',
+          }}
+        >
+          Đăng nhập
+        </h1>
+        <p
+          className="mt-[var(--spacing-2)] text-[var(--font-size-base)]"
+          style={{ color: 'var(--color-text-secondary)' }}
+        >
+          Chào mừng bạn quay lại HRLite
+        </p>
+      </div>
+
+      {/* Form card */}
+      <div
+        className="rounded-[var(--radius-2xl)] p-[var(--spacing-8)] animate-fade-up-delay-1"
+        style={{
+          background: 'var(--color-bg-card)',
+          boxShadow: 'var(--shadow-card)',
+        }}
+      >
+        <form onSubmit={handleSubmit} className="flex flex-col gap-[var(--spacing-5)]" noValidate>
+          <div className="animate-fade-up-delay-1">
+            <Input
+              label="Email"
+              type="email"
+              placeholder="name@company.com"
+              value={form.email}
+              onChange={handleChange('email')}
+              error={errors.email}
+              autoComplete="email"
+              required
+              aria-required="true"
+            />
           </div>
-          <h1 className="text-[var(--font-size-2xl)] font-[var(--font-weight-bold)] text-[var(--color-text-primary)]">
-            HRLite
-          </h1>
-          <p className="text-[var(--font-size-sm)] text-[var(--color-text-secondary)] mt-1">
-            Đăng nhập vào tài khoản của bạn
-          </p>
-        </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-          <Input
-            label="Email"
-            type="email"
-            placeholder="name@company.com"
-            value={form.email}
-            onChange={handleChange('email')}
-            error={errors.email}
-            autoComplete="email"
-            required
-            aria-required="true"
-          />
+          <div className="animate-fade-up-delay-2">
+            <Input
+              label="Mật khẩu"
+              type="password"
+              placeholder="Nhập mật khẩu"
+              value={form.password}
+              onChange={handleChange('password')}
+              error={errors.password}
+              autoComplete="current-password"
+              required
+              aria-required="true"
+            />
+          </div>
 
-          <Input
-            label="Mật khẩu"
-            type="password"
-            placeholder="Nhập mật khẩu"
-            value={form.password}
-            onChange={handleChange('password')}
-            error={errors.password}
-            autoComplete="current-password"
-            required
-            aria-required="true"
-          />
-
-          <div className="flex justify-end">
+          <div className="flex justify-end animate-fade-up-delay-2">
             <Link
               href="/forgot-password"
-              className="text-[var(--font-size-sm)] text-[var(--color-text-brand)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] rounded-[var(--radius-sm)]"
+              className="text-[var(--font-size-sm)] font-[var(--font-weight-medium)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] rounded-[var(--radius-sm)]"
+              style={{ color: 'var(--color-text-brand)' }}
             >
               Quên mật khẩu?
             </Link>
           </div>
 
-          <Button type="submit" variant="primary" className="w-full" loading={loading}>
-            Đăng nhập
-          </Button>
+          <div className="animate-fade-up-delay-3 pt-[var(--spacing-1)]">
+            <Button type="submit" variant="primary" size="lg" className="w-full" loading={loading}>
+              Đăng nhập
+            </Button>
+          </div>
         </form>
+      </div>
 
-        <p className="mt-6 text-center text-[var(--font-size-sm)] text-[var(--color-text-secondary)]">
-          Chưa có tài khoản?{' '}
-          <Link
-            href="/signup"
-            className="text-[var(--color-text-brand)] font-[var(--font-weight-medium)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] rounded-[var(--radius-sm)]"
-          >
-            Đăng ký
-          </Link>
-        </p>
-      </CardContent>
-    </Card>
+      {/* Footer link */}
+      <p
+        className="mt-[var(--spacing-6)] text-center text-[var(--font-size-sm)] animate-fade-up-delay-4"
+        style={{ color: 'var(--color-text-secondary)' }}
+      >
+        Chưa có tài khoản?{' '}
+        <Link
+          href="/signup"
+          className="font-[var(--font-weight-semibold)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] rounded-[var(--radius-sm)]"
+          style={{ color: 'var(--color-text-brand)' }}
+        >
+          Đăng ký ngay
+        </Link>
+      </p>
+    </div>
   );
 }

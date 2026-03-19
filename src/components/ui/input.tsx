@@ -46,16 +46,25 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           disabled={disabled}
           aria-invalid={error ? 'true' : undefined}
-          aria-describedby={error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined}
+          aria-describedby={
+            error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined
+          }
           {...props}
         />
         {error && (
-          <p id={`${inputId}-error`} className="text-[var(--font-size-xs)] text-[var(--color-error-500)]" role="alert">
+          <p
+            id={`${inputId}-error`}
+            className="text-[var(--font-size-xs)] text-[var(--color-error-500)]"
+            role="alert"
+          >
             {error}
           </p>
         )}
         {!error && helperText && (
-          <p id={`${inputId}-helper`} className="text-[var(--font-size-xs)] text-[var(--color-text-tertiary)]">
+          <p
+            id={`${inputId}-helper`}
+            className="text-[var(--font-size-xs)] text-[var(--color-text-tertiary)]"
+          >
             {helperText}
           </p>
         )}

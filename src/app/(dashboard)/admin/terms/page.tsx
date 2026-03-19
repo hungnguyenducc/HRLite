@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, FileText } from 'lucide-react';
 import {
   DataTable,
   Badge,
@@ -210,15 +210,21 @@ export default function AdminTermsPage() {
       key: 'type',
       header: 'Loại',
       render: (row) => (
-        <span className="text-[var(--font-size-sm)]">
-          {typeLabel[row.type] || row.type}
-        </span>
+        <span style={{ fontSize: 'var(--font-size-sm)' }}>{typeLabel[row.type] || row.type}</span>
       ),
     },
     {
       key: 'version',
       header: 'Phiên bản',
       sortable: true,
+      render: (row) => (
+        <span
+          className="text-[var(--color-text-secondary)]"
+          style={{ fontSize: 'var(--font-size-sm)', fontFamily: 'var(--font-family-mono)' }}
+        >
+          v{row.version}
+        </span>
+      ),
     },
     {
       key: 'title',
@@ -228,6 +234,7 @@ export default function AdminTermsPage() {
         <button
           onClick={() => openEditDialog(row)}
           className="text-left text-[var(--color-text-brand)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] rounded-[var(--radius-sm)]"
+          style={{ fontWeight: 'var(--font-weight-medium)' }}
         >
           {row.title}
         </button>
@@ -248,7 +255,7 @@ export default function AdminTermsPage() {
       render: (row) => (
         <button
           onClick={() => handleToggleActive(row)}
-          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] rounded-[var(--radius-sm)]"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] rounded-[var(--radius-sm)] transition-opacity hover:opacity-80"
           aria-label={row.active ? 'Vô hiệu hóa điều khoản' : 'Kích hoạt điều khoản'}
         >
           <Badge variant={row.active ? 'success' : 'default'} size="sm" dot>
@@ -261,23 +268,47 @@ export default function AdminTermsPage() {
       key: 'effectiveDate',
       header: 'Ngày hiệu lực',
       sortable: true,
-      render: (row) =>
-        row.effectiveDate
-          ? new Date(row.effectiveDate).toLocaleDateString('vi-VN')
-          : '—',
+      render: (row) => (
+        <span
+          className="text-[var(--color-text-secondary)]"
+          style={{ fontSize: 'var(--font-size-sm)' }}
+        >
+          {row.effectiveDate ? new Date(row.effectiveDate).toLocaleDateString('vi-VN') : '—'}
+        </span>
+      ),
     },
   ];
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-[var(--font-size-2xl)] font-[var(--font-weight-bold)] text-[var(--color-text-primary)]">
-            Quản lý điều khoản
-          </h1>
-          <p className="text-[var(--font-size-sm)] text-[var(--color-text-secondary)] mt-1">
-            Quản lý các điều khoản sử dụng và chính sách
-          </p>
+    <div className="flex flex-col gap-6 max-w-[1200px]">
+      {/* Page heading */}
+      <div className="animate-fade-up flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-4">
+          <div
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-xl)]"
+            style={{ background: 'var(--color-accent-50)', color: 'var(--color-accent-600)' }}
+          >
+            <FileText className="h-6 w-6" />
+          </div>
+          <div>
+            <h1
+              className="text-[var(--color-text-primary)]"
+              style={{
+                fontFamily: 'var(--font-family-serif)',
+                fontSize: 'var(--font-size-3xl)',
+                fontWeight: 'var(--font-weight-bold)',
+                fontStyle: 'italic',
+              }}
+            >
+              Quản lý điều khoản
+            </h1>
+            <p
+              className="text-[var(--color-text-secondary)] mt-1"
+              style={{ fontSize: 'var(--font-size-sm)' }}
+            >
+              Quản lý các điều khoản sử dụng và chính sách
+            </p>
+          </div>
         </div>
         <Button variant="primary" size="sm" onClick={openCreateDialog}>
           <Plus className="h-4 w-4" />
@@ -285,21 +316,29 @@ export default function AdminTermsPage() {
         </Button>
       </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <div
-            className="h-6 w-6 animate-spin rounded-full border-2 border-t-transparent"
-            style={{ borderColor: 'var(--color-brand-600)', borderTopColor: 'transparent' }}
-          />
-        </div>
-      ) : (
-        <DataTable
-          columns={columns}
-          data={terms}
-          keyExtractor={(row) => row.id}
-        />
-      )}
+      {/* Data table */}
+      <div className="animate-fade-up-delay-1">
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <div className="flex flex-col items-center gap-3">
+              <div
+                className="h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
+                style={{ borderColor: 'var(--color-brand-300)', borderTopColor: 'transparent' }}
+              />
+              <p
+                className="text-[var(--color-text-secondary)]"
+                style={{ fontSize: 'var(--font-size-sm)' }}
+              >
+                Đang tải dữ liệu...
+              </p>
+            </div>
+          </div>
+        ) : (
+          <DataTable columns={columns} data={terms} keyExtractor={(row) => row.id} />
+        )}
+      </div>
 
+      {/* Create/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent size="lg">
           <DialogHeader>
@@ -316,7 +355,13 @@ export default function AdminTermsPage() {
             <div className="flex flex-col gap-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[var(--font-size-sm)] font-[var(--font-weight-medium)] text-[var(--color-text-primary)]">
+                  <label
+                    className="text-[var(--color-text-primary)]"
+                    style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
+                  >
                     Loại
                   </label>
                   <Select
@@ -358,7 +403,11 @@ export default function AdminTermsPage() {
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor="term-content"
-                  className="text-[var(--font-size-sm)] font-[var(--font-weight-medium)] text-[var(--color-text-primary)]"
+                  className="text-[var(--color-text-primary)]"
+                  style={{
+                    fontSize: 'var(--font-size-sm)',
+                    fontWeight: 'var(--font-weight-medium)',
+                  }}
                 >
                   Nội dung
                 </label>
@@ -367,7 +416,13 @@ export default function AdminTermsPage() {
                   rows={6}
                   value={form.content}
                   onChange={(e) => setForm((prev) => ({ ...prev, content: e.target.value }))}
-                  className="flex w-full rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-3 py-2 text-[var(--font-size-sm)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:border-transparent resize-y"
+                  className="flex w-full rounded-[var(--radius-lg)] border px-3 py-2 placeholder:text-[var(--color-text-tertiary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:border-transparent resize-y transition-all duration-[var(--transition-fast)]"
+                  style={{
+                    borderColor: 'var(--color-border)',
+                    background: 'var(--color-bg-primary)',
+                    fontSize: 'var(--font-size-sm)',
+                    color: 'var(--color-text-primary)',
+                  }}
                   placeholder="Nội dung điều khoản..."
                 />
               </div>
@@ -379,7 +434,10 @@ export default function AdminTermsPage() {
                 onChange={(e) => setForm((prev) => ({ ...prev, effectiveDate: e.target.value }))}
               />
 
-              <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
+              <div
+                className="flex flex-col gap-3 sm:flex-row sm:gap-6 p-3 rounded-[var(--radius-lg)]"
+                style={{ background: 'var(--color-bg-secondary)' }}
+              >
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -387,7 +445,10 @@ export default function AdminTermsPage() {
                     onChange={(e) => setForm((prev) => ({ ...prev, required: e.target.checked }))}
                     className="h-4 w-4 rounded-[var(--radius-sm)] border-[var(--color-border)] text-[var(--color-brand-600)] focus:ring-[var(--color-border-focus)] cursor-pointer"
                   />
-                  <span className="text-[var(--font-size-sm)] text-[var(--color-text-primary)]">
+                  <span
+                    className="text-[var(--color-text-primary)]"
+                    style={{ fontSize: 'var(--font-size-sm)' }}
+                  >
                     Bắt buộc đồng ý
                   </span>
                 </label>
@@ -399,7 +460,10 @@ export default function AdminTermsPage() {
                     onChange={(e) => setForm((prev) => ({ ...prev, active: e.target.checked }))}
                     className="h-4 w-4 rounded-[var(--radius-sm)] border-[var(--color-border)] text-[var(--color-brand-600)] focus:ring-[var(--color-border-focus)] cursor-pointer"
                   />
-                  <span className="text-[var(--font-size-sm)] text-[var(--color-text-primary)]">
+                  <span
+                    className="text-[var(--color-text-primary)]"
+                    style={{ fontSize: 'var(--font-size-sm)' }}
+                  >
                     Kích hoạt
                   </span>
                 </label>

@@ -3,23 +3,58 @@
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import {
-  Dialog, DialogTrigger, DialogContent, DialogHeader, DialogBody, DialogFooter, DialogTitle, DialogDescription,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Toast, ToastProvider, useToast } from '@/components/ui/toast';
 import { Badge } from '@/components/ui/badge';
 import { DataTable, type Column } from '@/components/ui/table';
 import {
-  Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectLabel,
+  SelectItem,
 } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
-  SidebarLayout, Sidebar, SidebarGroup, SidebarItem, SidebarMobileTrigger, SidebarContent,
+  SidebarLayout,
+  Sidebar,
+  SidebarGroup,
+  SidebarItem,
+  SidebarMobileTrigger,
+  SidebarContent,
 } from '@/components/ui/sidebar';
 import {
-  Users, Building2, Clock, CalendarDays, BarChart3, Settings, Home,
-  Download, Trash2, Plus, Edit3, Bell,
+  Users,
+  Building2,
+  Clock,
+  CalendarDays,
+  BarChart3,
+  Settings,
+  Home,
+  Download,
+  Trash2,
+  Plus,
+  Edit3,
+  Bell,
 } from 'lucide-react';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -49,16 +84,44 @@ function ToastDemo() {
   const { addToast } = useToast();
   return (
     <div className="flex flex-wrap gap-2">
-      <Button size="sm" variant="primary" onClick={() => addToast({ variant: 'success', title: 'Thành công', description: 'Đã lưu thành công.' })}>
+      <Button
+        size="sm"
+        variant="primary"
+        onClick={() =>
+          addToast({ variant: 'success', title: 'Thành công', description: 'Đã lưu thành công.' })
+        }
+      >
         Success Toast
       </Button>
-      <Button size="sm" variant="outline" onClick={() => addToast({ variant: 'warning', title: 'Cảnh báo', description: 'Hãy kiểm tra lại thông tin.' })}>
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() =>
+          addToast({
+            variant: 'warning',
+            title: 'Cảnh báo',
+            description: 'Hãy kiểm tra lại thông tin.',
+          })
+        }
+      >
         Warning Toast
       </Button>
-      <Button size="sm" variant="danger" onClick={() => addToast({ variant: 'error', title: 'Lỗi', description: 'Đã xảy ra lỗi khi xử lý.' })}>
+      <Button
+        size="sm"
+        variant="danger"
+        onClick={() =>
+          addToast({ variant: 'error', title: 'Lỗi', description: 'Đã xảy ra lỗi khi xử lý.' })
+        }
+      >
         Error Toast
       </Button>
-      <Button size="sm" variant="ghost" onClick={() => addToast({ variant: 'info', title: 'Thông tin', description: 'Có bản cập nhật mới.' })}>
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() =>
+          addToast({ variant: 'info', title: 'Thông tin', description: 'Có bản cập nhật mới.' })
+        }
+      >
         Info Toast
       </Button>
     </div>
@@ -74,10 +137,34 @@ interface Employee {
 }
 
 const sampleEmployees: Employee[] = [
-  { name: 'Nguyễn Văn An', department: 'Kỹ thuật', position: 'Senior Developer', status: 'active', joinDate: '2023-01-15' },
-  { name: 'Trần Thị Bình', department: 'Nhân sự', position: 'HR Manager', status: 'active', joinDate: '2022-06-01' },
-  { name: 'Lê Hoàng Cường', department: 'Marketing', position: 'Content Lead', status: 'leave', joinDate: '2023-09-20' },
-  { name: 'Phạm Minh Đức', department: 'Kỹ thuật', position: 'Junior Developer', status: 'active', joinDate: '2024-03-10' },
+  {
+    name: 'Nguyễn Văn An',
+    department: 'Kỹ thuật',
+    position: 'Senior Developer',
+    status: 'active',
+    joinDate: '2023-01-15',
+  },
+  {
+    name: 'Trần Thị Bình',
+    department: 'Nhân sự',
+    position: 'HR Manager',
+    status: 'active',
+    joinDate: '2022-06-01',
+  },
+  {
+    name: 'Lê Hoàng Cường',
+    department: 'Marketing',
+    position: 'Content Lead',
+    status: 'leave',
+    joinDate: '2023-09-20',
+  },
+  {
+    name: 'Phạm Minh Đức',
+    department: 'Kỹ thuật',
+    position: 'Junior Developer',
+    status: 'active',
+    joinDate: '2024-03-10',
+  },
 ];
 
 const columns: Column<Employee>[] = [
@@ -104,17 +191,52 @@ export default function DesignSystemPage() {
       <SidebarLayout>
         <Sidebar>
           <SidebarGroup label="Chính">
-            <SidebarItem icon={<Home />} label="Dashboard" active={activeMenu === 'dashboard'} onClick={() => setActiveMenu('dashboard')} />
-            <SidebarItem icon={<Users />} label="Nhân viên" active={activeMenu === 'employees'} onClick={() => setActiveMenu('employees')} />
-            <SidebarItem icon={<Building2 />} label="Phòng ban" active={activeMenu === 'departments'} onClick={() => setActiveMenu('departments')} />
+            <SidebarItem
+              icon={<Home />}
+              label="Dashboard"
+              active={activeMenu === 'dashboard'}
+              onClick={() => setActiveMenu('dashboard')}
+            />
+            <SidebarItem
+              icon={<Users />}
+              label="Nhân viên"
+              active={activeMenu === 'employees'}
+              onClick={() => setActiveMenu('employees')}
+            />
+            <SidebarItem
+              icon={<Building2 />}
+              label="Phòng ban"
+              active={activeMenu === 'departments'}
+              onClick={() => setActiveMenu('departments')}
+            />
           </SidebarGroup>
           <SidebarGroup label="Quản lý">
-            <SidebarItem icon={<Clock />} label="Chấm công" active={activeMenu === 'attendance'} onClick={() => setActiveMenu('attendance')} />
-            <SidebarItem icon={<CalendarDays />} label="Nghỉ phép" active={activeMenu === 'leave'} onClick={() => setActiveMenu('leave')} />
-            <SidebarItem icon={<BarChart3 />} label="Báo cáo" active={activeMenu === 'reports'} onClick={() => setActiveMenu('reports')} />
+            <SidebarItem
+              icon={<Clock />}
+              label="Chấm công"
+              active={activeMenu === 'attendance'}
+              onClick={() => setActiveMenu('attendance')}
+            />
+            <SidebarItem
+              icon={<CalendarDays />}
+              label="Nghỉ phép"
+              active={activeMenu === 'leave'}
+              onClick={() => setActiveMenu('leave')}
+            />
+            <SidebarItem
+              icon={<BarChart3 />}
+              label="Báo cáo"
+              active={activeMenu === 'reports'}
+              onClick={() => setActiveMenu('reports')}
+            />
           </SidebarGroup>
           <SidebarGroup label="Hệ thống">
-            <SidebarItem icon={<Settings />} label="Cài đặt" active={activeMenu === 'settings'} onClick={() => setActiveMenu('settings')} />
+            <SidebarItem
+              icon={<Settings />}
+              label="Cài đặt"
+              active={activeMenu === 'settings'}
+              onClick={() => setActiveMenu('settings')}
+            />
           </SidebarGroup>
         </Sidebar>
 
@@ -128,13 +250,16 @@ export default function DesignSystemPage() {
               </h1>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon"><Bell className="h-4 w-4" /></Button>
-              <Button variant="ghost" size="icon"><Settings className="h-4 w-4" /></Button>
+              <Button variant="ghost" size="icon">
+                <Bell className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon">
+                <Settings className="h-4 w-4" />
+              </Button>
             </div>
           </header>
 
           <div className="p-6 md:p-10 max-w-5xl">
-
             {/* ── BUTTONS ── */}
             <Section title="1. Button">
               <SubSection title="Biến thể">
@@ -151,22 +276,34 @@ export default function DesignSystemPage() {
                   <Button size="sm">Small</Button>
                   <Button size="md">Medium</Button>
                   <Button size="lg">Large</Button>
-                  <Button size="icon"><Plus className="h-4 w-4" /></Button>
+                  <Button size="icon">
+                    <Plus className="h-4 w-4" />
+                  </Button>
                 </div>
               </SubSection>
               <SubSection title="Trạng thái">
                 <div className="flex flex-wrap items-center gap-3">
                   <Button loading>Loading...</Button>
                   <Button disabled>Disabled</Button>
-                  <Button variant="danger" loading>Deleting...</Button>
+                  <Button variant="danger" loading>
+                    Deleting...
+                  </Button>
                 </div>
               </SubSection>
               <SubSection title="Với Icon">
                 <div className="flex flex-wrap items-center gap-3">
-                  <Button><Plus className="h-4 w-4" /> Thêm mới</Button>
-                  <Button variant="outline"><Download className="h-4 w-4" /> Xuất Excel</Button>
-                  <Button variant="danger"><Trash2 className="h-4 w-4" /> Xóa</Button>
-                  <Button variant="ghost"><Edit3 className="h-4 w-4" /> Chỉnh sửa</Button>
+                  <Button>
+                    <Plus className="h-4 w-4" /> Thêm mới
+                  </Button>
+                  <Button variant="outline">
+                    <Download className="h-4 w-4" /> Xuất Excel
+                  </Button>
+                  <Button variant="danger">
+                    <Trash2 className="h-4 w-4" /> Xóa
+                  </Button>
+                  <Button variant="ghost">
+                    <Edit3 className="h-4 w-4" /> Chỉnh sửa
+                  </Button>
                 </div>
               </SubSection>
             </Section>
@@ -175,8 +312,17 @@ export default function DesignSystemPage() {
             <Section title="2. Input">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Input label="Tên nhân viên" placeholder="Nhập tên nhân viên" />
-                <Input label="Email" type="email" placeholder="example@company.com" helperText="Email dùng để đăng nhập hệ thống" />
-                <Input label="Số điện thoại" placeholder="0901234567" error="Số điện thoại không hợp lệ" />
+                <Input
+                  label="Email"
+                  type="email"
+                  placeholder="example@company.com"
+                  helperText="Email dùng để đăng nhập hệ thống"
+                />
+                <Input
+                  label="Số điện thoại"
+                  placeholder="0901234567"
+                  error="Số điện thoại không hợp lệ"
+                />
                 <Input label="Ghi chú" placeholder="Không thể chỉnh sửa" disabled />
               </div>
             </Section>
@@ -228,7 +374,9 @@ export default function DesignSystemPage() {
                     </p>
                   </CardContent>
                   <CardFooter>
-                    <Button variant="ghost" size="sm">Xem thêm</Button>
+                    <Button variant="ghost" size="sm">
+                      Xem thêm
+                    </Button>
                   </CardFooter>
                 </Card>
               </div>
@@ -244,7 +392,9 @@ export default function DesignSystemPage() {
                   <DialogContent size="sm">
                     <DialogHeader>
                       <DialogTitle>Xác nhận xóa</DialogTitle>
-                      <DialogDescription>Bạn có chắc chắn muốn xóa nhân viên này? Hành động này không thể hoàn tác.</DialogDescription>
+                      <DialogDescription>
+                        Bạn có chắc chắn muốn xóa nhân viên này? Hành động này không thể hoàn tác.
+                      </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
                       <Button variant="secondary">Hủy</Button>
@@ -308,10 +458,22 @@ export default function DesignSystemPage() {
             <Section title="5. Toast / Alert">
               <SubSection title="Tĩnh (Static)">
                 <div className="flex flex-col gap-3 max-w-md">
-                  <Toast variant="success" title="Thành công" description="Nhân viên đã được thêm vào hệ thống." />
-                  <Toast variant="warning" title="Cảnh báo" description="Nhân viên này chưa có phòng ban." />
+                  <Toast
+                    variant="success"
+                    title="Thành công"
+                    description="Nhân viên đã được thêm vào hệ thống."
+                  />
+                  <Toast
+                    variant="warning"
+                    title="Cảnh báo"
+                    description="Nhân viên này chưa có phòng ban."
+                  />
                   <Toast variant="error" title="Lỗi" description="Không thể kết nối đến server." />
-                  <Toast variant="info" title="Thông tin" description="Có 3 yêu cầu nghỉ phép chờ duyệt." />
+                  <Toast
+                    variant="info"
+                    title="Thông tin"
+                    description="Có 3 yêu cầu nghỉ phép chờ duyệt."
+                  />
                 </div>
               </SubSection>
               <SubSection title="Tương tác (Click để hiển thị)">
@@ -323,29 +485,63 @@ export default function DesignSystemPage() {
             <Section title="6. Badge">
               <SubSection title="Biến thể & Kích thước">
                 <div className="flex flex-wrap items-center gap-3 mb-4">
-                  <Badge variant="default" size="sm">Default sm</Badge>
-                  <Badge variant="brand" size="sm">Brand sm</Badge>
-                  <Badge variant="success" size="sm">Success sm</Badge>
-                  <Badge variant="warning" size="sm">Warning sm</Badge>
-                  <Badge variant="error" size="sm">Error sm</Badge>
-                  <Badge variant="info" size="sm">Info sm</Badge>
+                  <Badge variant="default" size="sm">
+                    Default sm
+                  </Badge>
+                  <Badge variant="brand" size="sm">
+                    Brand sm
+                  </Badge>
+                  <Badge variant="success" size="sm">
+                    Success sm
+                  </Badge>
+                  <Badge variant="warning" size="sm">
+                    Warning sm
+                  </Badge>
+                  <Badge variant="error" size="sm">
+                    Error sm
+                  </Badge>
+                  <Badge variant="info" size="sm">
+                    Info sm
+                  </Badge>
                 </div>
                 <div className="flex flex-wrap items-center gap-3 mb-4">
-                  <Badge variant="default" size="md">Default md</Badge>
-                  <Badge variant="brand" size="md">Brand md</Badge>
-                  <Badge variant="success" size="md">Success md</Badge>
-                  <Badge variant="warning" size="md">Warning md</Badge>
-                  <Badge variant="error" size="md">Error md</Badge>
-                  <Badge variant="info" size="md">Info md</Badge>
+                  <Badge variant="default" size="md">
+                    Default md
+                  </Badge>
+                  <Badge variant="brand" size="md">
+                    Brand md
+                  </Badge>
+                  <Badge variant="success" size="md">
+                    Success md
+                  </Badge>
+                  <Badge variant="warning" size="md">
+                    Warning md
+                  </Badge>
+                  <Badge variant="error" size="md">
+                    Error md
+                  </Badge>
+                  <Badge variant="info" size="md">
+                    Info md
+                  </Badge>
                 </div>
               </SubSection>
               <SubSection title="Status Badge (với chấm tròn)">
                 <div className="flex flex-wrap items-center gap-3">
-                  <Badge variant="success" dot>Đang làm việc</Badge>
-                  <Badge variant="warning" dot>Nghỉ phép</Badge>
-                  <Badge variant="error" dot>Đã nghỉ việc</Badge>
-                  <Badge variant="info" dot>Thử việc</Badge>
-                  <Badge variant="default" dot>Chưa xác nhận</Badge>
+                  <Badge variant="success" dot>
+                    Đang làm việc
+                  </Badge>
+                  <Badge variant="warning" dot>
+                    Nghỉ phép
+                  </Badge>
+                  <Badge variant="error" dot>
+                    Đã nghỉ việc
+                  </Badge>
+                  <Badge variant="info" dot>
+                    Thử việc
+                  </Badge>
+                  <Badge variant="default" dot>
+                    Chưa xác nhận
+                  </Badge>
                 </div>
               </SubSection>
             </Section>
@@ -408,27 +604,45 @@ export default function DesignSystemPage() {
                   <TabsTrigger value="info">Thông tin chung</TabsTrigger>
                   <TabsTrigger value="attendance">Chấm công</TabsTrigger>
                   <TabsTrigger value="leave">Nghỉ phép</TabsTrigger>
-                  <TabsTrigger value="salary" disabled>Lương (sắp có)</TabsTrigger>
+                  <TabsTrigger value="salary" disabled>
+                    Lương (sắp có)
+                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value="info">
                   <Card variant="default">
                     <CardContent>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <p className="text-[var(--font-size-xs)] text-[var(--color-text-tertiary)]">Họ và tên</p>
-                          <p className="text-[var(--font-size-sm)] font-[var(--font-weight-medium)]">Nguyễn Văn An</p>
+                          <p className="text-[var(--font-size-xs)] text-[var(--color-text-tertiary)]">
+                            Họ và tên
+                          </p>
+                          <p className="text-[var(--font-size-sm)] font-[var(--font-weight-medium)]">
+                            Nguyễn Văn An
+                          </p>
                         </div>
                         <div>
-                          <p className="text-[var(--font-size-xs)] text-[var(--color-text-tertiary)]">Phòng ban</p>
-                          <p className="text-[var(--font-size-sm)] font-[var(--font-weight-medium)]">Kỹ thuật</p>
+                          <p className="text-[var(--font-size-xs)] text-[var(--color-text-tertiary)]">
+                            Phòng ban
+                          </p>
+                          <p className="text-[var(--font-size-sm)] font-[var(--font-weight-medium)]">
+                            Kỹ thuật
+                          </p>
                         </div>
                         <div>
-                          <p className="text-[var(--font-size-xs)] text-[var(--color-text-tertiary)]">Chức vụ</p>
-                          <p className="text-[var(--font-size-sm)] font-[var(--font-weight-medium)]">Senior Developer</p>
+                          <p className="text-[var(--font-size-xs)] text-[var(--color-text-tertiary)]">
+                            Chức vụ
+                          </p>
+                          <p className="text-[var(--font-size-sm)] font-[var(--font-weight-medium)]">
+                            Senior Developer
+                          </p>
                         </div>
                         <div>
-                          <p className="text-[var(--font-size-xs)] text-[var(--color-text-tertiary)]">Trạng thái</p>
-                          <Badge variant="success" dot>Đang làm việc</Badge>
+                          <p className="text-[var(--font-size-xs)] text-[var(--color-text-tertiary)]">
+                            Trạng thái
+                          </p>
+                          <Badge variant="success" dot>
+                            Đang làm việc
+                          </Badge>
                         </div>
                       </div>
                     </CardContent>
@@ -464,26 +678,33 @@ export default function DesignSystemPage() {
                   </p>
                   <ul className="mt-3 space-y-2 text-[var(--font-size-sm)] text-[var(--color-text-secondary)]">
                     <li className="flex items-center gap-2">
-                      <Badge variant="success" size="sm">OK</Badge>
+                      <Badge variant="success" size="sm">
+                        OK
+                      </Badge>
                       Thu gọn / Mở rộng (click icon trên desktop)
                     </li>
                     <li className="flex items-center gap-2">
-                      <Badge variant="success" size="sm">OK</Badge>
+                      <Badge variant="success" size="sm">
+                        OK
+                      </Badge>
                       Highlight menu active
                     </li>
                     <li className="flex items-center gap-2">
-                      <Badge variant="success" size="sm">OK</Badge>
+                      <Badge variant="success" size="sm">
+                        OK
+                      </Badge>
                       Nhóm menu với label
                     </li>
                     <li className="flex items-center gap-2">
-                      <Badge variant="success" size="sm">OK</Badge>
+                      <Badge variant="success" size="sm">
+                        OK
+                      </Badge>
                       Responsive drawer trên mobile
                     </li>
                   </ul>
                 </CardContent>
               </Card>
             </Section>
-
           </div>
         </SidebarContent>
       </SidebarLayout>

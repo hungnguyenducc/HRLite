@@ -4,9 +4,17 @@ import { verifyPassword } from '@/lib/auth/password';
 import { generateAccessToken, generateRefreshToken, hashToken } from '@/lib/auth/jwt';
 import { loginSchema } from '@/lib/auth/validation';
 import { successResponse, errorResponse } from '@/lib/api-response';
+import { checkRateLimit, RATE_LIMITS, rateLimitResponse } from '@/lib/auth/rate-limit';
+import { RateLimitError, handleApiError } from '@/lib/errors';
+
+// Dummy hash for constant-time comparison when user not found
+const DUMMY_HASH = '$2a$12$000000000000000000000uGHPOPNOGPMU0txPwWGr3JjOKSjGFUy';
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 5 requests per minute per IP
+    checkRateLimit(req, 'login', RATE_LIMITS.login);
+
     const body = await req.json();
 
     // Validate input
@@ -17,29 +25,19 @@ export async function POST(req: NextRequest) {
     }
 
     const { email, password } = parsed.data;
+    const genericError = 'Email hoặc mật khẩu không chính xác.';
 
     // Find user by email
     const user = await prisma.user.findUnique({
       where: { email },
     });
-    if (!user) {
-      return errorResponse('Email hoặc mật khẩu không chính xác.', 401);
-    }
 
-    // Check if user is soft-deleted
-    if (user.delYn === 'Y') {
-      return errorResponse('Tài khoản đã bị xóa.', 401);
-    }
+    // Always run bcrypt compare to prevent timing oracle
+    const isValid = await verifyPassword(password, user?.passwdHash ?? DUMMY_HASH);
 
-    // Check user status
-    if (user.sttsCd !== 'ACTIVE') {
-      return errorResponse('Tài khoản đã bị vô hiệu hóa.', 401);
-    }
-
-    // Verify password
-    const isValid = await verifyPassword(password, user.passwdHash);
-    if (!isValid) {
-      return errorResponse('Email hoặc mật khẩu không chính xác.', 401);
+    // Check all auth conditions with same generic message
+    if (!user || !isValid || user.delYn === 'Y' || user.sttsCd !== 'ACTIVE') {
+      return errorResponse(genericError, 401);
     }
 
     // Check for pending required terms
@@ -79,7 +77,7 @@ export async function POST(req: NextRequest) {
       data: { lastLoginDt: new Date() },
     });
 
-    // Build response
+    // Build response (tokens only in HttpOnly cookies, not body)
     const response = successResponse({
       user: {
         id: user.id,
@@ -87,11 +85,10 @@ export async function POST(req: NextRequest) {
         displayName: user.displayName,
         roleCd: user.roleCd,
       },
-      accessToken,
-      refreshToken,
-      pendingTerms: pendingTerms.length > 0
-        ? pendingTerms.map((t) => ({ id: t.id, typeCd: t.typeCd, title: t.title }))
-        : undefined,
+      pendingTerms:
+        pendingTerms.length > 0
+          ? pendingTerms.map((t) => ({ id: t.id, typeCd: t.typeCd, title: t.title }))
+          : undefined,
     });
 
     // Set HTTP-only cookies
@@ -113,7 +110,7 @@ export async function POST(req: NextRequest) {
 
     return response;
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Lỗi hệ thống';
-    return errorResponse(message, 500);
+    if (error instanceof RateLimitError) return rateLimitResponse(error);
+    return handleApiError(error);
   }
 }

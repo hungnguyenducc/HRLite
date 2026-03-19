@@ -15,9 +15,12 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        success: 'bg-[var(--color-success-50)] border-[var(--color-success-500)]/30 text-[var(--color-success-700)]',
-        warning: 'bg-[var(--color-warning-50)] border-[var(--color-warning-500)]/30 text-[var(--color-warning-700)]',
-        error: 'bg-[var(--color-error-50)] border-[var(--color-error-500)]/30 text-[var(--color-error-700)]',
+        success:
+          'bg-[var(--color-success-50)] border-[var(--color-success-500)]/30 text-[var(--color-success-700)]',
+        warning:
+          'bg-[var(--color-warning-50)] border-[var(--color-warning-500)]/30 text-[var(--color-warning-700)]',
+        error:
+          'bg-[var(--color-error-50)] border-[var(--color-error-500)]/30 text-[var(--color-error-700)]',
         info: 'bg-[var(--color-info-50)] border-[var(--color-info-500)]/30 text-[var(--color-info-700)]',
       },
     },
@@ -35,8 +38,7 @@ const iconMap = {
 };
 
 export interface ToastProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof toastVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof toastVariants> {
   title?: string;
   description?: string;
   onClose?: () => void;
@@ -44,7 +46,10 @@ export interface ToastProps
 }
 
 const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
-  ({ className, variant = 'info', title, description, onClose, duration = 5000, ...props }, ref) => {
+  (
+    { className, variant = 'info', title, description, onClose, duration = 5000, ...props },
+    ref,
+  ) => {
     const Icon = iconMap[variant || 'info'];
 
     React.useEffect(() => {

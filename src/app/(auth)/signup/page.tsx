@@ -4,20 +4,20 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
-import { Button, Input, Card, CardContent, Badge, useToast } from '@/components/ui';
+import { Button, Input, Badge, useToast } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 const signupSchema = z
   .object({
     fullName: z.string().optional(),
-    email: z
-      .string()
-      .min(1, 'Email không được để trống')
-      .email('Email không hợp lệ'),
+    email: z.string().min(1, 'Email không được để trống').email('Email không hợp lệ'),
     password: z
       .string()
       .min(1, 'Mật khẩu không được để trống')
-      .min(8, 'Mật khẩu phải có ít nhất 8 ký tự'),
+      .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
+      .regex(/[A-Z]/, 'Mật khẩu phải chứa ít nhất 1 chữ hoa')
+      .regex(/[a-z]/, 'Mật khẩu phải chứa ít nhất 1 chữ thường')
+      .regex(/[0-9]/, 'Mật khẩu phải chứa ít nhất 1 chữ số'),
     confirmPassword: z.string().min(1, 'Vui lòng xác nhận mật khẩu'),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -28,6 +28,15 @@ const signupSchema = z
 type SignupForm = z.infer<typeof signupSchema>;
 type FieldErrors = Partial<Record<keyof SignupForm, string>>;
 
+interface TermItemApi {
+  id: string;
+  typeCd: string;
+  verNo: string;
+  title: string;
+  content: string;
+  reqYn: string;
+}
+
 interface TermItem {
   id: string;
   type: string;
@@ -37,7 +46,10 @@ interface TermItem {
   required: boolean;
 }
 
-function getPasswordStrength(password: string): { level: 'weak' | 'medium' | 'strong'; label: string } {
+function getPasswordStrength(password: string): {
+  level: 'weak' | 'medium' | 'strong';
+  label: string;
+} {
   if (password.length === 0) return { level: 'weak', label: '' };
 
   let score = 0;
@@ -85,9 +97,18 @@ export default function SignupPage() {
       try {
         const res = await fetch('/api/terms/active');
         if (res.ok) {
-          const data: { success: boolean; data: TermItem[] } = await res.json();
+          const data: { success: boolean; data: TermItemApi[] } = await res.json();
           if (data.success) {
-            setTerms(data.data);
+            setTerms(
+              data.data.map((t) => ({
+                id: t.id,
+                type: t.typeCd,
+                version: t.verNo,
+                title: t.title,
+                content: t.content,
+                required: t.reqYn === 'Y',
+              })),
+            );
           }
         }
       } catch {
@@ -151,7 +172,7 @@ export default function SignupPage() {
           email: result.data.email,
           password: result.data.password,
           displayName: result.data.fullName || undefined,
-          agreedTermIds,
+          agreedTermsIds: agreedTermIds,
         }),
       });
 
@@ -184,50 +205,63 @@ export default function SignupPage() {
   };
 
   return (
-    <Card variant="elevated">
-      <CardContent>
-        <div className="flex flex-col items-center mb-8">
-          <div
-            className="flex h-12 w-12 items-center justify-center rounded-[var(--radius-xl)] mb-4"
-            style={{ background: 'var(--color-brand-600)' }}
-          >
-            <span className="text-[var(--font-size-xl)] font-[var(--font-weight-bold)] text-[var(--color-text-inverse)]">
-              HR
-            </span>
+    <div>
+      {/* Header */}
+      <div className="mb-[var(--spacing-6)] animate-fade-up">
+        <h1
+          className="font-serif italic leading-[var(--line-height-tight)]"
+          style={{
+            fontSize: 'var(--font-size-4xl)',
+            color: 'var(--color-text-primary)',
+          }}
+        >
+          Tạo tài khoản
+        </h1>
+        <p
+          className="mt-[var(--spacing-2)] text-[var(--font-size-base)]"
+          style={{ color: 'var(--color-text-secondary)' }}
+        >
+          Đăng ký tài khoản HRLite mới
+        </p>
+      </div>
+
+      {/* Form card */}
+      <div
+        className="rounded-[var(--radius-2xl)] p-[var(--spacing-8)] animate-fade-up-delay-1"
+        style={{
+          background: 'var(--color-bg-card)',
+          boxShadow: 'var(--shadow-card)',
+        }}
+      >
+        <form onSubmit={handleSubmit} className="flex flex-col gap-[var(--spacing-5)]" noValidate>
+          <div className="animate-fade-up-delay-1">
+            <Input
+              label="Họ và tên"
+              type="text"
+              placeholder="Nguyễn Văn A"
+              value={form.fullName ?? ''}
+              onChange={handleChange('fullName')}
+              error={errors.fullName}
+              autoComplete="name"
+              helperText="Không bắt buộc"
+            />
           </div>
-          <h1 className="text-[var(--font-size-2xl)] font-[var(--font-weight-bold)] text-[var(--color-text-primary)]">
-            Tạo tài khoản
-          </h1>
-          <p className="text-[var(--font-size-sm)] text-[var(--color-text-secondary)] mt-1">
-            Đăng ký tài khoản HRLite mới
-          </p>
-        </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-          <Input
-            label="Họ và tên"
-            type="text"
-            placeholder="Nguyễn Văn A"
-            value={form.fullName ?? ''}
-            onChange={handleChange('fullName')}
-            error={errors.fullName}
-            autoComplete="name"
-            helperText="Không bắt buộc"
-          />
+          <div className="animate-fade-up-delay-1">
+            <Input
+              label="Email"
+              type="email"
+              placeholder="name@company.com"
+              value={form.email}
+              onChange={handleChange('email')}
+              error={errors.email}
+              autoComplete="email"
+              required
+              aria-required="true"
+            />
+          </div>
 
-          <Input
-            label="Email"
-            type="email"
-            placeholder="name@company.com"
-            value={form.email}
-            onChange={handleChange('email')}
-            error={errors.email}
-            autoComplete="email"
-            required
-            aria-required="true"
-          />
-
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-[var(--spacing-2)] animate-fade-up-delay-2">
             <Input
               label="Mật khẩu"
               type="password"
@@ -240,8 +274,11 @@ export default function SignupPage() {
               aria-required="true"
             />
             {form.password.length > 0 && (
-              <div className="flex items-center gap-2">
-                <div className="flex-1 h-1.5 rounded-full bg-[var(--color-bg-tertiary)] overflow-hidden">
+              <div className="flex items-center gap-[var(--spacing-2)]">
+                <div
+                  className="flex-1 h-1.5 rounded-full overflow-hidden"
+                  style={{ background: 'var(--color-bg-tertiary)' }}
+                >
                   <div
                     className={cn(
                       'h-full rounded-full transition-all duration-300',
@@ -264,27 +301,32 @@ export default function SignupPage() {
             )}
           </div>
 
-          <Input
-            label="Xác nhận mật khẩu"
-            type="password"
-            placeholder="Nhập lại mật khẩu"
-            value={form.confirmPassword}
-            onChange={handleChange('confirmPassword')}
-            error={errors.confirmPassword}
-            autoComplete="new-password"
-            required
-            aria-required="true"
-          />
+          <div className="animate-fade-up-delay-2">
+            <Input
+              label="Xác nhận mật khẩu"
+              type="password"
+              placeholder="Nhập lại mật khẩu"
+              value={form.confirmPassword}
+              onChange={handleChange('confirmPassword')}
+              error={errors.confirmPassword}
+              autoComplete="new-password"
+              required
+              aria-required="true"
+            />
+          </div>
 
           {terms.length > 0 && (
-            <fieldset className="flex flex-col gap-3 mt-2">
-              <legend className="text-[var(--font-size-sm)] font-[var(--font-weight-medium)] text-[var(--color-text-primary)] mb-1">
+            <fieldset className="flex flex-col gap-[var(--spacing-3)] mt-[var(--spacing-1)] animate-fade-up-delay-3">
+              <legend
+                className="text-[var(--font-size-sm)] font-[var(--font-weight-medium)] mb-[var(--spacing-1)]"
+                style={{ color: 'var(--color-text-primary)' }}
+              >
                 Điều khoản sử dụng
               </legend>
               {terms.map((term) => (
                 <label
                   key={term.id}
-                  className="flex items-start gap-3 cursor-pointer group"
+                  className="flex items-start gap-[var(--spacing-3)] cursor-pointer group"
                 >
                   <input
                     type="checkbox"
@@ -293,41 +335,50 @@ export default function SignupPage() {
                     className="mt-0.5 h-4 w-4 rounded-[var(--radius-sm)] border-[var(--color-border)] text-[var(--color-brand-600)] focus:ring-[var(--color-border-focus)] cursor-pointer"
                     aria-required={term.required ? 'true' : undefined}
                   />
-                  <span className="flex-1 text-[var(--font-size-sm)] text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)] transition-colors">
-                    {term.title}
-                    {' '}
-                    <Badge
-                      variant={term.required ? 'error' : 'default'}
-                      size="sm"
-                    >
+                  <span
+                    className="flex-1 text-[var(--font-size-sm)] transition-colors"
+                    style={{ color: 'var(--color-text-secondary)' }}
+                  >
+                    {term.title}{' '}
+                    <Badge variant={term.required ? 'error' : 'default'} size="sm">
                       {term.required ? 'Bắt buộc' : 'Tùy chọn'}
                     </Badge>
                   </span>
                 </label>
               ))}
               {termsError && (
-                <p className="text-[var(--font-size-xs)] text-[var(--color-error-500)]" role="alert">
+                <p
+                  className="text-[var(--font-size-xs)] text-[var(--color-error-500)]"
+                  role="alert"
+                >
                   {termsError}
                 </p>
               )}
             </fieldset>
           )}
 
-          <Button type="submit" variant="primary" className="w-full mt-2" loading={loading}>
-            Đăng ký
-          </Button>
+          <div className="animate-fade-up-delay-3 pt-[var(--spacing-1)]">
+            <Button type="submit" variant="primary" size="lg" className="w-full" loading={loading}>
+              Đăng ký
+            </Button>
+          </div>
         </form>
+      </div>
 
-        <p className="mt-6 text-center text-[var(--font-size-sm)] text-[var(--color-text-secondary)]">
-          Đã có tài khoản?{' '}
-          <Link
-            href="/login"
-            className="text-[var(--color-text-brand)] font-[var(--font-weight-medium)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] rounded-[var(--radius-sm)]"
-          >
-            Đăng nhập
-          </Link>
-        </p>
-      </CardContent>
-    </Card>
+      {/* Footer link */}
+      <p
+        className="mt-[var(--spacing-6)] text-center text-[var(--font-size-sm)] animate-fade-up-delay-4"
+        style={{ color: 'var(--color-text-secondary)' }}
+      >
+        Đã có tài khoản?{' '}
+        <Link
+          href="/login"
+          className="font-[var(--font-weight-semibold)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] rounded-[var(--radius-sm)]"
+          style={{ color: 'var(--color-text-brand)' }}
+        >
+          Đăng nhập
+        </Link>
+      </p>
+    </div>
   );
 }

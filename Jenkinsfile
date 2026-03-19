@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:20-alpine'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
+    agent any
 
     environment {
         DATABASE_URL     = 'postgresql://hrlite_test:hrlite_test@localhost:5433/hrlite_test'
@@ -45,7 +40,6 @@ pipeline {
 
         stage('Test DB Up') {
             steps {
-                sh 'apk add --no-cache docker-cli docker-cli-compose'
                 sh 'docker compose -f docker-compose.test.yml up -d --wait'
                 sh 'npx dotenv -e .env.test -- npx prisma db push --force-reset'
             }

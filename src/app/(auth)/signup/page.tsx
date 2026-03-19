@@ -151,7 +151,7 @@ export default function SignupPage() {
           email: result.data.email,
           password: result.data.password,
           displayName: result.data.fullName || undefined,
-          agreedTermIds,
+          agreedTermsIds: agreedTermIds,
         }),
       });
 

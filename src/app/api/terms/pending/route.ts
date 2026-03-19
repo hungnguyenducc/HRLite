@@ -1,6 +1,7 @@
 import prisma from '@/lib/db';
 import { withAuth, AuthenticatedRequest } from '@/lib/auth/middleware';
 import { successResponse, errorResponse } from '@/lib/api-response';
+import { handleApiError } from '@/lib/errors';
 
 // GET /api/terms/pending - Return terms not yet agreed by current user
 async function handler(req: AuthenticatedRequest) {
@@ -36,8 +37,8 @@ async function handler(req: AuthenticatedRequest) {
 
     return successResponse(pendingTerms);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Lỗi hệ thống';
-    return errorResponse(message, 500);
+
+    return handleApiError(error);
   }
 }
 

@@ -4,9 +4,14 @@ import { hashPassword } from '@/lib/auth/password';
 import { generateAccessToken, generateRefreshToken, hashToken } from '@/lib/auth/jwt';
 import { signupSchema } from '@/lib/auth/validation';
 import { successResponse, errorResponse } from '@/lib/api-response';
+import { checkRateLimit, RATE_LIMITS, rateLimitResponse } from '@/lib/auth/rate-limit';
+import { RateLimitError, handleApiError } from '@/lib/errors';
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 3 requests per minute per IP
+    checkRateLimit(req, 'signup', RATE_LIMITS.signup);
+
     const body = await req.json();
 
     // Validate input
@@ -99,7 +104,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Build response with cookies
+    // Build response with cookies (tokens only in HttpOnly cookies, not body)
     const response = successResponse(
       {
         user: {
@@ -108,8 +113,6 @@ export async function POST(req: NextRequest) {
           displayName: user.displayName,
           roleCd: user.roleCd,
         },
-        accessToken,
-        refreshToken,
       },
       201,
     );
@@ -133,7 +136,7 @@ export async function POST(req: NextRequest) {
 
     return response;
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Lỗi hệ thống';
-    return errorResponse(message, 500);
+    if (error instanceof RateLimitError) return rateLimitResponse(error);
+    return handleApiError(error);
   }
 }

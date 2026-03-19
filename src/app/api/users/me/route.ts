@@ -2,6 +2,7 @@ import prisma from '@/lib/db';
 import { withAuth, AuthenticatedRequest } from '@/lib/auth/middleware';
 import { updateProfileSchema } from '@/lib/auth/validation';
 import { successResponse, errorResponse } from '@/lib/api-response';
+import { handleApiError } from '@/lib/errors';
 
 // GET /api/users/me - Return current user profile
 async function getHandler(req: AuthenticatedRequest) {
@@ -27,8 +28,8 @@ async function getHandler(req: AuthenticatedRequest) {
 
     return successResponse(user);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Lỗi hệ thống';
-    return errorResponse(message, 500);
+
+    return handleApiError(error);
   }
 }
 
@@ -66,8 +67,8 @@ async function patchHandler(req: AuthenticatedRequest) {
 
     return successResponse(updated);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Lỗi hệ thống';
-    return errorResponse(message, 500);
+
+    return handleApiError(error);
   }
 }
 
@@ -117,8 +118,8 @@ async function deleteHandler(req: AuthenticatedRequest) {
 
     return response;
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Lỗi hệ thống';
-    return errorResponse(message, 500);
+
+    return handleApiError(error);
   }
 }
 

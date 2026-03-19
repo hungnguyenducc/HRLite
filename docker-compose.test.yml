@@ -1,0 +1,17 @@
+services:
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: hrlite_test_db
+    environment:
+      POSTGRES_USER: hrlite_test
+      POSTGRES_PASSWORD: hrlite_test
+      POSTGRES_DB: hrlite_test
+    ports:
+      - "5433:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hrlite_test -d hrlite_test"]
+      interval: 3s
+      timeout: 3s
+      retries: 10

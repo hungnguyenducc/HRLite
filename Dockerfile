@@ -17,6 +17,12 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
+# ---- Migrator (dùng để chạy db push trước khi app start) ----
+FROM base AS migrator
+COPY --from=deps /app/node_modules ./node_modules
+COPY prisma ./prisma/
+CMD ["npx", "prisma", "db", "push", "--skip-generate", "--accept-data-loss"]
+
 # ---- Production ----
 FROM base AS production
 ENV NODE_ENV=production
@@ -31,7 +37,6 @@ COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=deps /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=deps /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=build /app/prisma ./prisma
-COPY docker/app/entrypoint.sh ./entrypoint.sh
 
 USER nextjs
 
@@ -42,4 +47,4 @@ ENV HOSTNAME="0.0.0.0"
 HEALTHCHECK --interval=10s --timeout=3s --start-period=15s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
-ENTRYPOINT ["./entrypoint.sh"]
+CMD ["node", "server.js"]

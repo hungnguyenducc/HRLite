@@ -18,23 +18,40 @@ services:
       timeout: 3s
       retries: 10
 
+  # --- DB Migration (chạy trước app) ---
+  migrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrator
+    container_name: hrlite_migrator
+    environment:
+      DATABASE_URL: postgresql://hrlite:hrlite@postgres:5432/hrlite
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
   # --- HRLite App ---
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      target: production
     container_name: hrlite_app
     restart: unless-stopped
     ports:
       - "3000:3000"
     # WARNING: Giá trị mặc định chỉ dùng cho local dev, KHÔNG dùng trong production
     environment:
-      DATABASE_URL: ${DATABASE_URL:-postgresql://hrlite:hrlite@postgres:5432/hrlite}
+      DATABASE_URL: postgresql://hrlite:hrlite@postgres:5432/hrlite
       NEXTAUTH_URL: http://localhost:3000
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-local-dev-secret-change-in-production}
     depends_on:
       postgres:
         condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
       interval: 10s

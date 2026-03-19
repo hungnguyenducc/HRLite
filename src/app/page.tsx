@@ -11,7 +11,7 @@ export default function Home() {
         href="/login"
         className="mt-8 inline-flex items-center rounded-lg px-6 py-3 text-base font-medium text-white transition-colors"
         style={{
-          backgroundColor: 'var(--color-primary)',
+          backgroundColor: 'var(--color-brand-600)',
         }}
       >
         Đăng nhập

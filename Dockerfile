@@ -17,11 +17,11 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
-# ---- Migrator (dùng để chạy db push trước khi app start) ----
+# ---- Migrator (chạy migration trước khi app start) ----
 FROM base AS migrator
 COPY --from=deps /app/node_modules ./node_modules
 COPY prisma ./prisma/
-CMD ["npx", "prisma", "db", "push", "--skip-generate", "--accept-data-loss"]
+CMD ["npx", "prisma", "migrate", "deploy"]
 
 # ---- Production ----
 FROM base AS production

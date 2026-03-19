@@ -15,3 +15,9 @@ services:
       interval: 3s
       timeout: 3s
       retries: 10
+    networks:
+      - hrlite_default
+
+networks:
+  hrlite_default:
+    external: true

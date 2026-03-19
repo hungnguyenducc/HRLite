@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DATABASE_URL     = 'postgresql://hrlite_test:hrlite_test@localhost:5433/hrlite_test'
+        DATABASE_URL     = 'postgresql://hrlite_test:hrlite_test@hrlite_test_db:5432/hrlite_test'
         NEXTAUTH_SECRET  = 'jenkins-test-secret'
         NEXTAUTH_URL     = 'http://localhost:3000'
         NODE_ENV         = 'test'
@@ -41,7 +41,7 @@ pipeline {
         stage('Test DB Up') {
             steps {
                 sh 'docker compose -f docker-compose.test.yml up -d --wait'
-                sh 'npx dotenv -e .env.test -- npx prisma db push --force-reset'
+                sh 'npx prisma db push --force-reset'
             }
         }
 
@@ -58,7 +58,7 @@ pipeline {
 
         stage('Integration Tests') {
             steps {
-                sh 'JEST_JUNIT_OUTPUT_DIR=./reports JEST_JUNIT_OUTPUT_NAME=integration.xml npm run test:integration -- --ci --reporters=default --reporters=jest-junit'
+                sh 'JEST_JUNIT_OUTPUT_DIR=./reports JEST_JUNIT_OUTPUT_NAME=integration.xml npx jest --selectProjects integration --runInBand --testTimeout=30000 --ci --reporters=default --reporters=jest-junit'
             }
             post {
                 always {
@@ -69,7 +69,7 @@ pipeline {
 
         stage('Coverage') {
             steps {
-                sh 'npm run test:coverage -- --ci'
+                sh 'npx jest --coverage --ci'
             }
             post {
                 always {

@@ -69,7 +69,7 @@ pipeline {
 
         stage('Coverage') {
             steps {
-                sh 'npx jest --coverage --ci'
+                sh 'npx jest --coverage --ci --runInBand'
             }
             post {
                 always {

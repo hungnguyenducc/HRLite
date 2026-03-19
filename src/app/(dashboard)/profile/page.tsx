@@ -163,7 +163,10 @@ function PersonalInfoTab() {
             <div>
               <p
                 className="text-[var(--color-text-primary)]"
-                style={{ fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-semibold)' }}
+                style={{
+                  fontSize: 'var(--font-size-lg)',
+                  fontWeight: 'var(--font-weight-semibold)',
+                }}
               >
                 {user?.displayName || 'Chưa đặt tên'}
               </p>
@@ -173,10 +176,7 @@ function PersonalInfoTab() {
               >
                 {user?.email}
               </p>
-              <Badge
-                variant={user?.role === 'ADMIN' ? 'brand' : 'default'}
-                size="sm"
-              >
+              <Badge variant={user?.role === 'ADMIN' ? 'brand' : 'default'} size="sm">
                 {user?.role === 'ADMIN' ? 'Quản trị viên' : 'Người dùng'}
               </Badge>
             </div>
@@ -454,7 +454,10 @@ function TermsTab() {
                 <div>
                   <p
                     className="text-[var(--color-text-primary)]"
-                    style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)' }}
+                    style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-semibold)',
+                    }}
                   >
                     {term.termTitle}
                   </p>
@@ -466,7 +469,9 @@ function TermsTab() {
                   </p>
                 </div>
                 <div className="text-right shrink-0">
-                  <Badge variant="success" size="sm">Đã đồng ý</Badge>
+                  <Badge variant="success" size="sm">
+                    Đã đồng ý
+                  </Badge>
                   <p
                     className="text-[var(--color-text-tertiary)] mt-1"
                     style={{ fontSize: 'var(--font-size-xs)' }}
@@ -535,7 +540,10 @@ function DangerZone() {
           <div className="flex-1">
             <h3
               className="text-[var(--color-error-700)]"
-              style={{ fontSize: 'var(--font-size-base)', fontWeight: 'var(--font-weight-semibold)' }}
+              style={{
+                fontSize: 'var(--font-size-base)',
+                fontWeight: 'var(--font-weight-semibold)',
+              }}
             >
               Vùng nguy hiểm
             </h3>

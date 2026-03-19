@@ -1,6 +1,6 @@
 import prisma from '@/lib/db';
 import { withAuth, AuthenticatedRequest } from '@/lib/auth/middleware';
-import { successResponse, errorResponse } from '@/lib/api-response';
+import { successResponse } from '@/lib/api-response';
 import { handleApiError } from '@/lib/errors';
 
 // GET /api/terms/pending - Return terms not yet agreed by current user
@@ -37,7 +37,6 @@ async function handler(req: AuthenticatedRequest) {
 
     return successResponse(pendingTerms);
   } catch (error) {
-
     return handleApiError(error);
   }
 }

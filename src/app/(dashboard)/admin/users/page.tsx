@@ -248,7 +248,10 @@ export default function AdminUsersPage() {
       header: 'Ngày tạo',
       sortable: true,
       render: (row) => (
-        <span className="text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)' }}>
+        <span
+          className="text-[var(--color-text-secondary)]"
+          style={{ fontSize: 'var(--font-size-sm)' }}
+        >
           {new Date(row.createdAt).toLocaleDateString('vi-VN')}
         </span>
       ),
@@ -317,7 +320,13 @@ export default function AdminUsersPage() {
               </form>
 
               <div className="flex gap-2">
-                <Select value={roleFilter} onValueChange={(v) => { setRoleFilter(v); setPage(1); }}>
+                <Select
+                  value={roleFilter}
+                  onValueChange={(v) => {
+                    setRoleFilter(v);
+                    setPage(1);
+                  }}
+                >
                   <SelectTrigger className="w-[150px]" aria-label="Lọc theo vai trò">
                     <SelectValue placeholder="Vai trò" />
                   </SelectTrigger>
@@ -328,7 +337,13 @@ export default function AdminUsersPage() {
                   </SelectContent>
                 </Select>
 
-                <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
+                <Select
+                  value={statusFilter}
+                  onValueChange={(v) => {
+                    setStatusFilter(v);
+                    setPage(1);
+                  }}
+                >
                   <SelectTrigger className="w-[150px]" aria-label="Lọc theo trạng thái">
                     <SelectValue placeholder="Trạng thái" />
                   </SelectTrigger>
@@ -362,11 +377,7 @@ export default function AdminUsersPage() {
             </div>
           </div>
         ) : (
-          <DataTable
-            columns={columns}
-            data={users}
-            keyExtractor={(row) => row.id}
-          />
+          <DataTable columns={columns} data={users} keyExtractor={(row) => row.id} />
         )}
       </div>
 
@@ -403,9 +414,7 @@ export default function AdminUsersPage() {
         <DialogContent size="md">
           <DialogHeader>
             <DialogTitle>Chi tiết người dùng</DialogTitle>
-            <DialogDescription>
-              Xem và quản lý thông tin tài khoản
-            </DialogDescription>
+            <DialogDescription>Xem và quản lý thông tin tài khoản</DialogDescription>
           </DialogHeader>
           {selectedUser && (
             <DialogBody>
@@ -426,12 +435,16 @@ export default function AdminUsersPage() {
                       fontStyle: 'italic',
                     }}
                   >
-                    {selectedUser.displayName?.[0]?.toUpperCase() || selectedUser.email[0].toUpperCase()}
+                    {selectedUser.displayName?.[0]?.toUpperCase() ||
+                      selectedUser.email[0].toUpperCase()}
                   </div>
                   <div>
                     <p
                       className="text-[var(--color-text-primary)]"
-                      style={{ fontSize: 'var(--font-size-base)', fontWeight: 'var(--font-weight-semibold)' }}
+                      style={{
+                        fontSize: 'var(--font-size-base)',
+                        fontWeight: 'var(--font-weight-semibold)',
+                      }}
                     >
                       {selectedUser.displayName || selectedUser.email.split('@')[0]}
                     </p>
@@ -448,7 +461,10 @@ export default function AdminUsersPage() {
                   <div>
                     <p
                       className="text-[var(--color-text-tertiary)] mb-1"
-                      style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)' }}
+                      style={{
+                        fontSize: 'var(--font-size-xs)',
+                        fontWeight: 'var(--font-weight-medium)',
+                      }}
                     >
                       Ngày tạo
                     </p>
@@ -462,7 +478,10 @@ export default function AdminUsersPage() {
                   <div>
                     <p
                       className="text-[var(--color-text-tertiary)] mb-1"
-                      style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)' }}
+                      style={{
+                        fontSize: 'var(--font-size-xs)',
+                        fontWeight: 'var(--font-weight-medium)',
+                      }}
                     >
                       Trạng thái
                     </p>
@@ -475,7 +494,10 @@ export default function AdminUsersPage() {
                 <div>
                   <p
                     className="text-[var(--color-text-tertiary)] mb-2"
-                    style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)' }}
+                    style={{
+                      fontSize: 'var(--font-size-xs)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
                   >
                     Vai trò
                   </p>

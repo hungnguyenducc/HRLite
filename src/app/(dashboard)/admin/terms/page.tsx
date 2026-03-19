@@ -210,9 +210,7 @@ export default function AdminTermsPage() {
       key: 'type',
       header: 'Loại',
       render: (row) => (
-        <span style={{ fontSize: 'var(--font-size-sm)' }}>
-          {typeLabel[row.type] || row.type}
-        </span>
+        <span style={{ fontSize: 'var(--font-size-sm)' }}>{typeLabel[row.type] || row.type}</span>
       ),
     },
     {
@@ -275,9 +273,7 @@ export default function AdminTermsPage() {
           className="text-[var(--color-text-secondary)]"
           style={{ fontSize: 'var(--font-size-sm)' }}
         >
-          {row.effectiveDate
-            ? new Date(row.effectiveDate).toLocaleDateString('vi-VN')
-            : '—'}
+          {row.effectiveDate ? new Date(row.effectiveDate).toLocaleDateString('vi-VN') : '—'}
         </span>
       ),
     },
@@ -338,11 +334,7 @@ export default function AdminTermsPage() {
             </div>
           </div>
         ) : (
-          <DataTable
-            columns={columns}
-            data={terms}
-            keyExtractor={(row) => row.id}
-          />
+          <DataTable columns={columns} data={terms} keyExtractor={(row) => row.id} />
         )}
       </div>
 
@@ -365,7 +357,10 @@ export default function AdminTermsPage() {
                 <div className="flex flex-col gap-1.5">
                   <label
                     className="text-[var(--color-text-primary)]"
-                    style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}
+                    style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
                   >
                     Loại
                   </label>
@@ -409,7 +404,10 @@ export default function AdminTermsPage() {
                 <label
                   htmlFor="term-content"
                   className="text-[var(--color-text-primary)]"
-                  style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}
+                  style={{
+                    fontSize: 'var(--font-size-sm)',
+                    fontWeight: 'var(--font-weight-medium)',
+                  }}
                 >
                   Nội dung
                 </label>

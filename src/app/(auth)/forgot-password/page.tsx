@@ -7,10 +7,7 @@ import { ArrowLeft, Mail } from 'lucide-react';
 import { Button, Input, useToast } from '@/components/ui';
 
 const forgotPasswordSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'Email không được để trống')
-    .email('Email không hợp lệ'),
+  email: z.string().min(1, 'Email không được để trống').email('Email không hợp lệ'),
 });
 
 export default function ForgotPasswordPage() {
@@ -124,8 +121,8 @@ export default function ForgotPasswordPage() {
                 style={{ color: 'var(--color-text-secondary)' }}
               >
                 Chúng tôi đã gửi email hướng dẫn đặt lại mật khẩu đến{' '}
-                <strong style={{ color: 'var(--color-text-primary)' }}>{email}</strong>.
-                Vui lòng kiểm tra hộp thư của bạn.
+                <strong style={{ color: 'var(--color-text-primary)' }}>{email}</strong>. Vui lòng
+                kiểm tra hộp thư của bạn.
               </p>
             </div>
 
@@ -164,7 +161,13 @@ export default function ForgotPasswordPage() {
             </div>
 
             <div className="animate-fade-up-delay-2 pt-[var(--spacing-1)]">
-              <Button type="submit" variant="primary" size="lg" className="w-full" loading={loading}>
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                className="w-full"
+                loading={loading}
+              >
                 Gửi link đặt lại mật khẩu
               </Button>
             </div>

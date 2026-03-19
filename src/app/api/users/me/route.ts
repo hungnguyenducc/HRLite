@@ -28,7 +28,6 @@ async function getHandler(req: AuthenticatedRequest) {
 
     return successResponse(user);
   } catch (error) {
-
     return handleApiError(error);
   }
 }
@@ -67,7 +66,6 @@ async function patchHandler(req: AuthenticatedRequest) {
 
     return successResponse(updated);
   } catch (error) {
-
     return handleApiError(error);
   }
 }
@@ -118,7 +116,6 @@ async function deleteHandler(req: AuthenticatedRequest) {
 
     return response;
   } catch (error) {
-
     return handleApiError(error);
   }
 }

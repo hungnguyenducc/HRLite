@@ -54,7 +54,8 @@ const dialogContentVariants = cva(
 );
 
 export interface DialogContentProps
-  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
+  extends
+    React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
     VariantProps<typeof dialogContentVariants> {}
 
 const DialogContent = React.forwardRef<
@@ -79,13 +80,7 @@ const DialogContent = React.forwardRef<
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn(
-      'p-[var(--spacing-6)] pb-0',
-      className,
-    )}
-    {...props}
-  />
+  <div className={cn('p-[var(--spacing-6)] pb-0', className)} {...props} />
 );
 DialogHeader.displayName = 'DialogHeader';
 

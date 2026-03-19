@@ -186,7 +186,10 @@ function TopHeader() {
             <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--color-border)' }}>
               <p
                 className="text-[var(--color-text-primary)] truncate"
-                style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)' }}
+                style={{
+                  fontSize: 'var(--font-size-sm)',
+                  fontWeight: 'var(--font-weight-semibold)',
+                }}
               >
                 {user?.displayName || 'Người dùng'}
               </p>
@@ -217,7 +220,11 @@ function TopHeader() {
               </button>
             </div>
 
-            <div className="mx-3 h-px" style={{ background: 'var(--color-border)' }} role="separator" />
+            <div
+              className="mx-3 h-px"
+              style={{ background: 'var(--color-border)' }}
+              role="separator"
+            />
 
             <div className="py-1">
               <button
@@ -245,9 +252,16 @@ function TopHeader() {
 }
 
 function DashboardShell({ children }: { children: React.ReactNode }) {
-  const { loading } = useAuth();
+  const { user, loading } = useAuth();
+  const router = useRouter();
 
-  if (loading) {
+  React.useEffect(() => {
+    if (!loading && !user) {
+      router.replace('/login');
+    }
+  }, [loading, user, router]);
+
+  if (loading || !user) {
     return (
       <div
         className="flex h-screen items-center justify-center"
@@ -260,7 +274,11 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           />
           <p
             className="text-[var(--color-text-secondary)]"
-            style={{ fontSize: 'var(--font-size-sm)', fontFamily: 'var(--font-family-serif)', fontStyle: 'italic' }}
+            style={{
+              fontSize: 'var(--font-size-sm)',
+              fontFamily: 'var(--font-family-serif)',
+              fontStyle: 'italic',
+            }}
           >
             Đang tải...
           </p>

@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { cleanDatabase, seedTerms } from '../../helpers/db';
 import { createRequest } from '../../helpers/request';
-import { TEST_USERS, TEST_TERMS } from '../../helpers/auth';
+import { TEST_TERMS } from '../../helpers/auth';
 import { __resetStoreForTesting } from '@/lib/auth/rate-limit';
 
 import { POST } from '@/app/api/auth/signup/route';

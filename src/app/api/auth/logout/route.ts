@@ -1,7 +1,7 @@
 import prisma from '@/lib/db';
 import { hashToken } from '@/lib/auth/jwt';
 import { withAuth, AuthenticatedRequest } from '@/lib/auth/middleware';
-import { successResponse, errorResponse } from '@/lib/api-response';
+import { successResponse } from '@/lib/api-response';
 import { handleApiError } from '@/lib/errors';
 
 async function handler(req: AuthenticatedRequest) {
@@ -38,7 +38,6 @@ async function handler(req: AuthenticatedRequest) {
 
     return response;
   } catch (error) {
-
     return handleApiError(error);
   }
 }

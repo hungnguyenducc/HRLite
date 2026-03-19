@@ -4,7 +4,10 @@ import { successResponse, errorResponse } from '@/lib/api-response';
 import { handleApiError } from '@/lib/errors';
 
 // PATCH /api/users/[id] — Update user role or status (ADMIN only)
-async function patchHandler(req: AuthenticatedRequest, context: { params: Promise<Record<string, string>> }) {
+async function patchHandler(
+  req: AuthenticatedRequest,
+  context: { params: Promise<Record<string, string>> },
+) {
   try {
     const { id } = await context.params;
     const body = await req.json();
@@ -64,7 +67,6 @@ async function patchHandler(req: AuthenticatedRequest, context: { params: Promis
       status: updated.sttsCd,
     });
   } catch (error) {
-
     return handleApiError(error);
   }
 }

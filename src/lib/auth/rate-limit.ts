@@ -53,11 +53,7 @@ function getClientIp(req: NextRequest): string {
  * @param key   A namespace to separate different limit buckets (e.g. 'login')
  * @param config  The rate limit configuration
  */
-export function checkRateLimit(
-  req: NextRequest,
-  key: string,
-  config: RateLimitConfig,
-): void {
+export function checkRateLimit(req: NextRequest, key: string, config: RateLimitConfig): void {
   cleanup();
 
   const identifier = `${key}:${getClientIp(req)}`;
@@ -97,14 +93,11 @@ export function __resetStoreForTesting(): void {
  */
 export function rateLimitResponse(err: RateLimitError): Response {
   const retryAfter = (err as RateLimitError & { retryAfter?: number }).retryAfter ?? 60;
-  return new Response(
-    JSON.stringify({ success: false, error: err.message }),
-    {
-      status: 429,
-      headers: {
-        'Content-Type': 'application/json',
-        'Retry-After': String(retryAfter),
-      },
+  return new Response(JSON.stringify({ success: false, error: err.message }), {
+    status: 429,
+    headers: {
+      'Content-Type': 'application/json',
+      'Retry-After': String(retryAfter),
     },
-  );
+  });
 }

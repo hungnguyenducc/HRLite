@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { hashPassword, verifyPassword } from '@/lib/auth/password';
+import { verifyPassword } from '@/lib/auth/password';
 import { generateAccessToken, generateRefreshToken, hashToken } from '@/lib/auth/jwt';
 import { loginSchema } from '@/lib/auth/validation';
 import { successResponse, errorResponse } from '@/lib/api-response';
@@ -33,10 +33,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Always run bcrypt compare to prevent timing oracle
-    const isValid = await verifyPassword(
-      password,
-      user?.passwdHash ?? DUMMY_HASH,
-    );
+    const isValid = await verifyPassword(password, user?.passwdHash ?? DUMMY_HASH);
 
     // Check all auth conditions with same generic message
     if (!user || !isValid || user.delYn === 'Y' || user.sttsCd !== 'ACTIVE') {
@@ -88,9 +85,10 @@ export async function POST(req: NextRequest) {
         displayName: user.displayName,
         roleCd: user.roleCd,
       },
-      pendingTerms: pendingTerms.length > 0
-        ? pendingTerms.map((t) => ({ id: t.id, typeCd: t.typeCd, title: t.title }))
-        : undefined,
+      pendingTerms:
+        pendingTerms.length > 0
+          ? pendingTerms.map((t) => ({ id: t.id, typeCd: t.typeCd, title: t.title }))
+          : undefined,
     });
 
     // Set HTTP-only cookies

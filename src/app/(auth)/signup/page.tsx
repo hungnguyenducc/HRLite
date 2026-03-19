@@ -10,10 +10,7 @@ import { cn } from '@/lib/utils';
 const signupSchema = z
   .object({
     fullName: z.string().optional(),
-    email: z
-      .string()
-      .min(1, 'Email không được để trống')
-      .email('Email không hợp lệ'),
+    email: z.string().min(1, 'Email không được để trống').email('Email không hợp lệ'),
     password: z
       .string()
       .min(1, 'Mật khẩu không được để trống')
@@ -28,6 +25,15 @@ const signupSchema = z
 type SignupForm = z.infer<typeof signupSchema>;
 type FieldErrors = Partial<Record<keyof SignupForm, string>>;
 
+interface TermItemApi {
+  id: string;
+  typeCd: string;
+  verNo: string;
+  title: string;
+  content: string;
+  reqYn: string;
+}
+
 interface TermItem {
   id: string;
   type: string;
@@ -37,7 +43,10 @@ interface TermItem {
   required: boolean;
 }
 
-function getPasswordStrength(password: string): { level: 'weak' | 'medium' | 'strong'; label: string } {
+function getPasswordStrength(password: string): {
+  level: 'weak' | 'medium' | 'strong';
+  label: string;
+} {
   if (password.length === 0) return { level: 'weak', label: '' };
 
   let score = 0;
@@ -85,9 +94,18 @@ export default function SignupPage() {
       try {
         const res = await fetch('/api/terms/active');
         if (res.ok) {
-          const data: { success: boolean; data: TermItem[] } = await res.json();
+          const data: { success: boolean; data: TermItemApi[] } = await res.json();
           if (data.success) {
-            setTerms(data.data);
+            setTerms(
+              data.data.map((t) => ({
+                id: t.id,
+                type: t.typeCd,
+                version: t.verNo,
+                title: t.title,
+                content: t.content,
+                required: t.reqYn === 'Y',
+              })),
+            );
           }
         }
       } catch {
@@ -318,19 +336,18 @@ export default function SignupPage() {
                     className="flex-1 text-[var(--font-size-sm)] transition-colors"
                     style={{ color: 'var(--color-text-secondary)' }}
                   >
-                    {term.title}
-                    {' '}
-                    <Badge
-                      variant={term.required ? 'error' : 'default'}
-                      size="sm"
-                    >
+                    {term.title}{' '}
+                    <Badge variant={term.required ? 'error' : 'default'} size="sm">
                       {term.required ? 'Bắt buộc' : 'Tùy chọn'}
                     </Badge>
                   </span>
                 </label>
               ))}
               {termsError && (
-                <p className="text-[var(--font-size-xs)] text-[var(--color-error-500)]" role="alert">
+                <p
+                  className="text-[var(--font-size-xs)] text-[var(--color-error-500)]"
+                  role="alert"
+                >
                   {termsError}
                 </p>
               )}

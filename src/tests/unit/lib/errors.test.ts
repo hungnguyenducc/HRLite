@@ -290,7 +290,7 @@ describe('Errors', () => {
 
     it('nen tra ve thong bao chung khi loi la so', async () => {
       const response = handleApiError(42);
-      const body = await response.json();
+      await response.json();
 
       expect(response.status).toBe(500);
     });

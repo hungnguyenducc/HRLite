@@ -1,12 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { cleanDatabase, seedTerms, seedNormalUser } from '../../helpers/db';
 import { createRequest } from '../../helpers/request';
-import {
-  TEST_USERS,
-  createAccessToken,
-  createRefreshToken,
-  createTokenHash,
-} from '../../helpers/auth';
+import { TEST_USERS, createAccessToken, createTokenHash } from '../../helpers/auth';
 import { __resetStoreForTesting } from '@/lib/auth/rate-limit';
 import { SignJWT } from 'jose';
 
@@ -120,7 +115,7 @@ describe('POST /api/auth/refresh', () => {
     });
 
     // Tạo thêm một token hợp lệ khác cho user (mô phỏng token mới đã được cấp)
-    const validToken = await createStoredRefreshToken(TEST_USERS.user.id);
+    await createStoredRefreshToken(TEST_USERS.user.id);
 
     const req = createRequest('/api/auth/refresh', {
       method: 'POST',

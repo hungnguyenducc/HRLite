@@ -108,20 +108,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
           {/* Footer */}
           <div className="relative z-10 px-[var(--spacing-12)] pb-[var(--spacing-8)]">
-            <p
-              className="text-[var(--font-size-xs)]"
-              style={{ color: 'var(--color-brand-400)' }}
-            >
+            <p className="text-[var(--font-size-xs)]" style={{ color: 'var(--color-brand-400)' }}>
               &copy; {new Date().getFullYear()} HRLite. All rights reserved.
             </p>
           </div>
         </div>
 
         {/* ── Form Panel ── */}
-        <div
-          className="flex flex-1 flex-col"
-          style={{ background: 'var(--color-bg-primary)' }}
-        >
+        <div className="flex flex-1 flex-col" style={{ background: 'var(--color-bg-primary)' }}>
           {/* Mobile branding header */}
           <div
             className="lg:hidden flex items-center gap-[var(--spacing-3)] px-[var(--spacing-6)] py-[var(--spacing-4)]"
@@ -148,9 +142,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
           {/* Centered form area */}
           <div className="flex flex-1 items-center justify-center px-[var(--spacing-6)] py-[var(--spacing-10)]">
-            <div className="w-full max-w-[440px]">
-              {children}
-            </div>
+            <div className="w-full max-w-[440px]">{children}</div>
           </div>
         </div>
       </div>

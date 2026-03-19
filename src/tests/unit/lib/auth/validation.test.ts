@@ -262,21 +262,21 @@ describe('Validation', () => {
 
     // ── missing fields ──
     it('nen tu choi khi thieu email', () => {
-      const { email, ...rest } = validInput;
+      const { email: _email, ...rest } = validInput;
       const result = signupSchema.safeParse(rest);
 
       expect(result.success).toBe(false);
     });
 
     it('nen tu choi khi thieu password', () => {
-      const { password, ...rest } = validInput;
+      const { password: _password, ...rest } = validInput;
       const result = signupSchema.safeParse(rest);
 
       expect(result.success).toBe(false);
     });
 
     it('nen tu choi khi thieu agreedTermsIds', () => {
-      const { agreedTermsIds, ...rest } = validInput;
+      const { agreedTermsIds: _agreedTermsIds, ...rest } = validInput;
       const result = signupSchema.safeParse(rest);
 
       expect(result.success).toBe(false);

@@ -1,11 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { cleanDatabase, seedTerms, seedNormalUser } from '../../helpers/db';
 import { createRequest, createContext } from '../../helpers/request';
-import {
-  TEST_USERS,
-  createAccessToken,
-  createTokenHash,
-} from '../../helpers/auth';
+import { TEST_USERS, createAccessToken, createTokenHash } from '../../helpers/auth';
 import { __resetStoreForTesting } from '@/lib/auth/rate-limit';
 import { SignJWT } from 'jose';
 

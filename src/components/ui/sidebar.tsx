@@ -41,7 +41,13 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function Sidebar({ children, className }: { children: React.ReactNode; className?: string }) {
+export function Sidebar({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   const { collapsed, setCollapsed, mobileOpen, setMobileOpen } = useSidebar();
 
   return (
@@ -71,7 +77,10 @@ export function Sidebar({ children, className }: { children: React.ReactNode; cl
             {!collapsed && (
               <span
                 className="text-[var(--font-size-xl)] text-[var(--color-text-inverse)] italic truncate"
-                style={{ fontFamily: 'var(--font-family-serif)', fontWeight: 'var(--font-weight-bold)' }}
+                style={{
+                  fontFamily: 'var(--font-family-serif)',
+                  fontWeight: 'var(--font-weight-bold)',
+                }}
               >
                 HRLite
               </span>
@@ -82,7 +91,11 @@ export function Sidebar({ children, className }: { children: React.ReactNode; cl
               className="hidden lg:flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-text-inverse)] opacity-60 hover:opacity-100 hover:bg-white/10 transition-all"
               aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
-              {collapsed ? <PanelLeft className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+              {collapsed ? (
+                <PanelLeft className="h-4 w-4" />
+              ) : (
+                <PanelLeftClose className="h-4 w-4" />
+              )}
             </button>
             {/* Mobile close */}
             <button
@@ -181,9 +194,5 @@ export function SidebarMobileTrigger() {
 }
 
 export function SidebarContent({ children }: { children: React.ReactNode }) {
-  return (
-    <main className="flex-1 flex flex-col overflow-hidden">
-      {children}
-    </main>
-  );
+  return <main className="flex-1 flex flex-col overflow-hidden">{children}</main>;
 }

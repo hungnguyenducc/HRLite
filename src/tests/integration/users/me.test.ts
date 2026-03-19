@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
-import { cleanDatabase, seedNormalUser, seedAdminUser } from '../../helpers/db';
+import { cleanDatabase, seedNormalUser } from '../../helpers/db';
 import { createRequest } from '../../helpers/request';
-import { TEST_USERS, createBearerHeader, createAccessToken } from '../../helpers/auth';
+import { TEST_USERS, createBearerHeader } from '../../helpers/auth';
 import { __resetStoreForTesting } from '@/lib/auth/rate-limit';
 import { GET, PATCH, DELETE } from '@/app/api/users/me/route';
 

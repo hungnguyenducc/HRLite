@@ -32,8 +32,7 @@ export function DataTable<T>({
   const [sort, setSort] = React.useState<SortState>(null);
 
   const handleSort = (key: string) => {
-    const newDirection =
-      sort?.key === key && sort.direction === 'asc' ? 'desc' : 'asc';
+    const newDirection = sort?.key === key && sort.direction === 'asc' ? 'desc' : 'asc';
     setSort({ key, direction: newDirection });
     onSort?.(key, newDirection);
   };
@@ -50,7 +49,12 @@ export function DataTable<T>({
   return (
     <>
       {/* Desktop table */}
-      <div className={cn('hidden md:block overflow-auto rounded-[var(--radius-xl)] border border-[var(--color-border)]', className)}>
+      <div
+        className={cn(
+          'hidden md:block overflow-auto rounded-[var(--radius-xl)] border border-[var(--color-border)]',
+          className,
+        )}
+      >
         <table className="w-full border-collapse text-[var(--font-size-sm)]">
           <thead>
             <tr className="bg-[var(--color-bg-secondary)]">
@@ -60,7 +64,8 @@ export function DataTable<T>({
                   className={cn(
                     'text-left px-4 py-3 font-[var(--font-weight-medium)] text-[var(--color-text-secondary)]',
                     'border-b border-[var(--color-border)]',
-                    col.sortable && 'cursor-pointer select-none hover:text-[var(--color-text-primary)]',
+                    col.sortable &&
+                      'cursor-pointer select-none hover:text-[var(--color-text-primary)]',
                     col.className,
                   )}
                   onClick={col.sortable ? () => handleSort(col.key) : undefined}
@@ -87,10 +92,11 @@ export function DataTable<T>({
                 className="border-b border-[var(--color-border)] last:border-b-0 hover:bg-[var(--color-bg-secondary)] transition-colors"
               >
                 {columns.map((col) => (
-                  <td key={col.key} className={cn('px-4 py-3 text-[var(--color-text-primary)]', col.className)}>
-                    {col.render
-                      ? col.render(row)
-                      : String(row[col.key] ?? '')}
+                  <td
+                    key={col.key}
+                    className={cn('px-4 py-3 text-[var(--color-text-primary)]', col.className)}
+                  >
+                    {col.render ? col.render(row) : String(row[col.key] ?? '')}
                   </td>
                 ))}
               </tr>
@@ -117,14 +123,15 @@ export function DataTable<T>({
             className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-bg-primary)] p-4"
           >
             {columns.map((col) => (
-              <div key={col.key} className="flex justify-between py-1.5 border-b border-[var(--color-border)]/50 last:border-b-0">
+              <div
+                key={col.key}
+                className="flex justify-between py-1.5 border-b border-[var(--color-border)]/50 last:border-b-0"
+              >
                 <span className="text-[var(--font-size-xs)] font-[var(--font-weight-medium)] text-[var(--color-text-secondary)]">
                   {col.header}
                 </span>
                 <span className="text-[var(--font-size-sm)] text-[var(--color-text-primary)] text-right">
-                  {col.render
-                    ? col.render(row)
-                    : String(row[col.key] ?? '')}
+                  {col.render ? col.render(row) : String(row[col.key] ?? '')}
                 </span>
               </div>
             ))}

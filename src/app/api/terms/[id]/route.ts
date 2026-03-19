@@ -4,7 +4,10 @@ import { successResponse, errorResponse } from '@/lib/api-response';
 import { handleApiError } from '@/lib/errors';
 
 // PATCH /api/terms/[id] — Update a term (ADMIN only)
-async function patchHandler(req: AuthenticatedRequest, context: { params: Promise<Record<string, string>> }) {
+async function patchHandler(
+  req: AuthenticatedRequest,
+  context: { params: Promise<Record<string, string>> },
+) {
   try {
     const { id } = await context.params;
     const body = await req.json();
@@ -21,7 +24,10 @@ async function patchHandler(req: AuthenticatedRequest, context: { params: Promis
     if (body.type !== undefined) {
       const validTypes = ['TERMS_OF_SERVICE', 'PRIVACY_POLICY', 'OTHER'];
       if (!validTypes.includes(body.type)) {
-        return errorResponse(`Loại điều khoản không hợp lệ. Cho phép: ${validTypes.join(', ')}`, 400);
+        return errorResponse(
+          `Loại điều khoản không hợp lệ. Cho phép: ${validTypes.join(', ')}`,
+          400,
+        );
       }
       updateData.typeCd = body.type;
     }
@@ -48,13 +54,15 @@ async function patchHandler(req: AuthenticatedRequest, context: { params: Promis
       effectiveDate: updated.enfcDt.toISOString(),
     });
   } catch (error) {
-
     return handleApiError(error);
   }
 }
 
 // DELETE /api/terms/[id] — Soft delete a term (ADMIN only)
-async function deleteHandler(req: AuthenticatedRequest, context: { params: Promise<Record<string, string>> }) {
+async function deleteHandler(
+  req: AuthenticatedRequest,
+  context: { params: Promise<Record<string, string>> },
+) {
   try {
     const { id } = await context.params;
 
@@ -70,7 +78,6 @@ async function deleteHandler(req: AuthenticatedRequest, context: { params: Promi
 
     return successResponse({ message: 'Đã xóa điều khoản thành công.' });
   } catch (error) {
-
     return handleApiError(error);
   }
 }

@@ -24,7 +24,6 @@ async function getHandler(_req: AuthenticatedRequest) {
 
     return successResponse(mapped);
   } catch (error) {
-
     return handleApiError(error);
   }
 }
@@ -76,7 +75,6 @@ async function postHandler(req: AuthenticatedRequest) {
       201,
     );
   } catch (error) {
-
     return handleApiError(error);
   }
 }

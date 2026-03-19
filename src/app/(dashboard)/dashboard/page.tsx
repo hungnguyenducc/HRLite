@@ -1,14 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Users,
-  UserCheck,
-  CalendarDays,
-  Building2,
-  ArrowRight,
-  TrendingUp,
-} from 'lucide-react';
+import { Users, UserCheck, CalendarDays, Building2, ArrowRight, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useRouter } from 'next/navigation';
@@ -26,18 +19,12 @@ interface StatCardProps {
 
 function StatCard({ label, value, icon, accentColor, iconBg, iconColor, delay }: StatCardProps) {
   return (
-    <div
-      className="animate-fade-up hover-lift"
-      style={{ animationDelay: `${delay}ms` }}
-    >
+    <div className="animate-fade-up hover-lift" style={{ animationDelay: `${delay}ms` }}>
       <Card variant="default">
         <CardContent>
           <div className="flex items-stretch gap-4">
             {/* Left accent border */}
-            <div
-              className="w-1 rounded-full shrink-0 -my-1"
-              style={{ background: accentColor }}
-            />
+            <div className="w-1 rounded-full shrink-0 -my-1" style={{ background: accentColor }} />
             <div className="flex flex-1 items-center justify-between">
               <div className="flex flex-col gap-1">
                 <span
@@ -147,8 +134,7 @@ export default function DashboardPage() {
 
   const now = new Date();
   const hour = now.getHours();
-  const greeting =
-    hour < 12 ? 'Chào buổi sáng' : hour < 18 ? 'Chào buổi chiều' : 'Chào buổi tối';
+  const greeting = hour < 12 ? 'Chào buổi sáng' : hour < 18 ? 'Chào buổi chiều' : 'Chào buổi tối';
 
   return (
     <div className="flex flex-col gap-8 max-w-[1200px]">
@@ -164,8 +150,7 @@ export default function DashboardPage() {
             lineHeight: 'var(--line-height-tight)',
           }}
         >
-          {greeting},{' '}
-          <span className="text-[var(--color-text-accent)]">{displayName}</span>
+          {greeting}, <span className="text-[var(--color-text-accent)]">{displayName}</span>
         </h1>
         <p
           className="text-[var(--color-text-secondary)] mt-2"
@@ -258,7 +243,10 @@ export default function DashboardPage() {
                 <div className="flex-1 min-w-0">
                   <p
                     className="text-[var(--color-text-primary)] truncate"
-                    style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)' }}
+                    style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-semibold)',
+                    }}
                   >
                     {action.label}
                   </p>
@@ -269,9 +257,7 @@ export default function DashboardPage() {
                     {action.description}
                   </p>
                 </div>
-                <ArrowRight
-                  className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)] transition-transform duration-[var(--transition-fast)] group-hover:translate-x-1"
-                />
+                <ArrowRight className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)] transition-transform duration-[var(--transition-fast)] group-hover:translate-x-1" />
               </div>
             </button>
           ))}

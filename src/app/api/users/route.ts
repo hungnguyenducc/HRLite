@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { withRole, AuthenticatedRequest } from '@/lib/auth/middleware';
-import { errorResponse } from '@/lib/api-response';
 import { handleApiError } from '@/lib/errors';
 
 // GET /api/users - List users (ADMIN only) with pagination, search, filters
@@ -80,7 +79,6 @@ async function handler(req: AuthenticatedRequest) {
       },
     });
   } catch (error) {
-
     return handleApiError(error);
   }
 }

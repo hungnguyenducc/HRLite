@@ -13,16 +13,10 @@ interface RouteContext {
 }
 
 // Internal handler type that receives the authenticated request
-type AuthHandler = (
-  req: AuthenticatedRequest,
-  context: RouteContext
-) => Promise<NextResponse>;
+type AuthHandler = (req: AuthenticatedRequest, context: RouteContext) => Promise<NextResponse>;
 
 // Next.js route handler type
-type NextRouteHandler = (
-  req: NextRequest,
-  context: RouteContext
-) => Promise<NextResponse>;
+type NextRouteHandler = (req: NextRequest, context: RouteContext) => Promise<NextResponse>;
 
 // Extract JWT from Authorization header or cookie
 function extractToken(req: NextRequest): string | null {

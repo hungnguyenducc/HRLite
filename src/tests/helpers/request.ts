@@ -9,10 +9,7 @@ interface RequestOptions {
 }
 
 /** Tạo NextRequest mock cho testing API routes */
-export function createRequest(
-  path: string,
-  options: RequestOptions = {},
-): NextRequest {
+export function createRequest(path: string, options: RequestOptions = {}): NextRequest {
   const { method = 'GET', body, headers = {}, cookies = {}, searchParams = {} } = options;
 
   const url = new URL(`http://localhost:3000${path}`);
@@ -23,7 +20,9 @@ export function createRequest(
   const reqHeaders = new Headers(headers);
 
   if (Object.keys(cookies).length > 0) {
-    const cookieStr = Object.entries(cookies).map(([k, v]) => `${k}=${v}`).join('; ');
+    const cookieStr = Object.entries(cookies)
+      .map(([k, v]) => `${k}=${v}`)
+      .join('; ');
     reqHeaders.set('Cookie', cookieStr);
   }
 

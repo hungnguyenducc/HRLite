@@ -58,9 +58,11 @@ async function handler(req: AuthenticatedRequest) {
       skipDuplicates: true,
     });
 
-    return successResponse({ message: 'Đã đồng ý điều khoản thành công.', agreedCount: newTermsIds.length });
+    return successResponse({
+      message: 'Đã đồng ý điều khoản thành công.',
+      agreedCount: newTermsIds.length,
+    });
   } catch (error) {
-
     return handleApiError(error);
   }
 }

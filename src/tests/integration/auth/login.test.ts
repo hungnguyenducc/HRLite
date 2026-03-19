@@ -3,7 +3,6 @@ import { cleanDatabase, seedTerms, seedNormalUser } from '../../helpers/db';
 import { createRequest } from '../../helpers/request';
 import { TEST_USERS, TEST_TERMS } from '../../helpers/auth';
 import { __resetStoreForTesting } from '@/lib/auth/rate-limit';
-import { hashPassword } from '@/lib/auth/password';
 
 import { POST } from '@/app/api/auth/login/route';
 

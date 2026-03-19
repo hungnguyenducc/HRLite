@@ -32,10 +32,7 @@ const buttonVariants = cva(
           'hover:bg-[var(--color-error-700)]',
           'shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]',
         ].join(' '),
-        ghost: [
-          'text-[var(--color-text-brand)]',
-          'hover:bg-[var(--color-brand-50)]',
-        ].join(' '),
+        ghost: ['text-[var(--color-text-brand)]', 'hover:bg-[var(--color-brand-50)]'].join(' '),
         outline: [
           'border border-[var(--color-border)] bg-transparent text-[var(--color-text-primary)]',
           'hover:bg-[var(--color-bg-secondary)] hover:border-[var(--color-text-tertiary)]',
@@ -56,14 +53,16 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   loading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, loading = false, children, disabled, ...props }, ref) => {
+  (
+    { className, variant, size, asChild = false, loading = false, children, disabled, ...props },
+    ref,
+  ) => {
     const Comp = asChild ? Slot : 'button';
     return (
       <Comp

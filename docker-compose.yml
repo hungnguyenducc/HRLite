@@ -48,6 +48,7 @@ services:
       dockerfile: Dockerfile
     container_name: hrlite_jenkins
     restart: unless-stopped
+    user: root
     ports:
       - "8080:8080"
       - "50000:50000"

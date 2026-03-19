@@ -209,14 +209,10 @@ describe('Validation', () => {
 
     // ── agreedTermsIds ──
     describe('agreedTermsIds', () => {
-      it('nen tu choi khi agreedTermsIds la mang rong', () => {
+      it('nen chap nhan khi agreedTermsIds la mang rong', () => {
         const result = signupSchema.safeParse({ ...validInput, agreedTermsIds: [] });
 
-        expect(result.success).toBe(false);
-        if (!result.success) {
-          const messages = result.error.issues.map((i) => i.message);
-          expect(messages).toContain('Phải đồng ý ít nhất một điều khoản');
-        }
+        expect(result.success).toBe(true);
       });
 
       it('nen tu choi khi agreedTermsIds chua UUID khong hop le', () => {

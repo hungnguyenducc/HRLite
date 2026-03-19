@@ -544,5 +544,5 @@ src/
 ## Tai lieu tham chieu
 
 - `docs/database/database-design.md` — Thiet ke DB chi tiet (SSoT)
-- `docs/sprints/sprint-2-auth/prompt-map.md` — Ke hoach sprint
-- `docs/sprints/sprint-2-auth/progress.md` — Tien do sprint
+- `docs/sprints/sprint-1-auth/prompt-map.md` — Ke hoach sprint
+- `docs/sprints/sprint-1-auth/progress.md` — Tien do sprint

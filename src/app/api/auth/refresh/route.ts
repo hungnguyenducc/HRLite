@@ -7,9 +7,13 @@ import {
   hashToken,
 } from '@/lib/auth/jwt';
 import { successResponse, errorResponse } from '@/lib/api-response';
+import { checkRateLimit, RATE_LIMITS, rateLimitResponse } from '@/lib/auth/rate-limit';
+import { RateLimitError, handleApiError } from '@/lib/errors';
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 10 requests per minute per IP
+    checkRateLimit(req, 'refresh', RATE_LIMITS.refresh);
     // Extract refresh token from cookie or body
     let refreshTokenValue = req.cookies.get('refresh_token')?.value;
 
@@ -36,6 +40,11 @@ export async function POST(req: NextRequest) {
 
     if (!storedToken) {
       return errorResponse('Refresh token không tồn tại.', 401);
+    }
+
+    // Check DB-side expiry
+    if (storedToken.expryDt < new Date()) {
+      return errorResponse('Refresh token đã hết hạn. Vui lòng đăng nhập lại.', 401);
     }
 
     // Check not already discarded
@@ -112,7 +121,7 @@ export async function POST(req: NextRequest) {
 
     return response;
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Lỗi hệ thống';
-    return errorResponse(message, 500);
+    if (error instanceof RateLimitError) return rateLimitResponse(error);
+    return handleApiError(error);
   }
 }

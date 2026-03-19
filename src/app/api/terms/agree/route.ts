@@ -2,6 +2,7 @@ import prisma from '@/lib/db';
 import { withAuth, AuthenticatedRequest } from '@/lib/auth/middleware';
 import { agreeTermsSchema } from '@/lib/auth/validation';
 import { successResponse, errorResponse } from '@/lib/api-response';
+import { handleApiError } from '@/lib/errors';
 
 // POST /api/terms/agree - Create agreement records
 async function handler(req: AuthenticatedRequest) {
@@ -44,7 +45,7 @@ async function handler(req: AuthenticatedRequest) {
     const ipAddr = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? undefined;
     const dvcInfo = req.headers.get('user-agent') ?? undefined;
 
-    // Create new agreement records
+    // Create new agreement records (skipDuplicates to handle race conditions)
     await prisma.userAgreement.createMany({
       data: newTermsIds.map((trmsId) => ({
         userId,
@@ -54,12 +55,13 @@ async function handler(req: AuthenticatedRequest) {
         ipAddr,
         dvcInfo,
       })),
+      skipDuplicates: true,
     });
 
     return successResponse({ message: 'Đã đồng ý điều khoản thành công.', agreedCount: newTermsIds.length });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Lỗi hệ thống';
-    return errorResponse(message, 500);
+
+    return handleApiError(error);
   }
 }
 

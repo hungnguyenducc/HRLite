@@ -21,7 +21,7 @@ RUN npm run build
 FROM base AS migrator
 COPY --from=deps /app/node_modules ./node_modules
 COPY prisma ./prisma/
-CMD ["npx", "prisma", "migrate", "deploy"]
+CMD ["npx", "prisma", "db", "push"]
 
 # ---- Production ----
 FROM base AS production

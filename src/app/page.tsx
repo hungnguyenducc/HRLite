@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Button } from '@/components/ui';
 
 export default function Home() {
   return (
@@ -7,15 +8,9 @@ export default function Home() {
       <p className="mt-4 text-lg text-[var(--color-text-secondary)]">
         Công cụ quản lý nhân sự nội bộ
       </p>
-      <Link
-        href="/login"
-        className="mt-8 inline-flex items-center rounded-lg px-6 py-3 text-base font-medium text-white transition-colors"
-        style={{
-          backgroundColor: 'var(--color-brand-600)',
-        }}
-      >
-        Đăng nhập
-      </Link>
+      <Button asChild variant="primary" size="lg" className="mt-8">
+        <Link href="/login">Đăng nhập</Link>
+      </Button>
     </main>
   );
 }

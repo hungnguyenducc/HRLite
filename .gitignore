@@ -44,3 +44,10 @@ prisma/*.db-journal
 .vscode/
 *.swp
 *.swo
+
+# MCP / Playwright
+.mcp.json
+.playwright-mcp/
+
+# Test screenshots
+test-screenshots/

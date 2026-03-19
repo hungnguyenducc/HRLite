@@ -99,6 +99,41 @@ pipeline {
                 sh "docker build -t hrlite:\${BUILD_NUMBER} -t hrlite:latest ."
             }
         }
+
+        stage('Deploy') {
+            when {
+                branch 'main'
+            }
+            steps {
+                sh '''
+                    echo "Stopping old container..."
+                    docker stop hrlite_app || true
+                    docker rm hrlite_app || true
+
+                    echo "Starting new container..."
+                    docker run -d \
+                        --name hrlite_app \
+                        --network hrlite_default \
+                        -p 3000:3000 \
+                        -e DATABASE_URL=postgresql://hrlite:hrlite@hrlite_db:5432/hrlite \
+                        -e NEXTAUTH_SECRET=${DEPLOY_NEXTAUTH_SECRET:-local-deploy-secret-change-in-production} \
+                        -e NEXTAUTH_URL=http://localhost:3000 \
+                        -e NODE_ENV=production \
+                        --restart unless-stopped \
+                        hrlite:latest
+
+                    echo "Waiting for health check..."
+                    sleep 10
+
+                    HEALTH=$(docker exec hrlite_app wget -qO- http://localhost:3000/api/health 2>/dev/null || echo "FAIL")
+                    if echo "$HEALTH" | grep -q "ok"; then
+                        echo "Deploy thanh cong! App dang chay tai http://localhost:3000"
+                    else
+                        echo "WARNING: Health check chua san sang, kiem tra logs: docker logs hrlite_app"
+                    fi
+                '''
+            }
+        }
     }
 
     post {

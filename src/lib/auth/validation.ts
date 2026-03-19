@@ -10,9 +10,7 @@ export const signupSchema = z.object({
     .regex(/[a-z]/, { message: 'Mật khẩu phải chứa ít nhất 1 chữ thường' })
     .regex(/[0-9]/, { message: 'Mật khẩu phải chứa ít nhất 1 chữ số' }),
   displayName: z.string().min(1, { message: 'Tên hiển thị không được để trống' }).optional(),
-  agreedTermsIds: z
-    .array(z.string().uuid({ message: 'ID điều khoản không hợp lệ' }))
-    .min(1, { message: 'Phải đồng ý ít nhất một điều khoản' }),
+  agreedTermsIds: z.array(z.string().uuid({ message: 'ID điều khoản không hợp lệ' })),
 });
 
 // Login validation schema

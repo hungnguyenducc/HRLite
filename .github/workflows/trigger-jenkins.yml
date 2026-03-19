@@ -20,13 +20,15 @@ jobs:
           JENKINS_USER: ${{ secrets.JENKINS_USER }}
           JENKINS_TOKEN: ${{ secrets.JENKINS_API_TOKEN }}
         run: |
-          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+          RESPONSE=$(curl -s -D /tmp/jenkins_headers -o /dev/null -w "%{http_code}" -X POST \
             "${JENKINS_URL}/job/${JENKINS_JOB}/build" \
             --user "${JENKINS_USER}:${JENKINS_TOKEN}" \
             --data-urlencode json="{\"parameter\": [{\"name\":\"BRANCH\",\"value\":\"${BRANCH_NAME}\"},{\"name\":\"COMMIT\",\"value\":\"${COMMIT_SHA}\"}]}")
 
           if [ "$RESPONSE" -eq 201 ] || [ "$RESPONSE" -eq 200 ]; then
             echo "Jenkins build triggered successfully (HTTP $RESPONSE)"
+            QUEUE_URL=$(grep -i '^Location:' /tmp/jenkins_headers | sed 's/Location: *//;s/\r//')
+            echo "QUEUE_URL=${QUEUE_URL}" >> "$GITHUB_ENV"
           else
             echo "Failed to trigger Jenkins build (HTTP $RESPONSE)"
             exit 1
@@ -40,15 +42,34 @@ jobs:
           JENKINS_TOKEN: ${{ secrets.JENKINS_API_TOKEN }}
         run: |
           echo "Waiting for Jenkins to pick up the build..."
-          sleep 10
 
-          BUILD_INFO=$(curl -s \
-            "${JENKINS_URL}/job/${JENKINS_JOB}/lastBuild/api/json" \
-            --user "${JENKINS_USER}:${JENKINS_TOKEN}")
+          # Poll queue item until it returns a build number
+          MAX_QUEUE_ATTEMPTS=30
+          QUEUE_ATTEMPT=0
+          BUILD_NUMBER=""
 
-          BUILD_NUMBER=$(echo "$BUILD_INFO" | jq -r '.number')
-          echo "Jenkins Build #${BUILD_NUMBER} started"
-          echo "BUILD_NUMBER=${BUILD_NUMBER}" >> "$GITHUB_ENV"
+          while [ $QUEUE_ATTEMPT -lt $MAX_QUEUE_ATTEMPTS ]; do
+            QUEUE_INFO=$(curl -s \
+              "${QUEUE_URL}api/json" \
+              --user "${JENKINS_USER}:${JENKINS_TOKEN}")
+
+            BUILD_NUMBER=$(echo "$QUEUE_INFO" | jq -r '.executable.number // empty')
+
+            if [ -n "$BUILD_NUMBER" ]; then
+              echo "Jenkins Build #${BUILD_NUMBER} started"
+              echo "BUILD_NUMBER=${BUILD_NUMBER}" >> "$GITHUB_ENV"
+              break
+            fi
+
+            QUEUE_ATTEMPT=$((QUEUE_ATTEMPT + 1))
+            echo "Build queued, waiting for executor... (attempt ${QUEUE_ATTEMPT}/${MAX_QUEUE_ATTEMPTS})"
+            sleep 5
+          done
+
+          if [ -z "$BUILD_NUMBER" ]; then
+            echo "Timeout waiting for build to leave the queue"
+            exit 1
+          fi
 
       - name: Poll Jenkins Build Status
         env:

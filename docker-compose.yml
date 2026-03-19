@@ -27,10 +27,11 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    # WARNING: Giá trị mặc định chỉ dùng cho local dev, KHÔNG dùng trong production
     environment:
-      DATABASE_URL: postgresql://hrlite:hrlite@postgres:5432/hrlite
+      DATABASE_URL: ${DATABASE_URL:-postgresql://hrlite:hrlite@postgres:5432/hrlite}
       NEXTAUTH_URL: http://localhost:3000
-      NEXTAUTH_SECRET: local-dev-secret-change-in-production
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-local-dev-secret-change-in-production}
     depends_on:
       postgres:
         condition: service_healthy
@@ -48,6 +49,7 @@ services:
       dockerfile: Dockerfile
     container_name: hrlite_jenkins
     restart: unless-stopped
+    # WARNING: root chỉ dùng cho local dev, KHÔNG dùng trong production
     user: root
     ports:
       - "8080:8080"

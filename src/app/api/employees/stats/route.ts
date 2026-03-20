@@ -1,11 +1,10 @@
-import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { withAuth, AuthenticatedRequest } from '@/lib/auth/middleware';
 import { handleApiError } from '@/lib/errors';
 import { successResponse } from '@/lib/api-response';
 
 // GET /api/employees/stats - Employee statistics
-async function handler(_req: AuthenticatedRequest): Promise<NextResponse> {
+async function handler(_req: AuthenticatedRequest) {
   try {
     const where = { delYn: 'N' };
 

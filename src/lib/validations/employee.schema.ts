@@ -37,8 +37,13 @@ export const createEmployeeSchema = z.object({
   userId: z.string().uuid({ message: 'ID tài khoản không hợp lệ' }).nullable().optional(),
 });
 
-// Update employee validation
-export const updateEmployeeSchema = createEmployeeSchema.partial();
+// Update employee validation — email/emplNm must not be empty string if provided
+export const updateEmployeeSchema = createEmployeeSchema
+  .extend({
+    emplNm: createEmployeeSchema.shape.emplNm.optional(),
+    email: createEmployeeSchema.shape.email.optional(),
+  })
+  .partial();
 
 // Link user validation
 export const linkUserSchema = z.object({

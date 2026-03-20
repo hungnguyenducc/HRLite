@@ -4,20 +4,30 @@ import { handleApiError, NotFoundError, ConflictError } from '@/lib/errors';
 import { successResponse, errorResponse } from '@/lib/api-response';
 import { updateDepartmentSchema } from '@/lib/validations/department.schema';
 
-// Collect all descendant IDs to prevent circular references
+// Collect all descendant IDs in a single query + in-memory BFS
 async function getDescendantIds(deptId: string): Promise<string[]> {
+  const allDepts = await prisma.department.findMany({
+    where: { delYn: 'N' },
+    select: { id: true, upperDeptId: true },
+  });
+
+  const childrenMap = new Map<string, string[]>();
+  for (const d of allDepts) {
+    if (d.upperDeptId) {
+      const children = childrenMap.get(d.upperDeptId) ?? [];
+      children.push(d.id);
+      childrenMap.set(d.upperDeptId, children);
+    }
+  }
+
   const descendants: string[] = [];
   const queue = [deptId];
-
   while (queue.length > 0) {
     const currentId = queue.shift()!;
-    const children = await prisma.department.findMany({
-      where: { upperDeptId: currentId, delYn: 'N' },
-      select: { id: true },
-    });
-    for (const child of children) {
-      descendants.push(child.id);
-      queue.push(child.id);
+    const children = childrenMap.get(currentId) ?? [];
+    for (const childId of children) {
+      descendants.push(childId);
+      queue.push(childId);
     }
   }
 

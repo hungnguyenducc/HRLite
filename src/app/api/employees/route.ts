@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 import { withAuth, withRole, AuthenticatedRequest } from '@/lib/auth/middleware';
 import { handleApiError, ConflictError } from '@/lib/errors';
 import { successResponse, errorResponse } from '@/lib/api-response';
 import { createEmployeeSchema } from '@/lib/validations/employee.schema';
 
-// Generate next employee number (NV-0001, NV-0002, ...)
-async function generateEmployeeNo(): Promise<string> {
+// Generate next employee number inside a transaction to prevent race conditions
+async function generateEmployeeNo(tx: Prisma.TransactionClient): Promise<string> {
   const prefix = 'NV-';
-  const lastEmployee = await prisma.employee.findFirst({
+  const lastEmployee = await tx.employee.findFirst({
     where: { emplNo: { startsWith: prefix } },
     orderBy: { emplNo: 'desc' },
     select: { emplNo: true },
@@ -168,34 +169,36 @@ async function createHandler(req: AuthenticatedRequest) {
       }
     }
 
-    // Auto-generate employee number
-    const emplNo = await generateEmployeeNo();
+    // Auto-generate employee number + create in transaction to prevent race condition
+    const employee = await prisma.$transaction(async (tx) => {
+      const emplNo = await generateEmployeeNo(tx);
 
-    const employee = await prisma.employee.create({
-      data: {
-        emplNo,
-        emplNm,
-        email,
-        phoneNo: phoneNo ?? null,
-        deptId: deptId ?? null,
-        posiNm: posiNm ?? null,
-        joinDt: new Date(joinDt),
-        resignDt: resignDt ? new Date(resignDt) : null,
-        emplSttsCd,
-        userId: userId ?? null,
-        creatBy: req.user.email,
-      },
-      select: {
-        id: true,
-        emplNo: true,
-        emplNm: true,
-        email: true,
-        deptId: true,
-        posiNm: true,
-        joinDt: true,
-        emplSttsCd: true,
-        creatDt: true,
-      },
+      return tx.employee.create({
+        data: {
+          emplNo,
+          emplNm,
+          email,
+          phoneNo: phoneNo ?? null,
+          deptId: deptId ?? null,
+          posiNm: posiNm ?? null,
+          joinDt: new Date(joinDt),
+          resignDt: resignDt ? new Date(resignDt) : null,
+          emplSttsCd,
+          userId: userId ?? null,
+          creatBy: req.user.email,
+        },
+        select: {
+          id: true,
+          emplNo: true,
+          emplNm: true,
+          email: true,
+          deptId: true,
+          posiNm: true,
+          joinDt: true,
+          emplSttsCd: true,
+          creatDt: true,
+        },
+      });
     });
 
     return successResponse(

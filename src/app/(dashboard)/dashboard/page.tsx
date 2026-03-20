@@ -107,7 +107,7 @@ export default function DashboardPage() {
       <div
         className="relative overflow-hidden rounded-[var(--radius-2xl)] p-8 md:p-10 mb-8"
         style={{
-          background: 'linear-gradient(135deg, var(--color-bg-inverse) 0%, #312e81 50%, #4338ca 100%)',
+          background: 'linear-gradient(135deg, var(--color-bg-inverse) 0%, var(--color-brand-900) 50%, var(--color-brand-700) 100%)',
         }}
       >
         {/* Decorative circles */}
@@ -121,7 +121,7 @@ export default function DashboardPage() {
         />
         <div
           className="absolute top-1/2 right-1/4 w-32 h-32 rounded-full opacity-[0.05]"
-          style={{ background: '#fff' }}
+          style={{ background: 'var(--color-bg-card)' }}
         />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">

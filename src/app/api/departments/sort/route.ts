@@ -1,6 +1,6 @@
 import prisma from '@/lib/db';
 import { withRole, AuthenticatedRequest } from '@/lib/auth/middleware';
-import { handleApiError } from '@/lib/errors';
+import { handleApiError, NotFoundError } from '@/lib/errors';
 import { successResponse, errorResponse } from '@/lib/api-response';
 import { sortDepartmentsSchema } from '@/lib/validations/department.schema';
 
@@ -16,6 +16,15 @@ async function handler(req: AuthenticatedRequest) {
     }
 
     const { items } = parsed.data;
+
+    // Validate all IDs exist before updating
+    const ids = items.map((item) => item.id);
+    const existingCount = await prisma.department.count({
+      where: { id: { in: ids }, delYn: 'N' },
+    });
+    if (existingCount !== ids.length) {
+      throw new NotFoundError('Một hoặc nhiều phòng ban không tồn tại.');
+    }
 
     await prisma.$transaction(
       items.map((item) =>

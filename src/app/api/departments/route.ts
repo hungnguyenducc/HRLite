@@ -96,10 +96,13 @@ async function createHandler(req: AuthenticatedRequest) {
 
     const { deptCd, deptNm, upperDeptId, deptHeadId, sortOrd, useYn } = parsed.data;
 
-    // Check unique deptCd
+    // Check unique deptCd (includes soft-deleted — DB unique constraint)
     const existing = await prisma.department.findUnique({ where: { deptCd } });
     if (existing) {
-      throw new ConflictError('Mã phòng ban đã tồn tại.');
+      const msg = existing.delYn === 'Y'
+        ? 'Mã phòng ban đã được sử dụng bởi phòng ban đã xóa. Vui lòng chọn mã khác.'
+        : 'Mã phòng ban đã tồn tại.';
+      throw new ConflictError(msg);
     }
 
     // Validate upperDeptId exists

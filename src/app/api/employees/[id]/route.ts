@@ -77,7 +77,7 @@ async function updateHandler(req: AuthenticatedRequest, context: RouteContext) {
     const data = parsed.data;
 
     // Validate email uniqueness
-    if (data.email) {
+    if (data.email !== undefined) {
       const emailTaken = await prisma.employee.findFirst({
         where: { email: data.email, id: { not: id }, delYn: 'N' },
         select: { id: true },
@@ -130,37 +130,41 @@ async function updateHandler(req: AuthenticatedRequest, context: RouteContext) {
     if (data.userId !== undefined) updateData.userId = data.userId ?? null;
 
     // Handle status change to RESIGNED
+    const needsDeptHeadCleanup =
+      data.emplSttsCd === 'RESIGNED' && existing.emplSttsCd !== 'RESIGNED';
+
     if (data.emplSttsCd !== undefined) {
       updateData.emplSttsCd = data.emplSttsCd;
 
-      if (data.emplSttsCd === 'RESIGNED' && existing.emplSttsCd !== 'RESIGNED') {
-        // Auto-fill resignDt if not provided
-        if (!data.resignDt) {
-          updateData.resignDt = new Date();
-        }
+      if (needsDeptHeadCleanup && !data.resignDt) {
+        updateData.resignDt = new Date();
+      }
+    }
 
-        // Remove from department head if applicable
-        await prisma.department.updateMany({
+    // Wrap in transaction for atomicity (dept head cleanup + employee update)
+    const updated = await prisma.$transaction(async (tx) => {
+      if (needsDeptHeadCleanup) {
+        await tx.department.updateMany({
           where: { deptHeadId: id },
           data: { deptHeadId: null, updtBy: req.user.email },
         });
       }
-    }
 
-    const updated = await prisma.employee.update({
-      where: { id },
-      data: updateData,
-      select: {
-        id: true,
-        emplNo: true,
-        emplNm: true,
-        email: true,
-        deptId: true,
-        posiNm: true,
-        joinDt: true,
-        resignDt: true,
-        emplSttsCd: true,
-      },
+      return tx.employee.update({
+        where: { id },
+        data: updateData,
+        select: {
+          id: true,
+          emplNo: true,
+          emplNm: true,
+          email: true,
+          deptId: true,
+          posiNm: true,
+          joinDt: true,
+          resignDt: true,
+          emplSttsCd: true,
+        },
+      });
     });
 
     return successResponse({

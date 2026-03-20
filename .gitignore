@@ -51,3 +51,4 @@ prisma/*.db-journal
 
 # Test screenshots
 test-screenshots/
+test-*.png

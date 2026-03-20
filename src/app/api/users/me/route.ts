@@ -26,7 +26,17 @@ async function getHandler(req: AuthenticatedRequest) {
       return errorResponse('Không tìm thấy người dùng.', 404);
     }
 
-    return successResponse(user);
+    return successResponse({
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName,
+      phone: user.phone,
+      photoUrl: user.photoUrl,
+      role: user.roleCd,
+      status: user.sttsCd,
+      lastLoginAt: user.lastLoginDt?.toISOString() ?? null,
+      createdAt: user.creatDt.toISOString(),
+    });
   } catch (error) {
     return handleApiError(error);
   }

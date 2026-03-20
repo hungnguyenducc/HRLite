@@ -29,11 +29,11 @@ USER jenkins
 ENV JENKINS_UC=https://updates.jenkins.io
 ENV JENKINS_UC_DOWNLOAD=https://updates.jenkins.io/download
 
-RUN jenkins-plugin-cli --plugins \
-    workflow-aggregator \
-    pipeline-stage-view \
-    git \
-    nodejs \
-    junit \
-    htmlpublisher \
-    docker-workflow
+# Skip setup wizard + tạo admin user tự động
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
+
+# Cài plugin lúc build (đảm bảo plugin luôn có sẵn khi khởi động)
+COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
+RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
+
+COPY init-admin.groovy /usr/share/jenkins/ref/init.groovy.d/

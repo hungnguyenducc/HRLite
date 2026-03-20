@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    triggers {
+        githubPush()
+    }
+
     environment {
         DATABASE_URL     = 'postgresql://hrlite_test:hrlite_test@hrlite_test_db:5432/hrlite_test'
         NEXTAUTH_SECRET  = 'jenkins-test-secret'

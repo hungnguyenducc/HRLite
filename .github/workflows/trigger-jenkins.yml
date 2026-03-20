@@ -27,7 +27,7 @@ jobs:
 
           if [ "$RESPONSE" -eq 201 ] || [ "$RESPONSE" -eq 200 ]; then
             echo "Jenkins build triggered successfully (HTTP $RESPONSE)"
-            QUEUE_URL=$(grep -i '^Location:' /tmp/jenkins_headers | sed 's/Location: *//;s/\r//')
+            QUEUE_URL=$(grep -i '^location:' /tmp/jenkins_headers | sed 's/[Ll]ocation: *//;s/\r//')
             echo "QUEUE_URL=${QUEUE_URL}" >> "$GITHUB_ENV"
           else
             echo "Failed to trigger Jenkins build (HTTP $RESPONSE)"

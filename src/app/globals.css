@@ -215,6 +215,48 @@
     box-shadow: var(--shadow-lg);
   }
 
+  /* ── Login button glow ── */
+  @keyframes glow-pulse {
+    0%,
+    100% {
+      box-shadow:
+        0 0 12px var(--color-brand-400),
+        0 0 32px color-mix(in srgb, var(--color-brand-400) 40%, transparent);
+    }
+    50% {
+      box-shadow:
+        0 0 20px var(--color-brand-300),
+        0 0 48px color-mix(in srgb, var(--color-brand-300) 50%, transparent);
+    }
+  }
+
+  .login-glow {
+    background: linear-gradient(
+      135deg,
+      var(--color-brand-400),
+      var(--color-brand-500),
+      var(--color-brand-600)
+    );
+    box-shadow:
+      0 0 12px var(--color-brand-400),
+      0 0 32px color-mix(in srgb, var(--color-brand-400) 40%, transparent);
+    animation: glow-pulse 3s ease-in-out infinite;
+  }
+
+  .login-glow:hover {
+    background: linear-gradient(
+      135deg,
+      var(--color-brand-300),
+      var(--color-brand-400),
+      var(--color-brand-500)
+    );
+    box-shadow:
+      0 0 24px var(--color-brand-300),
+      0 0 56px color-mix(in srgb, var(--color-brand-300) 50%, transparent);
+    transform: translateY(-1px);
+    animation: none;
+  }
+
   /* ── Accent underline ── */
   .accent-underline {
     position: relative;

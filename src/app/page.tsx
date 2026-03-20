@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui';
 
 export default function Home() {
   return (
@@ -8,9 +7,12 @@ export default function Home() {
       <p className="mt-4 text-lg text-[var(--color-text-secondary)]">
         Công cụ quản lý nhân sự nội bộ
       </p>
-      <Button asChild variant="primary" size="lg" className="mt-8">
-        <Link href="/login">Đăng nhập</Link>
-      </Button>
+      <Link
+        href="/login"
+        className="login-glow mt-8 inline-flex h-12 items-center justify-center rounded-[var(--radius-xl)] px-8 text-[var(--font-size-base)] font-semibold text-white transition-all duration-300 active:scale-[0.97] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-300)] focus-visible:ring-offset-2"
+      >
+        Đăng nhập
+      </Link>
     </main>
   );
 }

@@ -96,7 +96,11 @@ export default function EmployeeDetailPage() {
         router.push('/employees');
       }
     } catch {
-      addToast({ variant: 'error', title: 'Lỗi', description: 'Không thể tải thông tin nhân viên.' });
+      addToast({
+        variant: 'error',
+        title: 'Lỗi',
+        description: 'Không thể tải thông tin nhân viên.',
+      });
     } finally {
       setLoading(false);
     }
@@ -140,7 +144,11 @@ export default function EmployeeDetailPage() {
       const json = await res.json();
 
       if (!res.ok || !json.success) {
-        addToast({ variant: 'error', title: 'Thất bại', description: json.error || 'Không thể liên kết.' });
+        addToast({
+          variant: 'error',
+          title: 'Thất bại',
+          description: json.error || 'Không thể liên kết.',
+        });
         return;
       }
 
@@ -191,19 +199,36 @@ export default function EmployeeDetailPage() {
 
   if (!employee) return null;
 
-  const stts = statusConfig[employee.emplSttsCd] ?? { label: employee.emplSttsCd, variant: 'default' as const };
+  const stts = statusConfig[employee.emplSttsCd] ?? {
+    label: employee.emplSttsCd,
+    variant: 'default' as const,
+  };
 
   // ─── Info row helper ─────────────────────────
 
-  function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) {
+  function InfoRow({
+    icon,
+    label,
+    value,
+  }: {
+    icon: React.ReactNode;
+    label: string;
+    value: React.ReactNode;
+  }) {
     return (
       <div className="flex items-start gap-3 py-3">
         <div className="shrink-0 mt-0.5 text-[var(--color-text-tertiary)]">{icon}</div>
         <div className="flex-1">
-          <p className="text-[var(--color-text-tertiary)]" style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)' }}>
+          <p
+            className="text-[var(--color-text-tertiary)]"
+            style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)' }}
+          >
             {label}
           </p>
-          <div className="text-[var(--color-text-primary)] mt-0.5" style={{ fontSize: 'var(--font-size-sm)' }}>
+          <div
+            className="text-[var(--color-text-primary)] mt-0.5"
+            style={{ fontSize: 'var(--font-size-sm)' }}
+          >
             {value || <span className="text-[var(--color-text-quaternary)]">—</span>}
           </div>
         </div>
@@ -215,7 +240,12 @@ export default function EmployeeDetailPage() {
     <div className="flex flex-col gap-6 max-w-[900px]">
       {/* Back button + heading */}
       <div className="animate-fade-up">
-        <Button variant="ghost" size="sm" onClick={() => router.push('/employees')} className="mb-3">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.push('/employees')}
+          className="mb-3"
+        >
           <ArrowLeft className="h-4 w-4 mr-1.5" />
           Quay lại
         </Button>
@@ -248,7 +278,10 @@ export default function EmployeeDetailPage() {
                 {employee.emplNm}
               </h1>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)' }}>
+                <span
+                  className="text-[var(--color-text-secondary)]"
+                  style={{ fontSize: 'var(--font-size-sm)' }}
+                >
                   {employee.emplNo}
                 </span>
                 <Badge variant={stts.variant} size="sm" dot>
@@ -275,10 +308,26 @@ export default function EmployeeDetailPage() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 divide-y md:divide-y-0 divide-[var(--color-border)]">
                   <div>
-                    <InfoRow icon={<Mail className="h-4 w-4" />} label="Email" value={employee.email} />
-                    <InfoRow icon={<Phone className="h-4 w-4" />} label="Số điện thoại" value={employee.phoneNo} />
-                    <InfoRow icon={<Building2 className="h-4 w-4" />} label="Phòng ban" value={employee.department?.deptNm} />
-                    <InfoRow icon={<Briefcase className="h-4 w-4" />} label="Chức vụ" value={employee.posiNm} />
+                    <InfoRow
+                      icon={<Mail className="h-4 w-4" />}
+                      label="Email"
+                      value={employee.email}
+                    />
+                    <InfoRow
+                      icon={<Phone className="h-4 w-4" />}
+                      label="Số điện thoại"
+                      value={employee.phoneNo}
+                    />
+                    <InfoRow
+                      icon={<Building2 className="h-4 w-4" />}
+                      label="Phòng ban"
+                      value={employee.department?.deptNm}
+                    />
+                    <InfoRow
+                      icon={<Briefcase className="h-4 w-4" />}
+                      label="Chức vụ"
+                      value={employee.posiNm}
+                    />
                   </div>
                   <div>
                     <InfoRow
@@ -289,7 +338,11 @@ export default function EmployeeDetailPage() {
                     <InfoRow
                       icon={<Calendar className="h-4 w-4" />}
                       label="Ngày nghỉ việc"
-                      value={employee.resignDt ? new Date(employee.resignDt).toLocaleDateString('vi-VN') : null}
+                      value={
+                        employee.resignDt
+                          ? new Date(employee.resignDt).toLocaleDateString('vi-VN')
+                          : null
+                      }
                     />
                     <InfoRow
                       icon={<User className="h-4 w-4" />}
@@ -317,15 +370,29 @@ export default function EmployeeDetailPage() {
                     <div className="flex items-center gap-3 p-4 rounded-[var(--radius-lg)] bg-[var(--color-bg-secondary)]">
                       <Link2 className="h-5 w-5 text-[var(--color-success-500)]" />
                       <div className="flex-1">
-                        <p className="text-[var(--color-text-primary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                        <p
+                          className="text-[var(--color-text-primary)]"
+                          style={{
+                            fontSize: 'var(--font-size-sm)',
+                            fontWeight: 'var(--font-weight-medium)',
+                          }}
+                        >
                           Đã liên kết với tài khoản
                         </p>
-                        <p className="text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)' }}>
+                        <p
+                          className="text-[var(--color-text-secondary)]"
+                          style={{ fontSize: 'var(--font-size-sm)' }}
+                        >
                           {employee.user.email} — Vai trò: {employee.user.roleCd}
                         </p>
                       </div>
                       {isAdmin && (
-                        <Button variant="danger" size="sm" loading={linkLoading} onClick={handleUnlinkUser}>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          loading={linkLoading}
+                          onClick={handleUnlinkUser}
+                        >
                           <Unlink className="h-4 w-4 mr-1" />
                           Hủy liên kết
                         </Button>
@@ -336,7 +403,10 @@ export default function EmployeeDetailPage() {
                   <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-3 p-4 rounded-[var(--radius-lg)] bg-[var(--color-bg-secondary)]">
                       <Unlink className="h-5 w-5 text-[var(--color-text-tertiary)]" />
-                      <p className="text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)' }}>
+                      <p
+                        className="text-[var(--color-text-secondary)]"
+                        style={{ fontSize: 'var(--font-size-sm)' }}
+                      >
                         Chưa liên kết tài khoản đăng nhập
                       </p>
                     </div>
@@ -344,7 +414,13 @@ export default function EmployeeDetailPage() {
                     {isAdmin && (
                       <div className="flex items-end gap-3">
                         <div className="flex-1">
-                          <label className="block mb-1.5 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                          <label
+                            className="block mb-1.5 text-[var(--color-text-secondary)]"
+                            style={{
+                              fontSize: 'var(--font-size-sm)',
+                              fontWeight: 'var(--font-weight-medium)',
+                            }}
+                          >
                             Chọn tài khoản
                           </label>
                           <Select value={selectedUserId} onValueChange={setSelectedUserId}>
@@ -384,10 +460,19 @@ export default function EmployeeDetailPage() {
               <CardContent>
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <Clock className="h-10 w-10 text-[var(--color-text-quaternary)] mb-3" />
-                  <p className="text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                  <p
+                    className="text-[var(--color-text-secondary)]"
+                    style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
+                  >
                     Chấm công
                   </p>
-                  <p className="text-[var(--color-text-tertiary)] mt-1" style={{ fontSize: 'var(--font-size-sm)' }}>
+                  <p
+                    className="text-[var(--color-text-tertiary)] mt-1"
+                    style={{ fontSize: 'var(--font-size-sm)' }}
+                  >
                     Tính năng sẽ được triển khai ở sprint tiếp theo
                   </p>
                 </div>
@@ -400,10 +485,19 @@ export default function EmployeeDetailPage() {
               <CardContent>
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <CalendarDays className="h-10 w-10 text-[var(--color-text-quaternary)] mb-3" />
-                  <p className="text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                  <p
+                    className="text-[var(--color-text-secondary)]"
+                    style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
+                  >
                     Nghỉ phép
                   </p>
-                  <p className="text-[var(--color-text-tertiary)] mt-1" style={{ fontSize: 'var(--font-size-sm)' }}>
+                  <p
+                    className="text-[var(--color-text-tertiary)] mt-1"
+                    style={{ fontSize: 'var(--font-size-sm)' }}
+                  >
                     Tính năng sẽ được triển khai ở sprint tiếp theo
                   </p>
                 </div>

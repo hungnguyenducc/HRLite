@@ -20,11 +20,7 @@ export const createEmployeeSchema = z.object({
     .nullable()
     .optional(),
   deptId: z.string().uuid({ message: 'ID phòng ban không hợp lệ' }).nullable().optional(),
-  posiNm: z
-    .string()
-    .max(50, { message: 'Chức vụ tối đa 50 ký tự' })
-    .nullable()
-    .optional(),
+  posiNm: z.string().max(50, { message: 'Chức vụ tối đa 50 ký tự' }).nullable().optional(),
   joinDt: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Ngày vào làm phải có format YYYY-MM-DD' }),

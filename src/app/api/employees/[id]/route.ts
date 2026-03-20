@@ -126,7 +126,8 @@ async function updateHandler(req: AuthenticatedRequest, context: RouteContext) {
     if (data.deptId !== undefined) updateData.deptId = data.deptId ?? null;
     if (data.posiNm !== undefined) updateData.posiNm = data.posiNm ?? null;
     if (data.joinDt !== undefined) updateData.joinDt = new Date(data.joinDt);
-    if (data.resignDt !== undefined) updateData.resignDt = data.resignDt ? new Date(data.resignDt) : null;
+    if (data.resignDt !== undefined)
+      updateData.resignDt = data.resignDt ? new Date(data.resignDt) : null;
     if (data.userId !== undefined) updateData.userId = data.userId ?? null;
 
     // Handle status change to RESIGNED

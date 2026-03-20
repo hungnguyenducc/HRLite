@@ -20,9 +20,7 @@ export const createDepartmentSchema = z.object({
 });
 
 // Update department validation (deptCd is immutable)
-export const updateDepartmentSchema = createDepartmentSchema
-  .omit({ deptCd: true })
-  .partial();
+export const updateDepartmentSchema = createDepartmentSchema.omit({ deptCd: true }).partial();
 
 // Batch sort validation
 export const sortDepartmentsSchema = z.object({

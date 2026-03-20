@@ -86,9 +86,7 @@ export default function DashboardPage() {
 
   // Workforce ratio for visual bar
   const workingPercent =
-    stats.totalEmployees > 0
-      ? Math.round((stats.activeEmployees / stats.totalEmployees) * 100)
-      : 0;
+    stats.totalEmployees > 0 ? Math.round((stats.activeEmployees / stats.totalEmployees) * 100) : 0;
 
   if (loading) {
     return (
@@ -107,7 +105,8 @@ export default function DashboardPage() {
       <div
         className="relative overflow-hidden rounded-[var(--radius-2xl)] p-8 md:p-10 mb-8"
         style={{
-          background: 'linear-gradient(135deg, var(--color-bg-inverse) 0%, var(--color-brand-900) 50%, var(--color-brand-700) 100%)',
+          background:
+            'linear-gradient(135deg, var(--color-bg-inverse) 0%, var(--color-brand-900) 50%, var(--color-brand-700) 100%)',
         }}
       >
         {/* Decorative circles */}
@@ -301,7 +300,10 @@ export default function DashboardPage() {
               >
                 Tình hình nhân sự
               </h2>
-              <p className="text-[var(--color-text-tertiary)] mt-1" style={{ fontSize: 'var(--font-size-xs)' }}>
+              <p
+                className="text-[var(--color-text-tertiary)] mt-1"
+                style={{ fontSize: 'var(--font-size-xs)' }}
+              >
                 Phân bổ nhân viên theo trạng thái
               </p>
             </div>
@@ -311,7 +313,12 @@ export default function DashboardPage() {
                 style={{ background: 'var(--color-success-50)', color: 'var(--color-success-700)' }}
               >
                 <TrendingUp className="h-3.5 w-3.5" />
-                <span style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)' }}>
+                <span
+                  style={{
+                    fontSize: 'var(--font-size-xs)',
+                    fontWeight: 'var(--font-weight-semibold)',
+                  }}
+                >
                   +{emplStats.newThisMonth} tháng này
                 </span>
               </div>
@@ -321,7 +328,10 @@ export default function DashboardPage() {
           {/* Workforce bar */}
           <div className="mb-6">
             <div className="flex items-end justify-between mb-2">
-              <span className="text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-xs)' }}>
+              <span
+                className="text-[var(--color-text-secondary)]"
+                style={{ fontSize: 'var(--font-size-xs)' }}
+              >
                 Tỷ lệ đang làm việc
               </span>
               <span
@@ -343,7 +353,8 @@ export default function DashboardPage() {
                 className="h-full rounded-[var(--radius-full)] transition-all duration-1000 ease-out"
                 style={{
                   width: `${workingPercent}%`,
-                  background: 'linear-gradient(90deg, var(--color-success-500), var(--color-brand-500))',
+                  background:
+                    'linear-gradient(90deg, var(--color-success-500), var(--color-brand-500))',
                 }}
               />
             </div>
@@ -392,7 +403,13 @@ export default function DashboardPage() {
                   >
                     {item.value}
                   </p>
-                  <p style={{ fontSize: 'var(--font-size-xs)', color: item.color, fontWeight: 'var(--font-weight-medium)' }}>
+                  <p
+                    style={{
+                      fontSize: 'var(--font-size-xs)',
+                      color: item.color,
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
+                  >
                     {item.label}
                   </p>
                 </div>
@@ -421,7 +438,10 @@ export default function DashboardPage() {
           >
             Theo phòng ban
           </h2>
-          <p className="text-[var(--color-text-tertiary)] mb-5" style={{ fontSize: 'var(--font-size-xs)' }}>
+          <p
+            className="text-[var(--color-text-tertiary)] mb-5"
+            style={{ fontSize: 'var(--font-size-xs)' }}
+          >
             Phân bổ nhân viên
           </p>
 
@@ -445,13 +465,19 @@ export default function DashboardPage() {
                       <div className="flex items-center justify-between mb-1">
                         <span
                           className="text-[var(--color-text-primary)] truncate max-w-[160px]"
-                          style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}
+                          style={{
+                            fontSize: 'var(--font-size-sm)',
+                            fontWeight: 'var(--font-weight-medium)',
+                          }}
                         >
                           {dept.deptNm}
                         </span>
                         <span
                           className="text-[var(--color-text-secondary)] shrink-0"
-                          style={{ fontSize: 'var(--font-size-xs)', fontFamily: 'var(--font-family-mono)' }}
+                          style={{
+                            fontSize: 'var(--font-size-xs)',
+                            fontFamily: 'var(--font-family-mono)',
+                          }}
                         >
                           {dept.count}
                         </span>
@@ -474,7 +500,10 @@ export default function DashboardPage() {
                 })}
             </div>
           ) : (
-            <p className="text-[var(--color-text-tertiary)] text-center py-8" style={{ fontSize: 'var(--font-size-sm)' }}>
+            <p
+              className="text-[var(--color-text-tertiary)] text-center py-8"
+              style={{ fontSize: 'var(--font-size-sm)' }}
+            >
               Chưa có dữ liệu
             </p>
           )}
@@ -484,20 +513,14 @@ export default function DashboardPage() {
       {/* ─── Quick Actions ─── */}
       <div className="animate-fade-up" style={{ animationDelay: '500ms' }}>
         <div className="flex items-center gap-3 mb-4">
-          <div
-            className="h-px flex-1"
-            style={{ background: 'var(--color-border)' }}
-          />
+          <div className="h-px flex-1" style={{ background: 'var(--color-border)' }} />
           <h2
             className="text-[var(--color-text-tertiary)] shrink-0 uppercase tracking-[0.15em]"
             style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)' }}
           >
             Thao tác nhanh
           </h2>
-          <div
-            className="h-px flex-1"
-            style={{ background: 'var(--color-border)' }}
-          />
+          <div className="h-px flex-1" style={{ background: 'var(--color-border)' }} />
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -555,7 +578,10 @@ export default function DashboardPage() {
               </div>
               <p
                 className="text-[var(--color-text-primary)]"
-                style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)' }}
+                style={{
+                  fontSize: 'var(--font-size-sm)',
+                  fontWeight: 'var(--font-weight-semibold)',
+                }}
               >
                 {action.label}
               </p>

@@ -157,7 +157,11 @@ export default function EmployeesPage() {
         }
       }
     } catch {
-      addToast({ variant: 'error', title: 'Lỗi', description: 'Không thể tải danh sách nhân viên.' });
+      addToast({
+        variant: 'error',
+        title: 'Lỗi',
+        description: 'Không thể tải danh sách nhân viên.',
+      });
     } finally {
       setLoading(false);
     }
@@ -273,16 +277,27 @@ export default function EmployeesPage() {
       const json = await res.json();
 
       if (!res.ok || !json.success) {
-        addToast({ variant: 'error', title: 'Thất bại', description: json.error || 'Không thể lưu nhân viên.' });
+        addToast({
+          variant: 'error',
+          title: 'Thất bại',
+          description: json.error || 'Không thể lưu nhân viên.',
+        });
         return;
       }
 
-      addToast({ variant: 'success', title: editingId ? 'Đã cập nhật nhân viên' : 'Đã tạo nhân viên' });
+      addToast({
+        variant: 'success',
+        title: editingId ? 'Đã cập nhật nhân viên' : 'Đã tạo nhân viên',
+      });
       setFormOpen(false);
       fetchEmployees();
       fetchStats();
     } catch {
-      addToast({ variant: 'error', title: 'Lỗi kết nối', description: 'Không thể kết nối đến máy chủ.' });
+      addToast({
+        variant: 'error',
+        title: 'Lỗi kết nối',
+        description: 'Không thể kết nối đến máy chủ.',
+      });
     } finally {
       setFormLoading(false);
     }
@@ -299,7 +314,11 @@ export default function EmployeesPage() {
       const json = await res.json();
 
       if (!res.ok || !json.success) {
-        addToast({ variant: 'error', title: 'Không thể xóa', description: json.error || 'Lỗi khi xóa nhân viên.' });
+        addToast({
+          variant: 'error',
+          title: 'Không thể xóa',
+          description: json.error || 'Lỗi khi xóa nhân viên.',
+        });
         return;
       }
 
@@ -346,7 +365,10 @@ export default function EmployeesPage() {
       key: 'email',
       header: 'Email',
       render: (row) => (
-        <span className="text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)' }}>
+        <span
+          className="text-[var(--color-text-secondary)]"
+          style={{ fontSize: 'var(--font-size-sm)' }}
+        >
           {row.email}
         </span>
       ),
@@ -355,7 +377,10 @@ export default function EmployeesPage() {
       key: 'deptNm',
       header: 'Phòng ban',
       render: (row) => (
-        <span className="text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)' }}>
+        <span
+          className="text-[var(--color-text-secondary)]"
+          style={{ fontSize: 'var(--font-size-sm)' }}
+        >
           {row.deptNm || '—'}
         </span>
       ),
@@ -364,7 +389,10 @@ export default function EmployeesPage() {
       key: 'posiNm',
       header: 'Chức vụ',
       render: (row) => (
-        <span className="text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)' }}>
+        <span
+          className="text-[var(--color-text-secondary)]"
+          style={{ fontSize: 'var(--font-size-sm)' }}
+        >
           {row.posiNm || '—'}
         </span>
       ),
@@ -373,7 +401,10 @@ export default function EmployeesPage() {
       key: 'emplSttsCd',
       header: 'Trạng thái',
       render: (row) => {
-        const cfg = statusConfig[row.emplSttsCd] ?? { label: row.emplSttsCd, variant: 'default' as const };
+        const cfg = statusConfig[row.emplSttsCd] ?? {
+          label: row.emplSttsCd,
+          variant: 'default' as const,
+        };
         return (
           <Badge variant={cfg.variant} size="sm" dot>
             {cfg.label}
@@ -388,16 +419,29 @@ export default function EmployeesPage() {
             header: '',
             render: (row: EmployeeRecord) => (
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" onClick={() => router.push(`/employees/${row.id}`)} aria-label="Xem">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => router.push(`/employees/${row.id}`)}
+                  aria-label="Xem"
+                >
                   <Eye className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => openEditDialog(row)} aria-label="Sửa">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => openEditDialog(row)}
+                  aria-label="Sửa"
+                >
                   <Pencil className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => { setDeletingEmpl(row); setDeleteOpen(true); }}
+                  onClick={() => {
+                    setDeletingEmpl(row);
+                    setDeleteOpen(true);
+                  }}
                   aria-label="Xóa"
                 >
                   <Trash2 className="h-4 w-4 text-[var(--color-error-600)]" />
@@ -412,11 +456,36 @@ export default function EmployeesPage() {
   // ─── Stat cards ──────────────────────────────
 
   const statCards = [
-    { label: 'Tổng nhân viên', value: stats?.total ?? 0, icon: <Users className="h-5 w-5" />, color: 'var(--color-brand-500)' },
-    { label: 'Đang làm', value: stats?.working ?? 0, icon: <UserCheck className="h-5 w-5" />, color: 'var(--color-success-500)' },
-    { label: 'Tạm nghỉ', value: stats?.onLeave ?? 0, icon: <UserMinus className="h-5 w-5" />, color: 'var(--color-warning-500)' },
-    { label: 'Đã nghỉ', value: stats?.resigned ?? 0, icon: <UserX className="h-5 w-5" />, color: 'var(--color-error-500)' },
-    { label: 'Mới tháng này', value: stats?.newThisMonth ?? 0, icon: <TrendingUp className="h-5 w-5" />, color: 'var(--color-accent-500)' },
+    {
+      label: 'Tổng nhân viên',
+      value: stats?.total ?? 0,
+      icon: <Users className="h-5 w-5" />,
+      color: 'var(--color-brand-500)',
+    },
+    {
+      label: 'Đang làm',
+      value: stats?.working ?? 0,
+      icon: <UserCheck className="h-5 w-5" />,
+      color: 'var(--color-success-500)',
+    },
+    {
+      label: 'Tạm nghỉ',
+      value: stats?.onLeave ?? 0,
+      icon: <UserMinus className="h-5 w-5" />,
+      color: 'var(--color-warning-500)',
+    },
+    {
+      label: 'Đã nghỉ',
+      value: stats?.resigned ?? 0,
+      icon: <UserX className="h-5 w-5" />,
+      color: 'var(--color-error-500)',
+    },
+    {
+      label: 'Mới tháng này',
+      value: stats?.newThisMonth ?? 0,
+      icon: <TrendingUp className="h-5 w-5" />,
+      color: 'var(--color-accent-500)',
+    },
   ];
 
   // ─── Render ──────────────────────────────────
@@ -444,7 +513,10 @@ export default function EmployeesPage() {
             >
               Nhân viên
             </h1>
-            <p className="text-[var(--color-text-secondary)] mt-1" style={{ fontSize: 'var(--font-size-sm)' }}>
+            <p
+              className="text-[var(--color-text-secondary)] mt-1"
+              style={{ fontSize: 'var(--font-size-sm)' }}
+            >
               Quản lý hồ sơ và thông tin nhân viên
             </p>
           </div>
@@ -464,12 +536,23 @@ export default function EmployeesPage() {
           <Card key={card.label} variant="default">
             <CardContent className="!py-3 !px-4">
               <div className="flex items-center gap-3">
-                <div className="shrink-0" style={{ color: card.color }}>{card.icon}</div>
+                <div className="shrink-0" style={{ color: card.color }}>
+                  {card.icon}
+                </div>
                 <div>
-                  <p className="text-[var(--color-text-tertiary)]" style={{ fontSize: 'var(--font-size-xs)' }}>
+                  <p
+                    className="text-[var(--color-text-tertiary)]"
+                    style={{ fontSize: 'var(--font-size-xs)' }}
+                  >
                     {card.label}
                   </p>
-                  <p className="text-[var(--color-text-primary)]" style={{ fontSize: 'var(--font-size-xl)', fontWeight: 'var(--font-weight-bold)' }}>
+                  <p
+                    className="text-[var(--color-text-primary)]"
+                    style={{
+                      fontSize: 'var(--font-size-xl)',
+                      fontWeight: 'var(--font-weight-bold)',
+                    }}
+                  >
                     {card.value}
                   </p>
                 </div>
@@ -484,7 +567,13 @@ export default function EmployeesPage() {
         <Card variant="default">
           <CardContent>
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-              <form onSubmit={(e) => { e.preventDefault(); setPage(1); }} className="flex-1">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setPage(1);
+                }}
+                className="flex-1"
+              >
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-tertiary)]" />
                   <input
@@ -510,19 +599,33 @@ export default function EmployeesPage() {
               </form>
 
               <div className="flex gap-2">
-                <Select value={deptFilter} onValueChange={(v) => { setDeptFilter(v); setPage(1); }}>
+                <Select
+                  value={deptFilter}
+                  onValueChange={(v) => {
+                    setDeptFilter(v);
+                    setPage(1);
+                  }}
+                >
                   <SelectTrigger className="w-[170px]" aria-label="Lọc phòng ban">
                     <SelectValue placeholder="Phòng ban" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Tất cả PB</SelectItem>
                     {deptOptions.map((d) => (
-                      <SelectItem key={d.id} value={d.id}>{d.deptNm}</SelectItem>
+                      <SelectItem key={d.id} value={d.id}>
+                        {d.deptNm}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
 
-                <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
+                <Select
+                  value={statusFilter}
+                  onValueChange={(v) => {
+                    setStatusFilter(v);
+                    setPage(1);
+                  }}
+                >
                   <SelectTrigger className="w-[150px]" aria-label="Lọc trạng thái">
                     <SelectValue placeholder="Trạng thái" />
                   </SelectTrigger>
@@ -548,7 +651,10 @@ export default function EmployeesPage() {
                 className="h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
                 style={{ borderColor: 'var(--color-brand-300)', borderTopColor: 'transparent' }}
               />
-              <p className="text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)' }}>
+              <p
+                className="text-[var(--color-text-secondary)]"
+                style={{ fontSize: 'var(--font-size-sm)' }}
+              >
                 Đang tải dữ liệu...
               </p>
             </div>
@@ -561,7 +667,12 @@ export default function EmployeesPage() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-3">
-          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
             Trang trước
           </Button>
           <span
@@ -570,7 +681,12 @@ export default function EmployeesPage() {
           >
             {page} / {totalPages}
           </span>
-          <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page >= totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
             Trang sau
           </Button>
         </div>
@@ -589,7 +705,13 @@ export default function EmployeesPage() {
             <div className="flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1.5 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                  <label
+                    className="block mb-1.5 text-[var(--color-text-secondary)]"
+                    style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
+                  >
                     Họ tên <span className="text-[var(--color-error-500)]">*</span>
                   </label>
                   <input
@@ -597,12 +719,26 @@ export default function EmployeesPage() {
                     value={formData.emplNm}
                     onChange={(e) => setFormData((prev) => ({ ...prev, emplNm: e.target.value }))}
                     placeholder="Nguyễn Văn A"
-                    className={cn('flex h-10 w-full rounded-[var(--radius-lg)] border px-3 py-2', 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]')}
-                    style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-primary)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)' }}
+                    className={cn(
+                      'flex h-10 w-full rounded-[var(--radius-lg)] border px-3 py-2',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
+                    )}
+                    style={{
+                      borderColor: 'var(--color-border)',
+                      background: 'var(--color-bg-primary)',
+                      fontSize: 'var(--font-size-sm)',
+                      color: 'var(--color-text-primary)',
+                    }}
                   />
                 </div>
                 <div>
-                  <label className="block mb-1.5 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                  <label
+                    className="block mb-1.5 text-[var(--color-text-secondary)]"
+                    style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
+                  >
                     Email <span className="text-[var(--color-error-500)]">*</span>
                   </label>
                   <input
@@ -610,15 +746,29 @@ export default function EmployeesPage() {
                     value={formData.email}
                     onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                     placeholder="a.nguyen@company.com"
-                    className={cn('flex h-10 w-full rounded-[var(--radius-lg)] border px-3 py-2', 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]')}
-                    style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-primary)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)' }}
+                    className={cn(
+                      'flex h-10 w-full rounded-[var(--radius-lg)] border px-3 py-2',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
+                    )}
+                    style={{
+                      borderColor: 'var(--color-border)',
+                      background: 'var(--color-bg-primary)',
+                      fontSize: 'var(--font-size-sm)',
+                      color: 'var(--color-text-primary)',
+                    }}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1.5 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                  <label
+                    className="block mb-1.5 text-[var(--color-text-secondary)]"
+                    style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
+                  >
                     Số điện thoại
                   </label>
                   <input
@@ -626,12 +776,26 @@ export default function EmployeesPage() {
                     value={formData.phoneNo}
                     onChange={(e) => setFormData((prev) => ({ ...prev, phoneNo: e.target.value }))}
                     placeholder="0901234567"
-                    className={cn('flex h-10 w-full rounded-[var(--radius-lg)] border px-3 py-2', 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]')}
-                    style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-primary)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)' }}
+                    className={cn(
+                      'flex h-10 w-full rounded-[var(--radius-lg)] border px-3 py-2',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
+                    )}
+                    style={{
+                      borderColor: 'var(--color-border)',
+                      background: 'var(--color-bg-primary)',
+                      fontSize: 'var(--font-size-sm)',
+                      color: 'var(--color-text-primary)',
+                    }}
                   />
                 </div>
                 <div>
-                  <label className="block mb-1.5 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                  <label
+                    className="block mb-1.5 text-[var(--color-text-secondary)]"
+                    style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
+                  >
                     Chức vụ
                   </label>
                   <input
@@ -639,20 +803,36 @@ export default function EmployeesPage() {
                     value={formData.posiNm}
                     onChange={(e) => setFormData((prev) => ({ ...prev, posiNm: e.target.value }))}
                     placeholder="Developer"
-                    className={cn('flex h-10 w-full rounded-[var(--radius-lg)] border px-3 py-2', 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]')}
-                    style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-primary)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)' }}
+                    className={cn(
+                      'flex h-10 w-full rounded-[var(--radius-lg)] border px-3 py-2',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
+                    )}
+                    style={{
+                      borderColor: 'var(--color-border)',
+                      background: 'var(--color-bg-primary)',
+                      fontSize: 'var(--font-size-sm)',
+                      color: 'var(--color-text-primary)',
+                    }}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1.5 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                  <label
+                    className="block mb-1.5 text-[var(--color-text-secondary)]"
+                    style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
+                  >
                     Phòng ban
                   </label>
                   <Select
                     value={formData.deptId ?? 'none'}
-                    onValueChange={(v) => setFormData((prev) => ({ ...prev, deptId: v === 'none' ? null : v }))}
+                    onValueChange={(v) =>
+                      setFormData((prev) => ({ ...prev, deptId: v === 'none' ? null : v }))
+                    }
                   >
                     <SelectTrigger className="w-full" aria-label="Chọn phòng ban">
                       <SelectValue placeholder="Chưa phân bổ" />
@@ -660,16 +840,27 @@ export default function EmployeesPage() {
                     <SelectContent>
                       <SelectItem value="none">Chưa phân bổ</SelectItem>
                       {deptOptions.map((d) => (
-                        <SelectItem key={d.id} value={d.id}>{d.deptNm}</SelectItem>
+                        <SelectItem key={d.id} value={d.id}>
+                          {d.deptNm}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <label className="block mb-1.5 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                  <label
+                    className="block mb-1.5 text-[var(--color-text-secondary)]"
+                    style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
+                  >
                     Trạng thái
                   </label>
-                  <Select value={formData.emplSttsCd} onValueChange={(v) => setFormData((prev) => ({ ...prev, emplSttsCd: v }))}>
+                  <Select
+                    value={formData.emplSttsCd}
+                    onValueChange={(v) => setFormData((prev) => ({ ...prev, emplSttsCd: v }))}
+                  >
                     <SelectTrigger className="w-full" aria-label="Trạng thái">
                       <SelectValue />
                     </SelectTrigger>
@@ -684,25 +875,47 @@ export default function EmployeesPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1.5 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                  <label
+                    className="block mb-1.5 text-[var(--color-text-secondary)]"
+                    style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
+                  >
                     Ngày vào làm <span className="text-[var(--color-error-500)]">*</span>
                   </label>
                   <input
                     type="date"
                     value={formData.joinDt}
                     onChange={(e) => setFormData((prev) => ({ ...prev, joinDt: e.target.value }))}
-                    className={cn('flex h-10 w-full rounded-[var(--radius-lg)] border px-3 py-2', 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]')}
-                    style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-primary)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)' }}
+                    className={cn(
+                      'flex h-10 w-full rounded-[var(--radius-lg)] border px-3 py-2',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
+                    )}
+                    style={{
+                      borderColor: 'var(--color-border)',
+                      background: 'var(--color-bg-primary)',
+                      fontSize: 'var(--font-size-sm)',
+                      color: 'var(--color-text-primary)',
+                    }}
                   />
                 </div>
                 {!editingId && (
                   <div>
-                    <label className="block mb-1.5 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                    <label
+                      className="block mb-1.5 text-[var(--color-text-secondary)]"
+                      style={{
+                        fontSize: 'var(--font-size-sm)',
+                        fontWeight: 'var(--font-weight-medium)',
+                      }}
+                    >
                       Liên kết tài khoản
                     </label>
                     <Select
                       value={formData.userId ?? 'none'}
-                      onValueChange={(v) => setFormData((prev) => ({ ...prev, userId: v === 'none' ? null : v }))}
+                      onValueChange={(v) =>
+                        setFormData((prev) => ({ ...prev, userId: v === 'none' ? null : v }))
+                      }
                     >
                       <SelectTrigger className="w-full" aria-label="Liên kết tài khoản">
                         <SelectValue placeholder="Không liên kết" />
@@ -738,7 +951,8 @@ export default function EmployeesPage() {
           <DialogHeader>
             <DialogTitle>Xác nhận xóa</DialogTitle>
             <DialogDescription>
-              Bạn có chắc chắn muốn xóa nhân viên <strong>{deletingEmpl?.emplNm}</strong> ({deletingEmpl?.emplNo})?
+              Bạn có chắc chắn muốn xóa nhân viên <strong>{deletingEmpl?.emplNm}</strong> (
+              {deletingEmpl?.emplNo})?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

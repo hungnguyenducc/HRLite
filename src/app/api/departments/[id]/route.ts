@@ -35,7 +35,10 @@ async function getDescendantIds(deptId: string): Promise<string[]> {
 }
 
 // GET /api/departments/[id] - Get department detail
-async function getHandler(req: AuthenticatedRequest, context: { params: Promise<Record<string, string>> }) {
+async function getHandler(
+  req: AuthenticatedRequest,
+  context: { params: Promise<Record<string, string>> },
+) {
   try {
     const { id } = await context.params;
 
@@ -85,7 +88,10 @@ async function getHandler(req: AuthenticatedRequest, context: { params: Promise<
 }
 
 // PATCH /api/departments/[id] - Update department
-async function updateHandler(req: AuthenticatedRequest, context: { params: Promise<Record<string, string>> }) {
+async function updateHandler(
+  req: AuthenticatedRequest,
+  context: { params: Promise<Record<string, string>> },
+) {
   try {
     const { id } = await context.params;
     const body = await req.json();
@@ -173,7 +179,10 @@ async function updateHandler(req: AuthenticatedRequest, context: { params: Promi
 }
 
 // DELETE /api/departments/[id] - Soft delete
-async function deleteHandler(req: AuthenticatedRequest, context: { params: Promise<Record<string, string>> }) {
+async function deleteHandler(
+  req: AuthenticatedRequest,
+  context: { params: Promise<Record<string, string>> },
+) {
   try {
     const { id } = await context.params;
 

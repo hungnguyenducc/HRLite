@@ -143,7 +143,11 @@ export default function DepartmentsPage() {
         }
       }
     } catch {
-      addToast({ variant: 'error', title: 'Lỗi', description: 'Không thể tải danh sách phòng ban.' });
+      addToast({
+        variant: 'error',
+        title: 'Lỗi',
+        description: 'Không thể tải danh sách phòng ban.',
+      });
     } finally {
       setLoading(false);
     }
@@ -230,7 +234,13 @@ export default function DepartmentsPage() {
       const method = editingId ? 'PATCH' : 'POST';
 
       const body = editingId
-        ? { deptNm: formData.deptNm, upperDeptId: formData.upperDeptId, deptHeadId: formData.deptHeadId, sortOrd: formData.sortOrd, useYn: formData.useYn }
+        ? {
+            deptNm: formData.deptNm,
+            upperDeptId: formData.upperDeptId,
+            deptHeadId: formData.deptHeadId,
+            sortOrd: formData.sortOrd,
+            useYn: formData.useYn,
+          }
         : formData;
 
       const res = await fetch(url, {
@@ -243,16 +253,27 @@ export default function DepartmentsPage() {
       const json = await res.json();
 
       if (!res.ok || !json.success) {
-        addToast({ variant: 'error', title: 'Thất bại', description: json.error || 'Không thể lưu phòng ban.' });
+        addToast({
+          variant: 'error',
+          title: 'Thất bại',
+          description: json.error || 'Không thể lưu phòng ban.',
+        });
         return;
       }
 
-      addToast({ variant: 'success', title: editingId ? 'Đã cập nhật phòng ban' : 'Đã tạo phòng ban' });
+      addToast({
+        variant: 'success',
+        title: editingId ? 'Đã cập nhật phòng ban' : 'Đã tạo phòng ban',
+      });
       setFormOpen(false);
       fetchDepartments();
       if (viewMode === 'tree') fetchTree();
     } catch {
-      addToast({ variant: 'error', title: 'Lỗi kết nối', description: 'Không thể kết nối đến máy chủ.' });
+      addToast({
+        variant: 'error',
+        title: 'Lỗi kết nối',
+        description: 'Không thể kết nối đến máy chủ.',
+      });
     } finally {
       setFormLoading(false);
     }
@@ -269,7 +290,11 @@ export default function DepartmentsPage() {
       const json = await res.json();
 
       if (!res.ok || !json.success) {
-        addToast({ variant: 'error', title: 'Không thể xóa', description: json.error || 'Lỗi khi xóa phòng ban.' });
+        addToast({
+          variant: 'error',
+          title: 'Không thể xóa',
+          description: json.error || 'Lỗi khi xóa phòng ban.',
+        });
         return;
       }
 
@@ -303,7 +328,10 @@ export default function DepartmentsPage() {
       header: 'Tên phòng ban',
       sortable: true,
       render: (row) => (
-        <span className="text-[var(--color-text-primary)]" style={{ fontWeight: 'var(--font-weight-medium)' }}>
+        <span
+          className="text-[var(--color-text-primary)]"
+          style={{ fontWeight: 'var(--font-weight-medium)' }}
+        >
           {row.deptNm}
         </span>
       ),
@@ -312,7 +340,10 @@ export default function DepartmentsPage() {
       key: 'upperDeptNm',
       header: 'Phòng ban cha',
       render: (row) => (
-        <span className="text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)' }}>
+        <span
+          className="text-[var(--color-text-secondary)]"
+          style={{ fontSize: 'var(--font-size-sm)' }}
+        >
           {row.upperDeptNm || '—'}
         </span>
       ),
@@ -321,7 +352,10 @@ export default function DepartmentsPage() {
       key: 'deptHeadNm',
       header: 'Trưởng phòng',
       render: (row) => (
-        <span className="text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)' }}>
+        <span
+          className="text-[var(--color-text-secondary)]"
+          style={{ fontSize: 'var(--font-size-sm)' }}
+        >
           {row.deptHeadNm || '—'}
         </span>
       ),
@@ -330,7 +364,10 @@ export default function DepartmentsPage() {
       key: 'employeeCount',
       header: 'Số NV',
       render: (row) => (
-        <div className="flex items-center gap-1 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)' }}>
+        <div
+          className="flex items-center gap-1 text-[var(--color-text-secondary)]"
+          style={{ fontSize: 'var(--font-size-sm)' }}
+        >
           <Users className="h-3.5 w-3.5" />
           {row.employeeCount}
         </div>
@@ -352,13 +389,21 @@ export default function DepartmentsPage() {
             header: '',
             render: (row: DepartmentRecord) => (
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" onClick={() => openEditDialog(row)} aria-label="Sửa">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => openEditDialog(row)}
+                  aria-label="Sửa"
+                >
                   <Pencil className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => { setDeletingDept(row); setDeleteOpen(true); }}
+                  onClick={() => {
+                    setDeletingDept(row);
+                    setDeleteOpen(true);
+                  }}
                   aria-label="Xóa"
                 >
                   <Trash2 className="h-4 w-4 text-[var(--color-error-600)]" />
@@ -408,18 +453,26 @@ export default function DepartmentsPage() {
           </span>
 
           {node.deptHeadNm && (
-            <span className="text-[var(--color-text-tertiary)]" style={{ fontSize: 'var(--font-size-xs)' }}>
+            <span
+              className="text-[var(--color-text-tertiary)]"
+              style={{ fontSize: 'var(--font-size-xs)' }}
+            >
               {node.deptHeadNm}
             </span>
           )}
 
-          <div className="flex items-center gap-1 text-[var(--color-text-tertiary)]" style={{ fontSize: 'var(--font-size-xs)' }}>
+          <div
+            className="flex items-center gap-1 text-[var(--color-text-tertiary)]"
+            style={{ fontSize: 'var(--font-size-xs)' }}
+          >
             <Users className="h-3 w-3" />
             {node.employeeCount}
           </div>
 
           {node.useYn === 'N' && (
-            <Badge variant="default" size="sm">Ngừng</Badge>
+            <Badge variant="default" size="sm">
+              Ngừng
+            </Badge>
           )}
         </div>
 
@@ -459,7 +512,10 @@ export default function DepartmentsPage() {
             >
               Phòng ban
             </h1>
-            <p className="text-[var(--color-text-secondary)] mt-1" style={{ fontSize: 'var(--font-size-sm)' }}>
+            <p
+              className="text-[var(--color-text-secondary)] mt-1"
+              style={{ fontSize: 'var(--font-size-sm)' }}
+            >
               Quản lý cơ cấu tổ chức và phòng ban
             </p>
           </div>
@@ -511,7 +567,13 @@ export default function DepartmentsPage() {
             <Card variant="default">
               <CardContent>
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-                  <form onSubmit={(e) => { e.preventDefault(); setPage(1); }} className="flex-1">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      setPage(1);
+                    }}
+                    className="flex-1"
+                  >
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-tertiary)]" />
                       <input
@@ -535,7 +597,13 @@ export default function DepartmentsPage() {
                       />
                     </div>
                   </form>
-                  <Select value={useYnFilter} onValueChange={(v) => { setUseYnFilter(v); setPage(1); }}>
+                  <Select
+                    value={useYnFilter}
+                    onValueChange={(v) => {
+                      setUseYnFilter(v);
+                      setPage(1);
+                    }}
+                  >
                     <SelectTrigger className="w-[150px]" aria-label="Lọc trạng thái">
                       <SelectValue placeholder="Trạng thái" />
                     </SelectTrigger>
@@ -559,7 +627,10 @@ export default function DepartmentsPage() {
                     className="h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
                     style={{ borderColor: 'var(--color-brand-300)', borderTopColor: 'transparent' }}
                   />
-                  <p className="text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)' }}>
+                  <p
+                    className="text-[var(--color-text-secondary)]"
+                    style={{ fontSize: 'var(--font-size-sm)' }}
+                  >
                     Đang tải dữ liệu...
                   </p>
                 </div>
@@ -572,7 +643,12 @@ export default function DepartmentsPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="animate-fade-up-delay-3 flex items-center justify-center gap-3">
-              <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page <= 1}
+                onClick={() => setPage((p) => p - 1)}
+              >
                 Trang trước
               </Button>
               <span
@@ -581,7 +657,12 @@ export default function DepartmentsPage() {
               >
                 {page} / {totalPages}
               </span>
-              <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page >= totalPages}
+                onClick={() => setPage((p) => p + 1)}
+              >
                 Trang sau
               </Button>
             </div>
@@ -602,7 +683,10 @@ export default function DepartmentsPage() {
                   />
                 </div>
               ) : tree.length === 0 ? (
-                <p className="text-center py-12 text-[var(--color-text-tertiary)]" style={{ fontSize: 'var(--font-size-sm)' }}>
+                <p
+                  className="text-center py-12 text-[var(--color-text-tertiary)]"
+                  style={{ fontSize: 'var(--font-size-sm)' }}
+                >
                   Chưa có phòng ban nào. Hãy thêm phòng ban đầu tiên.
                 </p>
               ) : (
@@ -630,13 +714,22 @@ export default function DepartmentsPage() {
             <div className="flex flex-col gap-4">
               {/* Mã phòng ban — readonly when editing */}
               <div>
-                <label className="block mb-1.5 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
-                  Mã phòng ban {!editingId && <span className="text-[var(--color-error-500)]">*</span>}
+                <label
+                  className="block mb-1.5 text-[var(--color-text-secondary)]"
+                  style={{
+                    fontSize: 'var(--font-size-sm)',
+                    fontWeight: 'var(--font-weight-medium)',
+                  }}
+                >
+                  Mã phòng ban{' '}
+                  {!editingId && <span className="text-[var(--color-error-500)]">*</span>}
                 </label>
                 <input
                   type="text"
                   value={formData.deptCd}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, deptCd: e.target.value.toUpperCase() }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, deptCd: e.target.value.toUpperCase() }))
+                  }
                   disabled={!!editingId}
                   placeholder="VD: DEPT-HR"
                   className={cn(
@@ -655,7 +748,13 @@ export default function DepartmentsPage() {
 
               {/* Tên phòng ban */}
               <div>
-                <label className="block mb-1.5 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                <label
+                  className="block mb-1.5 text-[var(--color-text-secondary)]"
+                  style={{
+                    fontSize: 'var(--font-size-sm)',
+                    fontWeight: 'var(--font-weight-medium)',
+                  }}
+                >
                   Tên phòng ban <span className="text-[var(--color-error-500)]">*</span>
                 </label>
                 <input
@@ -667,18 +766,31 @@ export default function DepartmentsPage() {
                     'flex h-10 w-full rounded-[var(--radius-lg)] border px-3 py-2',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
                   )}
-                  style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-primary)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)' }}
+                  style={{
+                    borderColor: 'var(--color-border)',
+                    background: 'var(--color-bg-primary)',
+                    fontSize: 'var(--font-size-sm)',
+                    color: 'var(--color-text-primary)',
+                  }}
                 />
               </div>
 
               {/* Phòng ban cấp trên */}
               <div>
-                <label className="block mb-1.5 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                <label
+                  className="block mb-1.5 text-[var(--color-text-secondary)]"
+                  style={{
+                    fontSize: 'var(--font-size-sm)',
+                    fontWeight: 'var(--font-weight-medium)',
+                  }}
+                >
                   Phòng ban cấp trên
                 </label>
                 <Select
                   value={formData.upperDeptId ?? 'none'}
-                  onValueChange={(v) => setFormData((prev) => ({ ...prev, upperDeptId: v === 'none' ? null : v }))}
+                  onValueChange={(v) =>
+                    setFormData((prev) => ({ ...prev, upperDeptId: v === 'none' ? null : v }))
+                  }
                 >
                   <SelectTrigger className="w-full" aria-label="Chọn phòng ban cấp trên">
                     <SelectValue placeholder="Không có" />
@@ -698,12 +810,20 @@ export default function DepartmentsPage() {
 
               {/* Trưởng phòng */}
               <div>
-                <label className="block mb-1.5 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                <label
+                  className="block mb-1.5 text-[var(--color-text-secondary)]"
+                  style={{
+                    fontSize: 'var(--font-size-sm)',
+                    fontWeight: 'var(--font-weight-medium)',
+                  }}
+                >
                   Trưởng phòng
                 </label>
                 <Select
                   value={formData.deptHeadId ?? 'none'}
-                  onValueChange={(v) => setFormData((prev) => ({ ...prev, deptHeadId: v === 'none' ? null : v }))}
+                  onValueChange={(v) =>
+                    setFormData((prev) => ({ ...prev, deptHeadId: v === 'none' ? null : v }))
+                  }
                 >
                   <SelectTrigger className="w-full" aria-label="Chọn trưởng phòng">
                     <SelectValue placeholder="Chưa chỉ định" />
@@ -722,29 +842,54 @@ export default function DepartmentsPage() {
               <div className="grid grid-cols-2 gap-4">
                 {/* Thứ tự */}
                 <div>
-                  <label className="block mb-1.5 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                  <label
+                    className="block mb-1.5 text-[var(--color-text-secondary)]"
+                    style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
+                  >
                     Thứ tự sắp xếp
                   </label>
                   <input
                     type="number"
                     min={0}
                     value={formData.sortOrd ?? ''}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, sortOrd: e.target.value ? parseInt(e.target.value, 10) : null }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        sortOrd: e.target.value ? parseInt(e.target.value, 10) : null,
+                      }))
+                    }
                     placeholder="0"
                     className={cn(
                       'flex h-10 w-full rounded-[var(--radius-lg)] border px-3 py-2',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
                     )}
-                    style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-primary)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)' }}
+                    style={{
+                      borderColor: 'var(--color-border)',
+                      background: 'var(--color-bg-primary)',
+                      fontSize: 'var(--font-size-sm)',
+                      color: 'var(--color-text-primary)',
+                    }}
                   />
                 </div>
 
                 {/* Trạng thái */}
                 <div>
-                  <label className="block mb-1.5 text-[var(--color-text-secondary)]" style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
+                  <label
+                    className="block mb-1.5 text-[var(--color-text-secondary)]"
+                    style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
+                  >
                     Trạng thái
                   </label>
-                  <Select value={formData.useYn} onValueChange={(v) => setFormData((prev) => ({ ...prev, useYn: v }))}>
+                  <Select
+                    value={formData.useYn}
+                    onValueChange={(v) => setFormData((prev) => ({ ...prev, useYn: v }))}
+                  >
                     <SelectTrigger className="w-full" aria-label="Trạng thái">
                       <SelectValue />
                     </SelectTrigger>
@@ -774,7 +919,8 @@ export default function DepartmentsPage() {
           <DialogHeader>
             <DialogTitle>Xác nhận xóa</DialogTitle>
             <DialogDescription>
-              Bạn có chắc chắn muốn xóa phòng ban <strong>{deletingDept?.deptNm}</strong> ({deletingDept?.deptCd})?
+              Bạn có chắc chắn muốn xóa phòng ban <strong>{deletingDept?.deptNm}</strong> (
+              {deletingDept?.deptCd})?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

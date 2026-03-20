@@ -79,7 +79,8 @@ export function Sidebar({
         <div
           className="absolute inset-0 pointer-events-none opacity-[0.03]"
           style={{
-            backgroundImage: 'radial-gradient(circle at 25% 25%, rgba(255,255,255,0.15) 1px, transparent 1px)',
+            backgroundImage:
+              'radial-gradient(circle at 25% 25%, rgba(255,255,255,0.15) 1px, transparent 1px)',
             backgroundSize: '24px 24px',
           }}
         />
@@ -101,7 +102,8 @@ export function Sidebar({
                 <div
                   className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-lg)] shrink-0"
                   style={{
-                    background: 'linear-gradient(135deg, var(--color-brand-500), var(--color-brand-700))',
+                    background:
+                      'linear-gradient(135deg, var(--color-brand-500), var(--color-brand-700))',
                     boxShadow: '0 2px 8px rgba(99, 102, 241, 0.3)',
                   }}
                 >
@@ -149,7 +151,8 @@ export function Sidebar({
               <div
                 className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-lg)] mx-auto"
                 style={{
-                  background: 'linear-gradient(135deg, var(--color-brand-500), var(--color-brand-700))',
+                  background:
+                    'linear-gradient(135deg, var(--color-brand-500), var(--color-brand-700))',
                   boxShadow: '0 2px 8px rgba(99, 102, 241, 0.3)',
                 }}
               >
@@ -199,11 +202,19 @@ export function Sidebar({
 
         {/* ── Divider ── */}
         <div className="relative z-10 mx-4 mb-2">
-          <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(250, 247, 242, 0.08), transparent)' }} />
+          <div
+            className="h-px"
+            style={{
+              background:
+                'linear-gradient(90deg, transparent, rgba(250, 247, 242, 0.08), transparent)',
+            }}
+          />
         </div>
 
         {/* ── Navigation ── */}
-        <nav className="relative z-10 flex-1 overflow-y-auto px-3 pb-4 scrollbar-none">{children}</nav>
+        <nav className="relative z-10 flex-1 overflow-y-auto px-3 pb-4 scrollbar-none">
+          {children}
+        </nav>
 
         {/* ── Bottom glow ── */}
         <div
@@ -258,9 +269,7 @@ export function SidebarItem({ icon, label, active, onClick }: SidebarItemProps) 
       className={cn(
         'group flex items-center gap-3 w-full rounded-[var(--radius-lg)] px-3 py-2.5 relative',
         'transition-all duration-[var(--transition-normal)]',
-        active
-          ? 'text-white'
-          : 'text-white/50 hover:text-white/80 hover:bg-white/[0.04]',
+        active ? 'text-white' : 'text-white/50 hover:text-white/80 hover:bg-white/[0.04]',
         collapsed && 'justify-center px-0',
       )}
       style={{
@@ -268,7 +277,8 @@ export function SidebarItem({ icon, label, active, onClick }: SidebarItemProps) 
         fontWeight: active ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)',
         ...(active
           ? {
-              background: 'linear-gradient(90deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.05))',
+              background:
+                'linear-gradient(90deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.05))',
               boxShadow: 'inset 0 0 0 1px rgba(99, 102, 241, 0.1)',
             }
           : {}),

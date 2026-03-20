@@ -13,9 +13,9 @@
 
 | Feature | Blueprint | DB Design | Test Cases | Implementation | Test Report | Status |
 |---------|-----------|-----------|------------|----------------|-------------|--------|
-| Quản lý Phòng ban | Done | Done | - | Done | - | In Progress |
-| Quản lý Nhân viên | Done | Done | - | Done | - | In Progress |
-| Tích hợp & Seed Data | N/A | N/A | N/A | Done | - | In Progress |
+| Quản lý Phòng ban | Done | Done | Done | Done | Done | Completed |
+| Quản lý Nhân viên | Done | Done | Done | Done | Done | Completed |
+| Tích hợp & Seed Data | N/A | N/A | N/A | Done | Done | Completed |
 
 **Legend**: `-` Not Started, `WIP` In Progress, `Done` Completed, `N/A` Not Applicable
 <!-- PROGRESS_TABLE_END -->

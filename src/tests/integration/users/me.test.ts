@@ -34,8 +34,8 @@ describe('GET /api/users/me', () => {
     expect(json.data.id).toBe(TEST_USERS.user.id);
     expect(json.data.email).toBe(TEST_USERS.user.email);
     expect(json.data.displayName).toBe('User Test');
-    expect(json.data.roleCd).toBe('USER');
-    expect(json.data.sttsCd).toBe('ACTIVE');
+    expect(json.data.role).toBe('USER');
+    expect(json.data.status).toBe('ACTIVE');
     // Must not contain password hash
     expect(json.data.passwdHash).toBeUndefined();
     expect(json.data.password).toBeUndefined();

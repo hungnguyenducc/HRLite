@@ -179,7 +179,7 @@ function DateChip({ date }: { date: string }) {
       </span>
       <span
         style={{
-          fontSize: '10px',
+          fontSize: 'var(--font-size-xs)',
           fontWeight: 'var(--font-weight-medium)',
           color: 'var(--color-text-tertiary)',
           textTransform: 'uppercase',
@@ -235,7 +235,7 @@ function StatCard({
           <div className="flex flex-col">
             <span
               style={{
-                fontSize: '11px',
+                fontSize: 'var(--font-size-xs)',
                 fontWeight: 'var(--font-weight-semibold)',
                 color: 'var(--color-text-tertiary)',
                 textTransform: 'uppercase',
@@ -501,6 +501,22 @@ export default function LeavePage() {
   };
 
   const handleCreateLeave = async () => {
+    if (!formData.lvTypeCd || !formData.startDt || !formData.endDt || !formData.rsn.trim()) {
+      addToast({ variant: 'error', title: 'Vui lòng điền đầy đủ thông tin' });
+      return;
+    }
+    if (formData.endDt < formData.startDt) {
+      addToast({ variant: 'error', title: 'Ngày kết thúc phải sau ngày bắt đầu' });
+      return;
+    }
+    if (calculatedDays === 0) {
+      addToast({ variant: 'error', title: 'Khoảng thời gian không có ngày làm việc' });
+      return;
+    }
+    if (isAdmin && !formData.employeeId) {
+      addToast({ variant: 'error', title: 'Vui lòng chọn nhân viên' });
+      return;
+    }
     setFormLoading(true);
     try {
       const body: Record<string, unknown> = {
@@ -550,7 +566,7 @@ export default function LeavePage() {
     }
   };
 
-  const handleLeaveAction = async (id: string, action: 'approve' | 'reject' | 'cancel') => {
+  const handleLeaveAction = React.useCallback(async (id: string, action: 'approve' | 'reject' | 'cancel') => {
     setActionLoading(`${id}-${action}`);
     try {
       const res = await fetch(`/api/leave/${id}/${action}`, {
@@ -581,7 +597,7 @@ export default function LeavePage() {
     } finally {
       setActionLoading(null);
     }
-  };
+  }, [addToast, fetchLeaves, fetchStats]);
 
   // ─── Leave type handlers ───────────────────────
 
@@ -693,7 +709,7 @@ export default function LeavePage() {
 
   // ─── Leave request table columns ───────────────
 
-  const leaveColumns: Column<LeaveRecord>[] = [
+  const leaveColumns: Column<LeaveRecord>[] = React.useMemo(() => [
     {
       key: 'employee' as keyof LeaveRecord,
       header: 'Nhân viên',
@@ -722,7 +738,7 @@ export default function LeavePage() {
             </span>
             <span
               style={{
-                fontSize: '11px',
+                fontSize: 'var(--font-size-xs)',
                 color: 'var(--color-text-tertiary)',
                 fontFamily: 'var(--font-family-mono)',
               }}
@@ -742,7 +758,7 @@ export default function LeavePage() {
           style={{
             background: 'var(--color-accent-50)',
             color: 'var(--color-accent-700)',
-            fontSize: '12px',
+            fontSize: 'var(--font-size-xs)',
             fontWeight: 'var(--font-weight-semibold)',
             letterSpacing: '0.01em',
           }}
@@ -767,7 +783,7 @@ export default function LeavePage() {
             style={{
               background: 'var(--color-brand-50)',
               color: 'var(--color-brand-700)',
-              fontSize: '11px',
+              fontSize: 'var(--font-size-xs)',
               fontWeight: 'var(--font-weight-bold)',
             }}
           >
@@ -813,7 +829,9 @@ export default function LeavePage() {
       render: (row: LeaveRecord) => {
         if (row.status !== 'PENDING') return null;
 
-        const isOwner = true; // Server validates ownership on cancel
+        // Ownership check is enforced server-side on cancel action.
+        // Frontend shows cancel button optimistically; API returns 403 if not owner.
+        const canCancel = true;
 
         return (
           <div className="flex items-center gap-0.5">
@@ -839,7 +857,7 @@ export default function LeavePage() {
                 </Button>
               </>
             )}
-            {(isOwner || isAdmin) && (
+            {(canCancel || isAdmin) && (
               <Button
                 variant="ghost"
                 size="icon"
@@ -854,11 +872,11 @@ export default function LeavePage() {
         );
       },
     },
-  ];
+  ], [isAdmin, actionLoading, handleLeaveAction]);
 
   // ─── Leave type table columns ──────────────────
 
-  const leaveTypeColumns: Column<LeaveTypeRecord>[] = [
+  const leaveTypeColumns: Column<LeaveTypeRecord>[] = React.useMemo(() => [
     {
       key: 'lvTypeCd',
       header: 'Mã',
@@ -870,7 +888,7 @@ export default function LeavePage() {
             background: 'var(--color-bg-secondary)',
             fontFamily: 'var(--font-family-mono)',
             fontWeight: 'var(--font-weight-semibold)',
-            fontSize: '12px',
+            fontSize: 'var(--font-size-xs)',
             color: 'var(--color-text-primary)',
             letterSpacing: '0.03em',
           }}
@@ -946,7 +964,7 @@ export default function LeavePage() {
         </div>
       ),
     },
-  ];
+  ], []);
 
   // ─── Stat cards config ─────────────────────────
 
@@ -963,7 +981,7 @@ export default function LeavePage() {
       label: 'Đã duyệt tháng này',
       value: stats?.approvedThisMonth ?? 0,
       icon: <CheckCircle className="h-5 w-5" style={{ color: 'var(--color-success-500)' }} />,
-      gradient: 'linear-gradient(135deg, var(--color-success-500), #34d399)',
+      gradient: 'linear-gradient(135deg, var(--color-success-500), var(--color-success-50))',
       iconBg: 'var(--color-success-50)',
       delay: 60,
     },
@@ -1414,7 +1432,7 @@ export default function LeavePage() {
                   <div>
                     <p
                       style={{
-                        fontSize: '11px',
+                        fontSize: 'var(--font-size-xs)',
                         color: 'var(--color-text-tertiary)',
                         fontWeight: 'var(--font-weight-medium)',
                         textTransform: 'uppercase',

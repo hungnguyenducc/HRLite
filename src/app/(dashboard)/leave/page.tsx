@@ -542,8 +542,7 @@ export default function LeavePage() {
         addToast({
           variant: 'error',
           title: 'Thất bại',
-          description:
-            json.error || 'Không thể tạo yêu cầu nghỉ phép.',
+          description: json.error || 'Không thể tạo yêu cầu nghỉ phép.',
         });
         return;
       }
@@ -566,38 +565,41 @@ export default function LeavePage() {
     }
   };
 
-  const handleLeaveAction = React.useCallback(async (id: string, action: 'approve' | 'reject' | 'cancel') => {
-    setActionLoading(`${id}-${action}`);
-    try {
-      const res = await fetch(`/api/leave/${id}/${action}`, {
-        method: 'PATCH',
-        credentials: 'include',
-      });
-      const json = await res.json();
-
-      if (!res.ok || !json.success) {
-        addToast({
-          variant: 'error',
-          title: 'Thất bại',
-          description: json.error || 'Không thể thực hiện thao tác.',
+  const handleLeaveAction = React.useCallback(
+    async (id: string, action: 'approve' | 'reject' | 'cancel') => {
+      setActionLoading(`${id}-${action}`);
+      try {
+        const res = await fetch(`/api/leave/${id}/${action}`, {
+          method: 'PATCH',
+          credentials: 'include',
         });
-        return;
-      }
+        const json = await res.json();
 
-      const actionLabels = {
-        approve: 'Đã duyệt',
-        reject: 'Đã từ chối',
-        cancel: 'Đã hủy',
-      };
-      addToast({ variant: 'success', title: actionLabels[action] });
-      fetchLeaves();
-      fetchStats();
-    } catch {
-      addToast({ variant: 'error', title: 'Lỗi kết nối' });
-    } finally {
-      setActionLoading(null);
-    }
-  }, [addToast, fetchLeaves, fetchStats]);
+        if (!res.ok || !json.success) {
+          addToast({
+            variant: 'error',
+            title: 'Thất bại',
+            description: json.error || 'Không thể thực hiện thao tác.',
+          });
+          return;
+        }
+
+        const actionLabels = {
+          approve: 'Đã duyệt',
+          reject: 'Đã từ chối',
+          cancel: 'Đã hủy',
+        };
+        addToast({ variant: 'success', title: actionLabels[action] });
+        fetchLeaves();
+        fetchStats();
+      } catch {
+        addToast({ variant: 'error', title: 'Lỗi kết nối' });
+      } finally {
+        setActionLoading(null);
+      }
+    },
+    [addToast, fetchLeaves, fetchStats],
+  );
 
   // ─── Leave type handlers ───────────────────────
 
@@ -655,9 +657,7 @@ export default function LeavePage() {
 
       addToast({
         variant: 'success',
-        title: ltEditingCd
-          ? 'Đã cập nhật loại nghỉ phép'
-          : 'Đã tạo loại nghỉ phép',
+        title: ltEditingCd ? 'Đã cập nhật loại nghỉ phép' : 'Đã tạo loại nghỉ phép',
       });
       setLtFormOpen(false);
       fetchLeaveTypes();
@@ -709,262 +709,268 @@ export default function LeavePage() {
 
   // ─── Leave request table columns ───────────────
 
-  const leaveColumns: Column<LeaveRecord>[] = React.useMemo(() => [
-    {
-      key: 'employee' as keyof LeaveRecord,
-      header: 'Nhân viên',
-      render: (row) => (
-        <div className="flex items-center gap-3 py-1">
-          <div
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-lg)]"
-            style={{
-              background: 'linear-gradient(135deg, var(--color-brand-100), var(--color-brand-50))',
-              color: 'var(--color-brand-600)',
-              fontSize: 'var(--font-size-sm)',
-              fontWeight: 'var(--font-weight-bold)',
-            }}
-          >
-            {row.employee.emplNm.charAt(0)}
-          </div>
-          <div className="flex flex-col">
-            <span
+  const leaveColumns: Column<LeaveRecord>[] = React.useMemo(
+    () => [
+      {
+        key: 'employee' as keyof LeaveRecord,
+        header: 'Nhân viên',
+        render: (row) => (
+          <div className="flex items-center gap-3 py-1">
+            <div
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-lg)]"
               style={{
-                fontWeight: 'var(--font-weight-semibold)',
+                background:
+                  'linear-gradient(135deg, var(--color-brand-100), var(--color-brand-50))',
+                color: 'var(--color-brand-600)',
                 fontSize: 'var(--font-size-sm)',
-                color: 'var(--color-text-primary)',
+                fontWeight: 'var(--font-weight-bold)',
               }}
             >
-              {row.employee.emplNm}
-            </span>
-            <span
-              style={{
-                fontSize: 'var(--font-size-xs)',
-                color: 'var(--color-text-tertiary)',
-                fontFamily: 'var(--font-family-mono)',
-              }}
-            >
-              {row.employee.emplNo}
-            </span>
+              {row.employee.emplNm.charAt(0)}
+            </div>
+            <div className="flex flex-col">
+              <span
+                style={{
+                  fontWeight: 'var(--font-weight-semibold)',
+                  fontSize: 'var(--font-size-sm)',
+                  color: 'var(--color-text-primary)',
+                }}
+              >
+                {row.employee.emplNm}
+              </span>
+              <span
+                style={{
+                  fontSize: 'var(--font-size-xs)',
+                  color: 'var(--color-text-tertiary)',
+                  fontFamily: 'var(--font-family-mono)',
+                }}
+              >
+                {row.employee.emplNo}
+              </span>
+            </div>
           </div>
-        </div>
-      ),
-    },
-    {
-      key: 'leaveType' as keyof LeaveRecord,
-      header: 'Loại nghỉ',
-      render: (row) => (
-        <span
-          className="inline-flex items-center px-2.5 py-1 rounded-[var(--radius-full)]"
-          style={{
-            background: 'var(--color-accent-50)',
-            color: 'var(--color-accent-700)',
-            fontSize: 'var(--font-size-xs)',
-            fontWeight: 'var(--font-weight-semibold)',
-            letterSpacing: '0.01em',
-          }}
-        >
-          {row.leaveType.lvTypeNm}
-        </span>
-      ),
-    },
-    {
-      key: 'startDt',
-      header: 'Thời gian',
-      render: (row) => (
-        <div className="flex items-center gap-2">
-          <DateChip date={row.startDt} />
-          <div
-            className="w-4 h-[1px]"
-            style={{ background: 'var(--color-border)' }}
-          />
-          <DateChip date={row.endDt} />
+        ),
+      },
+      {
+        key: 'leaveType' as keyof LeaveRecord,
+        header: 'Loại nghỉ',
+        render: (row) => (
           <span
-            className="ml-1 inline-flex items-center justify-center min-w-[28px] h-6 rounded-[var(--radius-md)] px-1.5"
+            className="inline-flex items-center px-2.5 py-1 rounded-[var(--radius-full)]"
             style={{
-              background: 'var(--color-brand-50)',
-              color: 'var(--color-brand-700)',
+              background: 'var(--color-accent-50)',
+              color: 'var(--color-accent-700)',
               fontSize: 'var(--font-size-xs)',
-              fontWeight: 'var(--font-weight-bold)',
+              fontWeight: 'var(--font-weight-semibold)',
+              letterSpacing: '0.01em',
             }}
           >
-            {row.lvDays}d
+            {row.leaveType.lvTypeNm}
           </span>
-        </div>
-      ),
-    },
-    {
-      key: 'rsn',
-      header: 'Lý do',
-      render: (row) => (
-        <span
-          className="block max-w-[200px] truncate"
-          style={{
-            fontSize: 'var(--font-size-sm)',
-            color: 'var(--color-text-secondary)',
-          }}
-          title={row.rsn}
-        >
-          {row.rsn || '\u2014'}
-        </span>
-      ),
-    },
-    {
-      key: 'status',
-      header: 'Trạng thái',
-      render: (row) => {
-        const cfg = leaveStatusConfig[row.status] ?? {
-          label: row.status,
-          variant: 'default' as const,
-        };
-        return (
-          <Badge variant={cfg.variant} size="sm" dot>
-            {cfg.label}
-          </Badge>
-        );
+        ),
       },
-    },
-    {
-      key: 'aprvlDt' as keyof LeaveRecord,
-      header: '',
-      render: (row: LeaveRecord) => {
-        if (row.status !== 'PENDING') return null;
-
-        // Ownership check is enforced server-side on cancel action.
-        // Frontend shows cancel button optimistically; API returns 403 if not owner.
-        const canCancel = true;
-
-        return (
-          <div className="flex items-center gap-0.5">
-            {isAdmin && (
-              <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleLeaveAction(row.id, 'approve')}
-                  loading={actionLoading === `${row.id}-approve`}
-                  aria-label="Duyệt"
-                >
-                  <Check className="h-4 w-4" style={{ color: 'var(--color-success-500)' }} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleLeaveAction(row.id, 'reject')}
-                  loading={actionLoading === `${row.id}-reject`}
-                  aria-label="Từ chối"
-                >
-                  <X className="h-4 w-4" style={{ color: 'var(--color-error-500)' }} />
-                </Button>
-              </>
-            )}
-            {(canCancel || isAdmin) && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleLeaveAction(row.id, 'cancel')}
-                loading={actionLoading === `${row.id}-cancel`}
-                aria-label="Hủy"
-              >
-                <Ban className="h-4 w-4" style={{ color: 'var(--color-text-tertiary)' }} />
-              </Button>
-            )}
+      {
+        key: 'startDt',
+        header: 'Thời gian',
+        render: (row) => (
+          <div className="flex items-center gap-2">
+            <DateChip date={row.startDt} />
+            <div className="w-4 h-[1px]" style={{ background: 'var(--color-border)' }} />
+            <DateChip date={row.endDt} />
+            <span
+              className="ml-1 inline-flex items-center justify-center min-w-[28px] h-6 rounded-[var(--radius-md)] px-1.5"
+              style={{
+                background: 'var(--color-brand-50)',
+                color: 'var(--color-brand-700)',
+                fontSize: 'var(--font-size-xs)',
+                fontWeight: 'var(--font-weight-bold)',
+              }}
+            >
+              {row.lvDays}d
+            </span>
           </div>
-        );
+        ),
       },
-    },
-  ], [isAdmin, actionLoading, handleLeaveAction]);
+      {
+        key: 'rsn',
+        header: 'Lý do',
+        render: (row) => (
+          <span
+            className="block max-w-[200px] truncate"
+            style={{
+              fontSize: 'var(--font-size-sm)',
+              color: 'var(--color-text-secondary)',
+            }}
+            title={row.rsn}
+          >
+            {row.rsn || '\u2014'}
+          </span>
+        ),
+      },
+      {
+        key: 'status',
+        header: 'Trạng thái',
+        render: (row) => {
+          const cfg = leaveStatusConfig[row.status] ?? {
+            label: row.status,
+            variant: 'default' as const,
+          };
+          return (
+            <Badge variant={cfg.variant} size="sm" dot>
+              {cfg.label}
+            </Badge>
+          );
+        },
+      },
+      {
+        key: 'aprvlDt' as keyof LeaveRecord,
+        header: '',
+        render: (row: LeaveRecord) => {
+          if (row.status !== 'PENDING') return null;
+
+          // Ownership check is enforced server-side on cancel action.
+          // Frontend shows cancel button optimistically; API returns 403 if not owner.
+          const canCancel = true;
+
+          return (
+            <div className="flex items-center gap-0.5">
+              {isAdmin && (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleLeaveAction(row.id, 'approve')}
+                    loading={actionLoading === `${row.id}-approve`}
+                    aria-label="Duyệt"
+                  >
+                    <Check className="h-4 w-4" style={{ color: 'var(--color-success-500)' }} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleLeaveAction(row.id, 'reject')}
+                    loading={actionLoading === `${row.id}-reject`}
+                    aria-label="Từ chối"
+                  >
+                    <X className="h-4 w-4" style={{ color: 'var(--color-error-500)' }} />
+                  </Button>
+                </>
+              )}
+              {(canCancel || isAdmin) && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleLeaveAction(row.id, 'cancel')}
+                  loading={actionLoading === `${row.id}-cancel`}
+                  aria-label="Hủy"
+                >
+                  <Ban className="h-4 w-4" style={{ color: 'var(--color-text-tertiary)' }} />
+                </Button>
+              )}
+            </div>
+          );
+        },
+      },
+    ],
+    [isAdmin, actionLoading, handleLeaveAction],
+  );
 
   // ─── Leave type table columns ──────────────────
 
-  const leaveTypeColumns: Column<LeaveTypeRecord>[] = React.useMemo(() => [
-    {
-      key: 'lvTypeCd',
-      header: 'Mã',
-      sortable: true,
-      render: (row) => (
-        <span
-          className="inline-flex items-center px-2.5 py-1 rounded-[var(--radius-md)]"
-          style={{
-            background: 'var(--color-bg-secondary)',
-            fontFamily: 'var(--font-family-mono)',
-            fontWeight: 'var(--font-weight-semibold)',
-            fontSize: 'var(--font-size-xs)',
-            color: 'var(--color-text-primary)',
-            letterSpacing: '0.03em',
-          }}
-        >
-          {row.lvTypeCd}
-        </span>
-      ),
-    },
-    {
-      key: 'lvTypeNm',
-      header: 'Tên loại',
-      sortable: true,
-      render: (row) => (
-        <span
-          style={{
-            fontWeight: 'var(--font-weight-semibold)',
-            fontSize: 'var(--font-size-sm)',
-            color: 'var(--color-text-primary)',
-          }}
-        >
-          {row.lvTypeNm}
-        </span>
-      ),
-    },
-    {
-      key: 'maxDays',
-      header: 'Số ngày tối đa',
-      render: (row) => (
-        <span
-          style={{
-            fontSize: 'var(--font-size-sm)',
-            color: row.maxDays !== null ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
-            fontWeight: row.maxDays !== null ? 'var(--font-weight-semibold)' : 'var(--font-weight-normal)',
-          }}
-        >
-          {row.maxDays !== null ? `${row.maxDays} ngày` : 'Không giới hạn'}
-        </span>
-      ),
-    },
-    {
-      key: 'useYn',
-      header: 'Trạng thái',
-      render: (row) => (
-        <Badge variant={row.useYn === 'Y' ? 'success' : 'default'} size="sm" dot>
-          {row.useYn === 'Y' ? 'Đang dùng' : 'Ngừng dùng'}
-        </Badge>
-      ),
-    },
-    {
-      key: 'creatDt' as keyof LeaveTypeRecord,
-      header: '',
-      render: (row: LeaveTypeRecord) => (
-        <div className="flex items-center gap-0.5">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => openEditLeaveTypeDialog(row)}
-            aria-label="Sửa"
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              setLtDeleting(row);
-              setLtDeleteOpen(true);
+  const leaveTypeColumns: Column<LeaveTypeRecord>[] = React.useMemo(
+    () => [
+      {
+        key: 'lvTypeCd',
+        header: 'Mã',
+        sortable: true,
+        render: (row) => (
+          <span
+            className="inline-flex items-center px-2.5 py-1 rounded-[var(--radius-md)]"
+            style={{
+              background: 'var(--color-bg-secondary)',
+              fontFamily: 'var(--font-family-mono)',
+              fontWeight: 'var(--font-weight-semibold)',
+              fontSize: 'var(--font-size-xs)',
+              color: 'var(--color-text-primary)',
+              letterSpacing: '0.03em',
             }}
-            aria-label="Xóa"
           >
-            <Trash2 className="h-4 w-4" style={{ color: 'var(--color-error-500)' }} />
-          </Button>
-        </div>
-      ),
-    },
-  ], []);
+            {row.lvTypeCd}
+          </span>
+        ),
+      },
+      {
+        key: 'lvTypeNm',
+        header: 'Tên loại',
+        sortable: true,
+        render: (row) => (
+          <span
+            style={{
+              fontWeight: 'var(--font-weight-semibold)',
+              fontSize: 'var(--font-size-sm)',
+              color: 'var(--color-text-primary)',
+            }}
+          >
+            {row.lvTypeNm}
+          </span>
+        ),
+      },
+      {
+        key: 'maxDays',
+        header: 'Số ngày tối đa',
+        render: (row) => (
+          <span
+            style={{
+              fontSize: 'var(--font-size-sm)',
+              color:
+                row.maxDays !== null ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+              fontWeight:
+                row.maxDays !== null ? 'var(--font-weight-semibold)' : 'var(--font-weight-normal)',
+            }}
+          >
+            {row.maxDays !== null ? `${row.maxDays} ngày` : 'Không giới hạn'}
+          </span>
+        ),
+      },
+      {
+        key: 'useYn',
+        header: 'Trạng thái',
+        render: (row) => (
+          <Badge variant={row.useYn === 'Y' ? 'success' : 'default'} size="sm" dot>
+            {row.useYn === 'Y' ? 'Đang dùng' : 'Ngừng dùng'}
+          </Badge>
+        ),
+      },
+      {
+        key: 'creatDt' as keyof LeaveTypeRecord,
+        header: '',
+        render: (row: LeaveTypeRecord) => (
+          <div className="flex items-center gap-0.5">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => openEditLeaveTypeDialog(row)}
+              aria-label="Sửa"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                setLtDeleting(row);
+                setLtDeleteOpen(true);
+              }}
+              aria-label="Xóa"
+            >
+              <Trash2 className="h-4 w-4" style={{ color: 'var(--color-error-500)' }} />
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [],
+  );
 
   // ─── Stat cards config ─────────────────────────
 
@@ -1038,7 +1044,8 @@ export default function LeavePage() {
           <div
             className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-[var(--radius-2xl)]"
             style={{
-              background: 'linear-gradient(135deg, var(--color-brand-100), var(--color-accent-100))',
+              background:
+                'linear-gradient(135deg, var(--color-brand-100), var(--color-accent-100))',
             }}
           >
             <CalendarDays className="h-7 w-7" style={{ color: 'var(--color-brand-600)' }} />
@@ -1101,7 +1108,6 @@ export default function LeavePage() {
         {/* ═══ Tab 1: Leave Requests ═══ */}
         <TabsContent value="requests">
           <div className="flex flex-col gap-6">
-
             {/* ── Stat Cards ── */}
             <div className="animate-fade-up-delay-1 grid grid-cols-2 lg:grid-cols-4 gap-3">
               {statCards.map((card) => (
@@ -1139,10 +1145,7 @@ export default function LeavePage() {
                       setPage(1);
                     }}
                   >
-                    <SelectTrigger
-                      className="w-[140px] h-8"
-                      aria-label="Lọc trạng thái"
-                    >
+                    <SelectTrigger className="w-[140px] h-8" aria-label="Lọc trạng thái">
                       <SelectValue placeholder="Trạng thái" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1161,10 +1164,7 @@ export default function LeavePage() {
                       setPage(1);
                     }}
                   >
-                    <SelectTrigger
-                      className="w-[160px] h-8"
-                      aria-label="Lọc loại nghỉ"
-                    >
+                    <SelectTrigger className="w-[160px] h-8" aria-label="Lọc loại nghỉ">
                       <SelectValue placeholder="Loại nghỉ phép" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1328,7 +1328,8 @@ export default function LeavePage() {
                 <div
                   className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-lg)]"
                   style={{
-                    background: 'linear-gradient(135deg, var(--color-brand-100), var(--color-brand-50))',
+                    background:
+                      'linear-gradient(135deg, var(--color-brand-100), var(--color-brand-50))',
                     color: 'var(--color-brand-600)',
                   }}
                 >
@@ -1337,9 +1338,7 @@ export default function LeavePage() {
                 Tạo yêu cầu nghỉ phép
               </span>
             </DialogTitle>
-            <DialogDescription>
-              Điền thông tin để tạo yêu cầu nghỉ phép mới
-            </DialogDescription>
+            <DialogDescription>Điền thông tin để tạo yêu cầu nghỉ phép mới</DialogDescription>
           </DialogHeader>
           <DialogBody>
             <div className="flex flex-col gap-5">
@@ -1416,7 +1415,8 @@ export default function LeavePage() {
                 <div
                   className="flex items-center gap-3 px-4 py-3 rounded-[var(--radius-xl)]"
                   style={{
-                    background: 'linear-gradient(135deg, var(--color-brand-50), var(--color-accent-50))',
+                    background:
+                      'linear-gradient(135deg, var(--color-brand-50), var(--color-accent-50))',
                     border: '1px solid var(--color-brand-100)',
                   }}
                 >
@@ -1524,17 +1524,12 @@ export default function LeavePage() {
                   }
                   disabled={!!ltEditingCd}
                   placeholder="VD: ANNUAL"
-                  className={cn(
-                    inputClasses,
-                    ltEditingCd && 'opacity-50 cursor-not-allowed',
-                  )}
+                  className={cn(inputClasses, ltEditingCd && 'opacity-50 cursor-not-allowed')}
                   style={{
                     ...inputStyle,
                     fontFamily: 'var(--font-family-mono)',
                     letterSpacing: '0.05em',
-                    background: ltEditingCd
-                      ? 'var(--color-bg-secondary)'
-                      : 'var(--color-bg-card)',
+                    background: ltEditingCd ? 'var(--color-bg-secondary)' : 'var(--color-bg-card)',
                   }}
                 />
               </FormField>
@@ -1627,8 +1622,8 @@ export default function LeavePage() {
               </span>
             </DialogTitle>
             <DialogDescription>
-              Bạn có chắc chắn muốn xóa loại nghỉ phép{' '}
-              <strong>{ltDeleting?.lvTypeNm}</strong> ({ltDeleting?.lvTypeCd})?
+              Bạn có chắc chắn muốn xóa loại nghỉ phép <strong>{ltDeleting?.lvTypeNm}</strong> (
+              {ltDeleting?.lvTypeCd})?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

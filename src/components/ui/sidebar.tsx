@@ -65,7 +65,7 @@ export function Sidebar({
       <aside
         className={cn(
           'flex flex-col relative overflow-hidden',
-          'transition-all duration-[var(--transition-slow)]',
+          'transition-all duration-[var(--duration-slow)]',
           'hidden lg:flex',
           collapsed ? 'w-[72px]' : 'w-[260px]',
           mobileOpen && 'fixed inset-y-0 left-0 z-[var(--z-modal)] flex w-[260px] lg:relative',
@@ -169,7 +169,7 @@ export function Sidebar({
               className={cn(
                 'hidden lg:flex h-7 w-7 items-center justify-center rounded-[var(--radius-md)]',
                 'text-white/30 hover:text-white/70 hover:bg-white/[0.06]',
-                'transition-all duration-[var(--transition-fast)]',
+                'transition-all duration-[var(--duration-fast)]',
                 collapsed && 'mx-auto mt-3',
               )}
               aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
@@ -251,7 +251,7 @@ export function SidebarItem({ icon, label, active, onClick }: SidebarItemProps) 
       onClick={onClick}
       className={cn(
         'group flex items-center gap-3 w-full rounded-[var(--radius-lg)] px-3 py-2.5 relative',
-        'transition-all duration-[var(--transition-normal)]',
+        'transition-all duration-[var(--duration-normal)]',
         active ? 'text-white' : 'text-white/45 hover:text-white/75 hover:bg-white/[0.04]',
         collapsed && 'justify-center px-0',
       )}
@@ -291,7 +291,7 @@ export function SidebarItem({ icon, label, active, onClick }: SidebarItemProps) 
       {/* Icon */}
       <span
         className={cn(
-          'shrink-0 [&>svg]:h-[18px] [&>svg]:w-[18px] transition-transform duration-[var(--transition-fast)]',
+          'shrink-0 [&>svg]:h-[18px] [&>svg]:w-[18px] transition-transform duration-[var(--duration-fast)]',
           !active && 'group-hover:scale-110',
         )}
       >

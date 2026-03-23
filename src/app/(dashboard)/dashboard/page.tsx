@@ -140,7 +140,7 @@ export default function DashboardPage() {
         <div className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="h-4 w-4 text-cyan-400" />
+              <Sparkles className="h-4 w-4" style={{ color: 'var(--color-accent-400)' }} />
               <span
                 className="uppercase tracking-[0.15em]"
                 style={{
@@ -155,7 +155,7 @@ export default function DashboardPage() {
             <h1
               style={{
                 fontFamily: 'var(--font-family-heading)',
-                fontSize: 'clamp(1.875rem, 4vw, 2.75rem)',
+                fontSize: 'var(--font-size-fluid-hero)',
                 fontWeight: 'var(--font-weight-bold)',
                 lineHeight: 'var(--line-height-tight)',
                 color: 'var(--color-text-inverse)',
@@ -195,7 +195,7 @@ export default function DashboardPage() {
               border: '1px solid rgba(255,255,255,0.08)',
             }}
           >
-            <Clock className="h-4 w-4 text-cyan-400" />
+            <Clock className="h-4 w-4" style={{ color: 'var(--color-accent-400)' }} />
             <span
               style={{
                 color: 'var(--color-text-inverse)',
@@ -247,7 +247,7 @@ export default function DashboardPage() {
             onClick={() => router.push(card.href)}
             className={cn(
               'group relative text-left rounded-[var(--radius-2xl)] p-5',
-              'transition-all duration-[var(--transition-normal)]',
+              'transition-all duration-[var(--duration-normal)]',
               'hover:shadow-[var(--shadow-xl)] hover:-translate-y-1',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
               'animate-fade-up',
@@ -469,18 +469,18 @@ export default function DashboardPage() {
             <div className="flex flex-col gap-3">
               {(() => {
                 const maxCount = Math.max(...emplStats.byDepartment.map((d) => d.count), 0);
+                const colors = [
+                  'var(--color-brand-500)',
+                  'var(--color-accent-500)',
+                  'var(--color-success-500)',
+                  'var(--color-info-500)',
+                  'var(--color-warning-500)',
+                ];
                 return emplStats.byDepartment
                 .filter((d) => d.count > 0)
                 .sort((a, b) => b.count - a.count)
                 .map((dept, i) => {
                   const barPercent = maxCount > 0 ? (dept.count / maxCount) * 100 : 0;
-                  const colors = [
-                    'var(--color-brand-500)',
-                    'var(--color-accent-500)',
-                    'var(--color-success-500)',
-                    'var(--color-info-500)',
-                    'var(--color-warning-500)',
-                  ];
                   return (
                     <div key={dept.deptNm}>
                       <div className="flex items-center justify-between mb-1.5">
@@ -582,7 +582,7 @@ export default function DashboardPage() {
               onClick={() => router.push(action.href)}
               className={cn(
                 'group text-left rounded-[var(--radius-2xl)] p-4',
-                'transition-all duration-[var(--transition-normal)]',
+                'transition-all duration-[var(--duration-normal)]',
                 'hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
                 'animate-fade-up',

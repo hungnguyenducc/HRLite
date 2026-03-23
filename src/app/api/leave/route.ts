@@ -37,12 +37,16 @@ async function listHandler(req: AuthenticatedRequest) {
         select: { id: true },
       });
       if (!employee) {
-        return NextResponse.json({ success: true, data: [], meta: { page, limit, total: 0, totalPages: 0 } });
+        return NextResponse.json({
+          success: true,
+          data: [],
+          meta: { page, limit, total: 0, totalPages: 0 },
+        });
       }
       where.emplId = employee.id;
     } else {
       if (emplId) where.emplId = emplId;
-      if (deptId) where.employee = { ...where.employee as object, deptId };
+      if (deptId) where.employee = { ...(where.employee as object), deptId };
     }
 
     if (status) where.aprvlSttsCd = status;

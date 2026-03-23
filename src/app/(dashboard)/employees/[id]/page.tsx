@@ -12,8 +12,6 @@ import {
   Briefcase,
   Link2,
   Unlink,
-  Clock,
-  CalendarDays,
 } from 'lucide-react';
 import {
   Badge,
@@ -92,13 +90,17 @@ function AttendanceTab({ emplId }: { emplId: string }) {
   const [records, setRecords] = React.useState<AtndRecord[]>([]);
   const [loading, setLoading] = React.useState(true);
   const now = new Date();
-  const [month, setMonth] = React.useState(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`);
+  const [month, setMonth] = React.useState(
+    `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`,
+  );
 
   const fetchRecords = React.useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({ limit: '50', month, sortOrder: 'asc' });
-      const res = await fetch(`/api/attendance?emplId=${emplId}&${params.toString()}`, { credentials: 'include' });
+      const res = await fetch(`/api/attendance?emplId=${emplId}&${params.toString()}`, {
+        credentials: 'include',
+      });
       if (res.ok) {
         const json = await res.json();
         if (json.success) setRecords(json.data);
@@ -110,7 +112,9 @@ function AttendanceTab({ emplId }: { emplId: string }) {
     }
   }, [emplId, month, addToast]);
 
-  React.useEffect(() => { fetchRecords(); }, [fetchRecords]);
+  React.useEffect(() => {
+    fetchRecords();
+  }, [fetchRecords]);
 
   const fmtTime = (iso: string | null) => {
     if (!iso) return '—';
@@ -126,7 +130,13 @@ function AttendanceTab({ emplId }: { emplId: string }) {
     <Card variant="default">
       <CardContent>
         <div className="flex items-center justify-between mb-4">
-          <h3 style={{ fontSize: 'var(--font-size-base)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>
+          <h3
+            style={{
+              fontSize: 'var(--font-size-base)',
+              fontWeight: 'var(--font-weight-semibold)',
+              color: 'var(--color-text-primary)',
+            }}
+          >
             Chấm công tháng
           </h3>
           <input
@@ -134,7 +144,11 @@ function AttendanceTab({ emplId }: { emplId: string }) {
             value={month}
             onChange={(e) => setMonth(e.target.value)}
             className="rounded-[var(--radius-lg)] border px-3 py-1.5"
-            style={{ borderColor: 'var(--color-border)', fontSize: 'var(--font-size-sm)', background: 'var(--color-bg-primary)' }}
+            style={{
+              borderColor: 'var(--color-border)',
+              fontSize: 'var(--font-size-sm)',
+              background: 'var(--color-bg-primary)',
+            }}
           />
         </div>
 
@@ -143,42 +157,95 @@ function AttendanceTab({ emplId }: { emplId: string }) {
             { label: 'Có mặt', value: totalPresent, color: 'var(--color-success-600)' },
             { label: 'Đi trễ', value: totalLate, color: 'var(--color-warning-600)' },
             { label: 'Vắng', value: totalAbsent, color: 'var(--color-error-600)' },
-            { label: 'Tổng giờ', value: Math.round(totalHours * 10) / 10, color: 'var(--color-brand-600)' },
+            {
+              label: 'Tổng giờ',
+              value: Math.round(totalHours * 10) / 10,
+              color: 'var(--color-brand-600)',
+            },
           ].map((s) => (
-            <div key={s.label} className="text-center p-2 rounded-[var(--radius-lg)]" style={{ background: 'var(--color-bg-secondary)' }}>
-              <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-tertiary)' }}>{s.label}</p>
-              <p style={{ fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-bold)', color: s.color, fontFamily: 'var(--font-family-mono)' }}>{s.value}</p>
+            <div
+              key={s.label}
+              className="text-center p-2 rounded-[var(--radius-lg)]"
+              style={{ background: 'var(--color-bg-secondary)' }}
+            >
+              <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-tertiary)' }}>
+                {s.label}
+              </p>
+              <p
+                style={{
+                  fontSize: 'var(--font-size-lg)',
+                  fontWeight: 'var(--font-weight-bold)',
+                  color: s.color,
+                  fontFamily: 'var(--font-family-mono)',
+                }}
+              >
+                {s.value}
+              </p>
             </div>
           ))}
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="h-6 w-6 animate-spin rounded-full border-[3px] border-t-transparent" style={{ borderColor: 'var(--color-brand-300)', borderTopColor: 'transparent' }} />
+            <div
+              className="h-6 w-6 animate-spin rounded-full border-[3px] border-t-transparent"
+              style={{ borderColor: 'var(--color-brand-300)', borderTopColor: 'transparent' }}
+            />
           </div>
         ) : records.length === 0 ? (
-          <p className="text-center py-8" style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-tertiary)' }}>Không có dữ liệu chấm công</p>
+          <p
+            className="text-center py-8"
+            style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-tertiary)' }}
+          >
+            Không có dữ liệu chấm công
+          </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full" style={{ fontSize: 'var(--font-size-sm)' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
                   {['Ngày', 'Giờ vào', 'Giờ ra', 'Số giờ', 'Trạng thái', 'Ghi chú'].map((h) => (
-                    <th key={h} className="text-left py-2 px-2" style={{ color: 'var(--color-text-tertiary)', fontWeight: 'var(--font-weight-medium)' }}>{h}</th>
+                    <th
+                      key={h}
+                      className="text-left py-2 px-2"
+                      style={{
+                        color: 'var(--color-text-tertiary)',
+                        fontWeight: 'var(--font-weight-medium)',
+                      }}
+                    >
+                      {h}
+                    </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {records.map((r) => {
-                  const cfg = atndStatusConfig[r.atndSttsCd] ?? { label: r.atndSttsCd, variant: 'default' };
+                  const cfg = atndStatusConfig[r.atndSttsCd] ?? {
+                    label: r.atndSttsCd,
+                    variant: 'default',
+                  };
                   return (
                     <tr key={r.id} style={{ borderBottom: '1px solid var(--color-border-light)' }}>
-                      <td className="py-2 px-2" style={{ fontFamily: 'var(--font-family-mono)' }}>{r.atndDt.slice(5)}</td>
-                      <td className="py-2 px-2" style={{ fontFamily: 'var(--font-family-mono)' }}>{fmtTime(r.chkInTm)}</td>
-                      <td className="py-2 px-2" style={{ fontFamily: 'var(--font-family-mono)' }}>{fmtTime(r.chkOutTm)}</td>
-                      <td className="py-2 px-2" style={{ fontFamily: 'var(--font-family-mono)' }}>{r.workHour ?? '—'}</td>
-                      <td className="py-2 px-2"><Badge variant={cfg.variant as 'success' | 'warning' | 'error' | 'default'}>{cfg.label}</Badge></td>
-                      <td className="py-2 px-2" style={{ color: 'var(--color-text-tertiary)' }}>{r.rmk ?? ''}</td>
+                      <td className="py-2 px-2" style={{ fontFamily: 'var(--font-family-mono)' }}>
+                        {r.atndDt.slice(5)}
+                      </td>
+                      <td className="py-2 px-2" style={{ fontFamily: 'var(--font-family-mono)' }}>
+                        {fmtTime(r.chkInTm)}
+                      </td>
+                      <td className="py-2 px-2" style={{ fontFamily: 'var(--font-family-mono)' }}>
+                        {fmtTime(r.chkOutTm)}
+                      </td>
+                      <td className="py-2 px-2" style={{ fontFamily: 'var(--font-family-mono)' }}>
+                        {r.workHour ?? '—'}
+                      </td>
+                      <td className="py-2 px-2">
+                        <Badge variant={cfg.variant as 'success' | 'warning' | 'error' | 'default'}>
+                          {cfg.label}
+                        </Badge>
+                      </td>
+                      <td className="py-2 px-2" style={{ color: 'var(--color-text-tertiary)' }}>
+                        {r.rmk ?? ''}
+                      </td>
                     </tr>
                   );
                 })}
@@ -248,14 +315,19 @@ function LeaveTab({ emplId, emplNm }: { emplId: string; emplNm: string }) {
     }
   }, [emplId, addToast]);
 
-  React.useEffect(() => { fetchData(); }, [fetchData]);
+  React.useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   if (loading) {
     return (
       <Card variant="default">
         <CardContent>
           <div className="flex items-center justify-center py-12">
-            <div className="h-6 w-6 animate-spin rounded-full border-[3px] border-t-transparent" style={{ borderColor: 'var(--color-brand-300)', borderTopColor: 'transparent' }} />
+            <div
+              className="h-6 w-6 animate-spin rounded-full border-[3px] border-t-transparent"
+              style={{ borderColor: 'var(--color-brand-300)', borderTopColor: 'transparent' }}
+            />
           </div>
         </CardContent>
       </Card>
@@ -268,17 +340,44 @@ function LeaveTab({ emplId, emplNm }: { emplId: string; emplNm: string }) {
       {balances.length > 0 && (
         <Card variant="default">
           <CardContent>
-            <h3 className="mb-3" style={{ fontSize: 'var(--font-size-base)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>
+            <h3
+              className="mb-3"
+              style={{
+                fontSize: 'var(--font-size-base)',
+                fontWeight: 'var(--font-weight-semibold)',
+                color: 'var(--color-text-primary)',
+              }}
+            >
               Số phép còn lại — {emplNm}
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {balances.map((b) => (
-                <div key={b.lvTypeCd} className="p-3 rounded-[var(--radius-lg)]" style={{ background: 'var(--color-bg-secondary)' }}>
-                  <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-tertiary)' }}>{b.lvTypeNm}</p>
-                  <p style={{ fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-brand-600)', fontFamily: 'var(--font-family-mono)' }}>
+                <div
+                  key={b.lvTypeCd}
+                  className="p-3 rounded-[var(--radius-lg)]"
+                  style={{ background: 'var(--color-bg-secondary)' }}
+                >
+                  <p
+                    style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-tertiary)' }}
+                  >
+                    {b.lvTypeNm}
+                  </p>
+                  <p
+                    style={{
+                      fontSize: 'var(--font-size-lg)',
+                      fontWeight: 'var(--font-weight-bold)',
+                      color: 'var(--color-brand-600)',
+                      fontFamily: 'var(--font-family-mono)',
+                    }}
+                  >
                     {b.remainingDays !== null ? b.remainingDays : '∞'}
                   </p>
-                  <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-quaternary)' }}>
+                  <p
+                    style={{
+                      fontSize: 'var(--font-size-xs)',
+                      color: 'var(--color-text-quaternary)',
+                    }}
+                  >
                     Đã dùng: {b.usedDays} / {b.maxDays ?? '∞'}
                   </p>
                 </div>
@@ -291,32 +390,81 @@ function LeaveTab({ emplId, emplNm }: { emplId: string; emplNm: string }) {
       {/* Leave history */}
       <Card variant="default">
         <CardContent>
-          <h3 className="mb-3" style={{ fontSize: 'var(--font-size-base)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>
+          <h3
+            className="mb-3"
+            style={{
+              fontSize: 'var(--font-size-base)',
+              fontWeight: 'var(--font-weight-semibold)',
+              color: 'var(--color-text-primary)',
+            }}
+          >
             Lịch sử yêu cầu nghỉ phép
           </h3>
           {records.length === 0 ? (
-            <p className="text-center py-8" style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-tertiary)' }}>Chưa có yêu cầu nghỉ phép</p>
+            <p
+              className="text-center py-8"
+              style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-tertiary)' }}
+            >
+              Chưa có yêu cầu nghỉ phép
+            </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full" style={{ fontSize: 'var(--font-size-sm)' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
-                    {['Loại', 'Từ ngày', 'Đến ngày', 'Số ngày', 'Trạng thái', 'Ngày tạo'].map((h) => (
-                      <th key={h} className="text-left py-2 px-2" style={{ color: 'var(--color-text-tertiary)', fontWeight: 'var(--font-weight-medium)' }}>{h}</th>
-                    ))}
+                    {['Loại', 'Từ ngày', 'Đến ngày', 'Số ngày', 'Trạng thái', 'Ngày tạo'].map(
+                      (h) => (
+                        <th
+                          key={h}
+                          className="text-left py-2 px-2"
+                          style={{
+                            color: 'var(--color-text-tertiary)',
+                            fontWeight: 'var(--font-weight-medium)',
+                          }}
+                        >
+                          {h}
+                        </th>
+                      ),
+                    )}
                   </tr>
                 </thead>
                 <tbody>
                   {records.map((r) => {
-                    const cfg = leaveStatusConfig[r.aprvlSttsCd] ?? { label: r.aprvlSttsCd, variant: 'default' };
+                    const cfg = leaveStatusConfig[r.aprvlSttsCd] ?? {
+                      label: r.aprvlSttsCd,
+                      variant: 'default',
+                    };
                     return (
-                      <tr key={r.id} style={{ borderBottom: '1px solid var(--color-border-light)' }}>
+                      <tr
+                        key={r.id}
+                        style={{ borderBottom: '1px solid var(--color-border-light)' }}
+                      >
                         <td className="py-2 px-2">{r.leaveType.lvTypeNm}</td>
-                        <td className="py-2 px-2" style={{ fontFamily: 'var(--font-family-mono)' }}>{r.startDt}</td>
-                        <td className="py-2 px-2" style={{ fontFamily: 'var(--font-family-mono)' }}>{r.endDt}</td>
-                        <td className="py-2 px-2" style={{ fontFamily: 'var(--font-family-mono)' }}>{r.lvDays}</td>
-                        <td className="py-2 px-2"><Badge variant={cfg.variant as 'success' | 'warning' | 'error' | 'default'}>{cfg.label}</Badge></td>
-                        <td className="py-2 px-2" style={{ fontFamily: 'var(--font-family-mono)', color: 'var(--color-text-tertiary)' }}>{r.creatDt.split('T')[0]}</td>
+                        <td className="py-2 px-2" style={{ fontFamily: 'var(--font-family-mono)' }}>
+                          {r.startDt}
+                        </td>
+                        <td className="py-2 px-2" style={{ fontFamily: 'var(--font-family-mono)' }}>
+                          {r.endDt}
+                        </td>
+                        <td className="py-2 px-2" style={{ fontFamily: 'var(--font-family-mono)' }}>
+                          {r.lvDays}
+                        </td>
+                        <td className="py-2 px-2">
+                          <Badge
+                            variant={cfg.variant as 'success' | 'warning' | 'error' | 'default'}
+                          >
+                            {cfg.label}
+                          </Badge>
+                        </td>
+                        <td
+                          className="py-2 px-2"
+                          style={{
+                            fontFamily: 'var(--font-family-mono)',
+                            color: 'var(--color-text-tertiary)',
+                          }}
+                        >
+                          {r.creatDt.split('T')[0]}
+                        </td>
                       </tr>
                     );
                   })}

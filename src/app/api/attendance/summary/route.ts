@@ -8,7 +8,9 @@ async function handler(req: AuthenticatedRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const now = new Date();
-    const month = searchParams.get('month') ?? `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const month =
+      searchParams.get('month') ??
+      `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     const deptId = searchParams.get('deptId') ?? undefined;
 
     const [yearStr, monStr] = month.split('-');
@@ -54,10 +56,18 @@ async function handler(req: AuthenticatedRequest) {
 
       for (const a of e.attendances) {
         switch (a.atndSttsCd) {
-          case 'PRESENT': presentDays++; break;
-          case 'LATE': lateDays++; break;
-          case 'HALF_DAY': halfDays++; break;
-          case 'ABSENT': absentDays++; break;
+          case 'PRESENT':
+            presentDays++;
+            break;
+          case 'LATE':
+            lateDays++;
+            break;
+          case 'HALF_DAY':
+            halfDays++;
+            break;
+          case 'ABSENT':
+            absentDays++;
+            break;
         }
         if (a.workHour) totalWorkHours += Number(a.workHour);
       }

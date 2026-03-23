@@ -342,12 +342,16 @@ export default function LeavePage() {
         addToast({
           variant: 'error',
           title: 'Th\u1EA5t b\u1EA1i',
-          description: json.error || 'Kh\u00F4ng th\u1EC3 t\u1EA1o y\u00EAu c\u1EA7u ngh\u1EC9 ph\u00E9p.',
+          description:
+            json.error || 'Kh\u00F4ng th\u1EC3 t\u1EA1o y\u00EAu c\u1EA7u ngh\u1EC9 ph\u00E9p.',
         });
         return;
       }
 
-      addToast({ variant: 'success', title: '\u0110\u00E3 t\u1EA1o y\u00EAu c\u1EA7u ngh\u1EC9 ph\u00E9p' });
+      addToast({
+        variant: 'success',
+        title: '\u0110\u00E3 t\u1EA1o y\u00EAu c\u1EA7u ngh\u1EC9 ph\u00E9p',
+      });
       setFormOpen(false);
       fetchLeaves();
       fetchStats();
@@ -380,7 +384,11 @@ export default function LeavePage() {
         return;
       }
 
-      const actionLabels = { approve: '\u0110\u00E3 duy\u1EC7t', reject: '\u0110\u00E3 t\u1EEB ch\u1ED1i', cancel: '\u0110\u00E3 h\u1EE7y' };
+      const actionLabels = {
+        approve: '\u0110\u00E3 duy\u1EC7t',
+        reject: '\u0110\u00E3 t\u1EEB ch\u1ED1i',
+        cancel: '\u0110\u00E3 h\u1EE7y',
+      };
       addToast({ variant: 'success', title: actionLabels[action] });
       fetchLeaves();
       fetchStats();
@@ -484,7 +492,10 @@ export default function LeavePage() {
         return;
       }
 
-      addToast({ variant: 'success', title: '\u0110\u00E3 x\u00F3a lo\u1EA1i ngh\u1EC9 ph\u00E9p' });
+      addToast({
+        variant: 'success',
+        title: '\u0110\u00E3 x\u00F3a lo\u1EA1i ngh\u1EC9 ph\u00E9p',
+      });
       setLtDeleteOpen(false);
       setLtDeleting(null);
       fetchLeaveTypes();
@@ -860,7 +871,10 @@ export default function LeavePage() {
                           setPage(1);
                         }}
                       >
-                        <SelectTrigger className="w-[150px]" aria-label="L\u1ECDc tr\u1EA1ng th\u00E1i">
+                        <SelectTrigger
+                          className="w-[150px]"
+                          aria-label="L\u1ECDc tr\u1EA1ng th\u00E1i"
+                        >
                           <SelectValue placeholder="Tr\u1EA1ng th\u00E1i" />
                         </SelectTrigger>
                         <SelectContent>
@@ -879,7 +893,10 @@ export default function LeavePage() {
                           setPage(1);
                         }}
                       >
-                        <SelectTrigger className="w-[170px]" aria-label="L\u1ECDc lo\u1EA1i ngh\u1EC9">
+                        <SelectTrigger
+                          className="w-[170px]"
+                          aria-label="L\u1ECDc lo\u1EA1i ngh\u1EC9"
+                        >
                           <SelectValue placeholder="Lo\u1EA1i ngh\u1EC9 ph\u00E9p" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1017,7 +1034,8 @@ export default function LeavePage() {
           <DialogHeader>
             <DialogTitle>T\u1EA1o y\u00EAu c\u1EA7u ngh\u1EC9 ph\u00E9p</DialogTitle>
             <DialogDescription>
-              \u0110i\u1EC1n th\u00F4ng tin \u0111\u1EC3 t\u1EA1o y\u00EAu c\u1EA7u ngh\u1EC9 ph\u00E9p m\u1EDBi
+              \u0110i\u1EC1n th\u00F4ng tin \u0111\u1EC3 t\u1EA1o y\u00EAu c\u1EA7u ngh\u1EC9
+              ph\u00E9p m\u1EDBi
             </DialogDescription>
           </DialogHeader>
           <DialogBody>
@@ -1096,14 +1114,13 @@ export default function LeavePage() {
                       fontWeight: 'var(--font-weight-medium)',
                     }}
                   >
-                    Ng\u00E0y b\u1EAFt \u0111\u1EA7u <span className="text-[var(--color-error-500)]">*</span>
+                    Ng\u00E0y b\u1EAFt \u0111\u1EA7u{' '}
+                    <span className="text-[var(--color-error-500)]">*</span>
                   </label>
                   <input
                     type="date"
                     value={formData.startDt}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, startDt: e.target.value }))
-                    }
+                    onChange={(e) => setFormData((prev) => ({ ...prev, startDt: e.target.value }))}
                     className={cn(
                       'flex h-10 w-full rounded-[var(--radius-lg)] border px-3 py-2',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
@@ -1124,7 +1141,8 @@ export default function LeavePage() {
                       fontWeight: 'var(--font-weight-medium)',
                     }}
                   >
-                    Ng\u00E0y k\u1EBFt th\u00FAc <span className="text-[var(--color-error-500)]">*</span>
+                    Ng\u00E0y k\u1EBFt th\u00FAc{' '}
+                    <span className="text-[var(--color-error-500)]">*</span>
                   </label>
                   <input
                     type="date"
@@ -1145,7 +1163,7 @@ export default function LeavePage() {
               </div>
 
               {/* Calculated days display */}
-              {(formData.startDt && formData.endDt) && (
+              {formData.startDt && formData.endDt && (
                 <div
                   className="flex items-center gap-2 px-3 py-2 rounded-[var(--radius-lg)]"
                   style={{
@@ -1208,7 +1226,9 @@ export default function LeavePage() {
         <DialogContent size="md">
           <DialogHeader>
             <DialogTitle>
-              {ltEditingCd ? 'S\u1EEDa lo\u1EA1i ngh\u1EC9 ph\u00E9p' : 'Th\u00EAm lo\u1EA1i ngh\u1EC9 ph\u00E9p m\u1EDBi'}
+              {ltEditingCd
+                ? 'S\u1EEDa lo\u1EA1i ngh\u1EC9 ph\u00E9p'
+                : 'Th\u00EAm lo\u1EA1i ngh\u1EC9 ph\u00E9p m\u1EDBi'}
             </DialogTitle>
             <DialogDescription>
               {ltEditingCd
@@ -1245,7 +1265,9 @@ export default function LeavePage() {
                   )}
                   style={{
                     borderColor: 'var(--color-border)',
-                    background: ltEditingCd ? 'var(--color-bg-secondary)' : 'var(--color-bg-primary)',
+                    background: ltEditingCd
+                      ? 'var(--color-bg-secondary)'
+                      : 'var(--color-bg-primary)',
                     fontSize: 'var(--font-size-sm)',
                     color: 'var(--color-text-primary)',
                   }}
@@ -1266,9 +1288,7 @@ export default function LeavePage() {
                 <input
                   type="text"
                   value={ltFormData.lvTypeNm}
-                  onChange={(e) =>
-                    setLtFormData((prev) => ({ ...prev, lvTypeNm: e.target.value }))
-                  }
+                  onChange={(e) => setLtFormData((prev) => ({ ...prev, lvTypeNm: e.target.value }))}
                   placeholder="VD: Ngh\u1EC9 ph\u00E9p n\u0103m"
                   className={cn(
                     'flex h-10 w-full rounded-[var(--radius-lg)] border px-3 py-2',

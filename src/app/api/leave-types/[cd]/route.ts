@@ -50,7 +50,9 @@ async function deleteHandler(
 
     const usageCount = await prisma.leaveRequest.count({ where: { lvTypeCd: cd } });
     if (usageCount > 0) {
-      throw new ConflictError(`Không thể xóa. Có ${usageCount} yêu cầu nghỉ phép đang sử dụng loại này.`);
+      throw new ConflictError(
+        `Không thể xóa. Có ${usageCount} yêu cầu nghỉ phép đang sử dụng loại này.`,
+      );
     }
 
     await prisma.leaveType.delete({ where: { lvTypeCd: cd } });

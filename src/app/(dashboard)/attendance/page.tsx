@@ -1,16 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Clock,
-  Users,
-  UserX,
-  AlertTriangle,
-  LogOut,
-  Plus,
-  Pencil,
-  Trash2,
-} from 'lucide-react';
+import { Clock, Users, UserX, AlertTriangle, LogOut, Plus, Pencil, Trash2 } from 'lucide-react';
 import {
   DataTable,
   Badge,

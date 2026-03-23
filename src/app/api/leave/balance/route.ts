@@ -60,7 +60,9 @@ async function handler(req: AuthenticatedRequest) {
     });
 
     const balances = leaveTypes.map((lt) => {
-      const approved = usage.find((u) => u.lvTypeCd === lt.lvTypeCd && u.aprvlSttsCd === 'APPROVED');
+      const approved = usage.find(
+        (u) => u.lvTypeCd === lt.lvTypeCd && u.aprvlSttsCd === 'APPROVED',
+      );
       const pending = usage.find((u) => u.lvTypeCd === lt.lvTypeCd && u.aprvlSttsCd === 'PENDING');
       const usedDays = Number(approved?._sum.lvDays || 0);
       const pendingDays = Number(pending?._sum.lvDays || 0);

@@ -1,12 +1,6 @@
 import { z } from 'zod';
 
-export const attendanceStatusEnum = z.enum([
-  'PRESENT',
-  'LATE',
-  'HALF_DAY',
-  'ABSENT',
-  'HOLIDAY',
-]);
+export const attendanceStatusEnum = z.enum(['PRESENT', 'LATE', 'HALF_DAY', 'ABSENT', 'HOLIDAY']);
 
 // Create attendance (Admin manual entry)
 export const createAttendanceSchema = z

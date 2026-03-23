@@ -47,7 +47,9 @@ export function getTodayRange(): { start: Date; end: Date } {
   const now = new Date();
   // Calculate start of today in Vietnam timezone
   const vnNow = new Date(now.getTime() + VN_OFFSET_MS);
-  const startUtc = new Date(Date.UTC(vnNow.getUTCFullYear(), vnNow.getUTCMonth(), vnNow.getUTCDate()) - VN_OFFSET_MS);
+  const startUtc = new Date(
+    Date.UTC(vnNow.getUTCFullYear(), vnNow.getUTCMonth(), vnNow.getUTCDate()) - VN_OFFSET_MS,
+  );
   const endUtc = new Date(startUtc.getTime() + 24 * 60 * 60 * 1000);
   return { start: startUtc, end: endUtc };
 }

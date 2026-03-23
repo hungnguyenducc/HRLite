@@ -87,7 +87,7 @@ export async function checkLeaveBalance(
 
   const used = Number(approvedAgg._sum.lvDays || 0);
   const pending = Number(pendingAgg._sum.lvDays || 0);
-  const remaining = leaveType.maxDays - used - pending;
+  const remaining = Math.max(0, leaveType.maxDays - used - pending);
 
   return {
     available: remaining >= requestedDays,

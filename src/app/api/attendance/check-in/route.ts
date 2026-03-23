@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import prisma from '@/lib/db';
 import { withAuth, AuthenticatedRequest } from '@/lib/auth/middleware';
 import { handleApiError } from '@/lib/errors';
@@ -67,6 +68,10 @@ async function handler(req: AuthenticatedRequest) {
       201,
     );
   } catch (error) {
+    // Handle unique constraint violation (race condition: double check-in)
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      return errorResponse('Bạn đã check-in hôm nay rồi.', 409);
+    }
     return handleApiError(error);
   }
 }

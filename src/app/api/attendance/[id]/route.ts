@@ -47,6 +47,9 @@ async function updateHandler(
     const finalInTm = (data.chkInTm as Date | null | undefined) ?? existing.chkInTm;
     const finalOutTm = (data.chkOutTm as Date | null | undefined) ?? existing.chkOutTm;
     if (finalInTm && finalOutTm) {
+      if (finalOutTm <= finalInTm) {
+        return errorResponse('Giờ ra phải sau giờ vào.', 400);
+      }
       data.workHour = calculateWorkHours(finalInTm, finalOutTm);
     } else {
       data.workHour = null;

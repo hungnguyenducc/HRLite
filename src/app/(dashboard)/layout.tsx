@@ -114,7 +114,8 @@ function TopHeader() {
       className="flex h-16 shrink-0 items-center justify-between border-b px-4 lg:px-8"
       style={{
         borderColor: 'var(--color-border)',
-        background: 'var(--color-bg-primary)',
+        background: 'rgba(248, 250, 252, 0.8)',
+        backdropFilter: 'blur(12px)',
       }}
     >
       <div className="flex items-center gap-3">
@@ -132,16 +133,15 @@ function TopHeader() {
           aria-expanded={dropdownOpen}
           aria-haspopup="true"
         >
-          {/* Serif initial avatar */}
+          {/* Avatar */}
           <div
             className="flex h-9 w-9 items-center justify-center rounded-full"
             style={{
-              background: 'var(--color-brand-100)',
-              color: 'var(--color-brand-700)',
-              fontFamily: 'var(--font-family-serif)',
-              fontSize: 'var(--font-size-base)',
+              background: 'linear-gradient(135deg, var(--color-brand-500), var(--color-accent-500))',
+              color: '#ffffff',
+              fontFamily: 'var(--font-family-heading)',
+              fontSize: 'var(--font-size-sm)',
               fontWeight: 'var(--font-weight-bold)',
-              fontStyle: 'italic',
             }}
           >
             {initial}
@@ -276,8 +276,8 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
             className="text-[var(--color-text-secondary)]"
             style={{
               fontSize: 'var(--font-size-sm)',
-              fontFamily: 'var(--font-family-serif)',
-              fontStyle: 'italic',
+              fontFamily: 'var(--font-family-heading)',
+              fontWeight: 'var(--font-weight-medium)',
             }}
           >
             Đang tải...
@@ -293,8 +293,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
       <SidebarContent>
         <TopHeader />
         <div
-          className="flex-1 overflow-y-auto p-4 lg:p-8 bg-noise"
-          style={{ background: 'var(--color-bg-primary)' }}
+          className="flex-1 overflow-y-auto p-4 lg:p-8 bg-mesh"
         >
           <div className="relative z-[1]">{children}</div>
         </div>

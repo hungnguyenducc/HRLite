@@ -84,7 +84,6 @@ export default function DashboardPage() {
     year: 'numeric',
   });
 
-  // Workforce ratio for visual bar
   const workingPercent =
     stats.totalEmployees > 0 ? Math.round((stats.activeEmployees / stats.totalEmployees) * 100) : 0;
 
@@ -106,31 +105,40 @@ export default function DashboardPage() {
         className="relative overflow-hidden rounded-[var(--radius-2xl)] p-8 md:p-10 mb-8"
         style={{
           background:
-            'linear-gradient(135deg, var(--color-bg-inverse) 0%, var(--color-brand-900) 50%, var(--color-brand-700) 100%)',
+            'linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #312e81 70%, #4338ca 100%)',
         }}
       >
-        {/* Decorative circles */}
+        {/* Gradient mesh orbs */}
         <div
-          className="absolute -top-20 -right-20 w-64 h-64 rounded-full opacity-10"
-          style={{ background: 'var(--color-accent-400)' }}
+          className="absolute -top-24 -right-24 w-72 h-72 rounded-full opacity-25"
+          style={{
+            background: 'radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, transparent 70%)',
+            filter: 'blur(40px)',
+          }}
         />
         <div
-          className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full opacity-[0.07]"
-          style={{ background: 'var(--color-brand-300)' }}
+          className="absolute -bottom-20 -left-20 w-56 h-56 rounded-full opacity-15"
+          style={{
+            background: 'radial-gradient(circle, rgba(6, 182, 212, 0.5) 0%, transparent 70%)',
+            filter: 'blur(30px)',
+          }}
         />
         <div
-          className="absolute top-1/2 right-1/4 w-32 h-32 rounded-full opacity-[0.05]"
-          style={{ background: 'var(--color-bg-card)' }}
+          className="absolute top-1/3 right-1/4 w-32 h-32 rounded-full opacity-10"
+          style={{
+            background: 'radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, transparent 70%)',
+            filter: 'blur(20px)',
+          }}
         />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="h-4 w-4" style={{ color: 'var(--color-accent-400)' }} />
+              <Sparkles className="h-4 w-4 text-cyan-400" />
               <span
                 className="uppercase tracking-[0.15em]"
                 style={{
-                  color: 'var(--color-accent-400)',
+                  color: 'rgba(34, 211, 238, 0.9)',
                   fontSize: 'var(--font-size-xs)',
                   fontWeight: 'var(--font-weight-semibold)',
                 }}
@@ -140,22 +148,30 @@ export default function DashboardPage() {
             </div>
             <h1
               style={{
-                fontFamily: 'var(--font-family-serif)',
+                fontFamily: 'var(--font-family-heading)',
                 fontSize: 'clamp(1.875rem, 4vw, 2.75rem)',
                 fontWeight: 'var(--font-weight-bold)',
-                fontStyle: 'italic',
                 lineHeight: 'var(--line-height-tight)',
-                color: 'var(--color-text-inverse)',
+                color: '#ffffff',
+                letterSpacing: '-0.02em',
               }}
             >
               {greeting},
               <br />
-              <span style={{ color: 'var(--color-accent-400)' }}>{displayName}</span>
+              <span
+                style={{
+                  background: 'linear-gradient(90deg, #818cf8, #22d3ee)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                {displayName}
+              </span>
             </h1>
             <p
               className="mt-3 max-w-md"
               style={{
-                color: 'rgba(250, 247, 242, 0.6)',
+                color: 'rgba(248, 250, 252, 0.5)',
                 fontSize: 'var(--font-size-sm)',
                 lineHeight: 'var(--line-height-relaxed)',
               }}
@@ -167,12 +183,16 @@ export default function DashboardPage() {
           {/* Time widget */}
           <div
             className="flex items-center gap-3 px-5 py-3 rounded-[var(--radius-xl)]"
-            style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(8px)' }}
+            style={{
+              background: 'rgba(255,255,255,0.06)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}
           >
-            <Clock className="h-4 w-4" style={{ color: 'var(--color-accent-400)' }} />
+            <Clock className="h-4 w-4 text-cyan-400" />
             <span
               style={{
-                color: 'var(--color-text-inverse)',
+                color: '#ffffff',
                 fontSize: 'var(--font-size-sm)',
                 fontWeight: 'var(--font-weight-medium)',
                 fontFamily: 'var(--font-family-mono)',
@@ -191,32 +211,28 @@ export default function DashboardPage() {
             label: 'Tổng nhân viên',
             value: stats.totalEmployees,
             icon: <Users className="h-5 w-5" />,
-            color: 'var(--color-brand-500)',
-            bg: 'var(--color-brand-50)',
+            gradient: 'linear-gradient(135deg, var(--color-brand-500), var(--color-brand-600))',
             href: '/employees',
           },
           {
             label: 'Đang làm việc',
             value: stats.activeEmployees,
             icon: <UserCheck className="h-5 w-5" />,
-            color: 'var(--color-success-500)',
-            bg: 'var(--color-success-50)',
+            gradient: 'linear-gradient(135deg, var(--color-success-500), #059669)',
             href: '/employees?status=WORKING',
           },
           {
             label: 'Nghỉ phép hôm nay',
             value: stats.onLeaveToday,
             icon: <CalendarDays className="h-5 w-5" />,
-            color: 'var(--color-warning-500)',
-            bg: 'var(--color-warning-50)',
+            gradient: 'linear-gradient(135deg, var(--color-warning-500), #d97706)',
             href: '/leave',
           },
           {
             label: 'Phòng ban',
             value: stats.departments,
             icon: <Building2 className="h-5 w-5" />,
-            color: 'var(--color-info-500)',
-            bg: 'var(--color-info-50)',
+            gradient: 'linear-gradient(135deg, var(--color-accent-500), var(--color-accent-600))',
             href: '/departments',
           },
         ].map((card, i) => (
@@ -224,28 +240,25 @@ export default function DashboardPage() {
             key={card.label}
             onClick={() => router.push(card.href)}
             className={cn(
-              'group relative text-left rounded-[var(--radius-xl)] border p-5',
+              'group relative text-left rounded-[var(--radius-2xl)] p-5',
               'transition-all duration-[var(--transition-normal)]',
-              'hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5',
+              'hover:shadow-[var(--shadow-xl)] hover:-translate-y-1',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
               'animate-fade-up',
             )}
             style={{
-              borderColor: 'var(--color-border)',
               background: 'var(--color-bg-card)',
+              boxShadow: 'var(--shadow-card)',
               animationDelay: `${i * 80}ms`,
             }}
           >
-            {/* Top accent line */}
-            <div
-              className="absolute top-0 left-5 right-5 h-[2px] rounded-b-full opacity-60 group-hover:opacity-100 transition-opacity"
-              style={{ background: card.color }}
-            />
-
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex items-start justify-between mb-4">
               <div
-                className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-lg)]"
-                style={{ background: card.bg, color: card.color }}
+                className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-xl)] text-white"
+                style={{
+                  background: card.gradient,
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                }}
               >
                 {card.icon}
               </div>
@@ -264,10 +277,11 @@ export default function DashboardPage() {
             <p
               className="text-[var(--color-text-primary)]"
               style={{
-                fontFamily: 'var(--font-family-serif)',
+                fontFamily: 'var(--font-family-heading)',
                 fontSize: 'var(--font-size-3xl)',
                 fontWeight: 'var(--font-weight-bold)',
                 lineHeight: '1',
+                letterSpacing: '-0.02em',
               }}
             >
               {card.value}
@@ -280,10 +294,10 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* ─── Workforce Overview (large card) ─── */}
         <div
-          className="lg:col-span-2 rounded-[var(--radius-xl)] border p-6 animate-fade-up"
+          className="lg:col-span-2 rounded-[var(--radius-2xl)] p-6 animate-fade-up"
           style={{
-            borderColor: 'var(--color-border)',
             background: 'var(--color-bg-card)',
+            boxShadow: 'var(--shadow-card)',
             animationDelay: '350ms',
           }}
         >
@@ -292,10 +306,10 @@ export default function DashboardPage() {
               <h2
                 className="text-[var(--color-text-primary)]"
                 style={{
-                  fontFamily: 'var(--font-family-serif)',
+                  fontFamily: 'var(--font-family-heading)',
                   fontSize: 'var(--font-size-xl)',
                   fontWeight: 'var(--font-weight-semibold)',
-                  fontStyle: 'italic',
+                  letterSpacing: '-0.01em',
                 }}
               >
                 Tình hình nhân sự
@@ -354,7 +368,7 @@ export default function DashboardPage() {
                 style={{
                   width: `${workingPercent}%`,
                   background:
-                    'linear-gradient(90deg, var(--color-success-500), var(--color-brand-500))',
+                    'linear-gradient(90deg, var(--color-brand-500), var(--color-accent-500))',
                 }}
               />
             </div>
@@ -387,7 +401,7 @@ export default function DashboardPage() {
             ].map((item) => (
               <div
                 key={item.label}
-                className="flex items-center gap-3 p-3 rounded-[var(--radius-lg)]"
+                className="flex items-center gap-3 p-3 rounded-[var(--radius-xl)]"
                 style={{ background: item.bg }}
               >
                 <div style={{ color: item.color }}>{item.icon}</div>
@@ -397,7 +411,7 @@ export default function DashboardPage() {
                     style={{
                       fontSize: 'var(--font-size-xl)',
                       fontWeight: 'var(--font-weight-bold)',
-                      fontFamily: 'var(--font-family-serif)',
+                      fontFamily: 'var(--font-family-heading)',
                       lineHeight: '1',
                     }}
                   >
@@ -420,20 +434,20 @@ export default function DashboardPage() {
 
         {/* ─── Department Distribution ─── */}
         <div
-          className="rounded-[var(--radius-xl)] border p-6 animate-fade-up"
+          className="rounded-[var(--radius-2xl)] p-6 animate-fade-up"
           style={{
-            borderColor: 'var(--color-border)',
             background: 'var(--color-bg-card)',
+            boxShadow: 'var(--shadow-card)',
             animationDelay: '430ms',
           }}
         >
           <h2
             className="text-[var(--color-text-primary)] mb-1"
             style={{
-              fontFamily: 'var(--font-family-serif)',
+              fontFamily: 'var(--font-family-heading)',
               fontSize: 'var(--font-size-xl)',
               fontWeight: 'var(--font-weight-semibold)',
-              fontStyle: 'italic',
+              letterSpacing: '-0.01em',
             }}
           >
             Theo phòng ban
@@ -462,7 +476,7 @@ export default function DashboardPage() {
                   ];
                   return (
                     <div key={dept.deptNm}>
-                      <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center justify-between mb-1.5">
                         <span
                           className="text-[var(--color-text-primary)] truncate max-w-[160px]"
                           style={{
@@ -477,6 +491,7 @@ export default function DashboardPage() {
                           style={{
                             fontSize: 'var(--font-size-xs)',
                             fontFamily: 'var(--font-family-mono)',
+                            fontWeight: 'var(--font-weight-semibold)',
                           }}
                         >
                           {dept.count}
@@ -530,49 +545,52 @@ export default function DashboardPage() {
               desc: 'Tạo hồ sơ mới',
               icon: <Users className="h-5 w-5" />,
               href: '/employees',
-              color: 'var(--color-brand-500)',
+              gradient: 'linear-gradient(135deg, var(--color-brand-500), var(--color-brand-600))',
             },
             {
               label: 'Phòng ban',
               desc: 'Quản lý cơ cấu',
               icon: <Building2 className="h-5 w-5" />,
               href: '/departments',
-              color: 'var(--color-info-500)',
+              gradient: 'linear-gradient(135deg, var(--color-accent-500), var(--color-accent-600))',
             },
             {
               label: 'Chấm công',
               desc: 'Theo dõi giờ làm',
               icon: <Clock className="h-5 w-5" />,
               href: '/attendance',
-              color: 'var(--color-success-500)',
+              gradient: 'linear-gradient(135deg, var(--color-success-500), #059669)',
             },
             {
               label: 'Nghỉ phép',
               desc: 'Duyệt yêu cầu',
               icon: <CalendarDays className="h-5 w-5" />,
               href: '/leave',
-              color: 'var(--color-accent-500)',
+              gradient: 'linear-gradient(135deg, var(--color-warning-500), #d97706)',
             },
           ].map((action, i) => (
             <button
               key={action.href}
               onClick={() => router.push(action.href)}
               className={cn(
-                'group text-left rounded-[var(--radius-xl)] border p-4',
+                'group text-left rounded-[var(--radius-2xl)] p-4',
                 'transition-all duration-[var(--transition-normal)]',
-                'hover:shadow-[var(--shadow-md)] hover:-translate-y-0.5',
+                'hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
                 'animate-fade-up',
               )}
               style={{
-                borderColor: 'var(--color-border)',
                 background: 'var(--color-bg-card)',
+                boxShadow: 'var(--shadow-card)',
                 animationDelay: `${550 + i * 60}ms`,
               }}
             >
               <div
-                className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-lg)] mb-3 transition-transform duration-200 group-hover:scale-110"
-                style={{ background: 'var(--color-bg-secondary)', color: action.color }}
+                className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-xl)] mb-3 text-white transition-transform duration-200 group-hover:scale-110"
+                style={{
+                  background: action.gradient,
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                }}
               >
                 {action.icon}
               </div>

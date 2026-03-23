@@ -114,7 +114,8 @@ function TopHeader() {
       className="flex h-16 shrink-0 items-center justify-between border-b px-4 lg:px-8"
       style={{
         borderColor: 'var(--color-border)',
-        background: 'var(--color-bg-primary)',
+        background: 'color-mix(in srgb, var(--color-bg-primary) 80%, transparent)',
+        backdropFilter: 'blur(12px)',
       }}
     >
       <div className="flex items-center gap-3">
@@ -126,22 +127,22 @@ function TopHeader() {
           onClick={() => setDropdownOpen(!dropdownOpen)}
           className={cn(
             'flex items-center gap-3 rounded-[var(--radius-xl)] px-3 py-2',
-            'hover:bg-[var(--color-bg-secondary)] transition-all duration-[var(--transition-fast)]',
+            'hover:bg-[var(--color-bg-secondary)] transition-all duration-[var(--duration-fast)]',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
           )}
           aria-expanded={dropdownOpen}
-          aria-haspopup="true"
+          aria-haspopup="menu"
+          aria-controls="user-dropdown-menu"
         >
-          {/* Serif initial avatar */}
+          {/* Avatar */}
           <div
             className="flex h-9 w-9 items-center justify-center rounded-full"
             style={{
-              background: 'var(--color-brand-100)',
-              color: 'var(--color-brand-700)',
-              fontFamily: 'var(--font-family-serif)',
-              fontSize: 'var(--font-size-base)',
+              background: 'linear-gradient(135deg, var(--color-brand-500), var(--color-accent-500))',
+              color: 'var(--color-text-inverse)',
+              fontFamily: 'var(--font-family-heading)',
+              fontSize: 'var(--font-size-sm)',
               fontWeight: 'var(--font-weight-bold)',
-              fontStyle: 'italic',
             }}
           >
             {initial}
@@ -162,7 +163,7 @@ function TopHeader() {
           </div>
           <ChevronDown
             className={cn(
-              'h-4 w-4 text-[var(--color-text-tertiary)] transition-transform duration-[var(--transition-fast)]',
+              'h-4 w-4 text-[var(--color-text-tertiary)] transition-transform duration-[var(--duration-fast)]',
               dropdownOpen && 'rotate-180',
             )}
           />
@@ -180,6 +181,7 @@ function TopHeader() {
               background: 'var(--color-bg-card)',
               boxShadow: 'var(--shadow-xl)',
             }}
+            id="user-dropdown-menu"
             role="menu"
             aria-label="Menu người dùng"
           >
@@ -210,7 +212,7 @@ function TopHeader() {
                 className={cn(
                   'flex w-full items-center gap-3 px-4 py-2.5',
                   'text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)]',
-                  'transition-colors duration-[var(--transition-fast)]',
+                  'transition-colors duration-[var(--duration-fast)]',
                 )}
                 style={{ fontSize: 'var(--font-size-sm)' }}
                 role="menuitem"
@@ -235,7 +237,7 @@ function TopHeader() {
                 className={cn(
                   'flex w-full items-center gap-3 px-4 py-2.5',
                   'text-[var(--color-error-500)] hover:bg-[var(--color-error-50)]',
-                  'transition-colors duration-[var(--transition-fast)]',
+                  'transition-colors duration-[var(--duration-fast)]',
                 )}
                 style={{ fontSize: 'var(--font-size-sm)' }}
                 role="menuitem"
@@ -276,8 +278,8 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
             className="text-[var(--color-text-secondary)]"
             style={{
               fontSize: 'var(--font-size-sm)',
-              fontFamily: 'var(--font-family-serif)',
-              fontStyle: 'italic',
+              fontFamily: 'var(--font-family-heading)',
+              fontWeight: 'var(--font-weight-medium)',
             }}
           >
             Đang tải...
@@ -293,8 +295,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
       <SidebarContent>
         <TopHeader />
         <div
-          className="flex-1 overflow-y-auto p-4 lg:p-8 bg-noise"
-          style={{ background: 'var(--color-bg-primary)' }}
+          className="flex-1 overflow-y-auto p-4 lg:p-8 bg-mesh"
         >
           <div className="relative z-[1]">{children}</div>
         </div>

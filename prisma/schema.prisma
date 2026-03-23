@@ -176,6 +176,7 @@ model Attendance {
 
   employee Employee @relation(fields: [emplId], references: [id])
 
+  @@unique([emplId, atndDt])
   @@map("TH_ATND")
 }
 

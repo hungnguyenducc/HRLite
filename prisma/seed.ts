@@ -257,6 +257,124 @@ async function main() {
       data: { deptHeadId: nvPhu.id },
     });
 
+  // 6. Create leave types
+  const leaveTypes = [
+    { lvTypeCd: 'ANNUAL', lvTypeNm: 'Nghỉ phép năm', maxDays: 12 },
+    { lvTypeCd: 'SICK', lvTypeNm: 'Nghỉ ốm', maxDays: 30 },
+    { lvTypeCd: 'MARRIAGE', lvTypeNm: 'Nghỉ cưới', maxDays: 3 },
+    { lvTypeCd: 'MATERNITY', lvTypeNm: 'Nghỉ thai sản', maxDays: 180 },
+    { lvTypeCd: 'PATERNITY', lvTypeNm: 'Nghỉ chăm con', maxDays: 5 },
+    { lvTypeCd: 'BEREAVEMENT', lvTypeNm: 'Nghỉ tang', maxDays: 3 },
+    { lvTypeCd: 'UNPAID', lvTypeNm: 'Nghỉ không lương', maxDays: null },
+  ];
+
+  for (const lt of leaveTypes) {
+    await prisma.leaveType.upsert({
+      where: { lvTypeCd: lt.lvTypeCd },
+      update: {},
+      create: lt,
+    });
+  }
+
+  // 7. Create sample attendance records (last 2 weeks for working employees)
+  const workingEmployees = await prisma.employee.findMany({
+    where: { delYn: 'N', emplSttsCd: 'WORKING' },
+    select: { id: true, emplNo: true },
+  });
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  for (const emp of workingEmployees) {
+    for (let dayOffset = 14; dayOffset >= 1; dayOffset--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - dayOffset);
+      const dayOfWeek = date.getDay();
+      if (dayOfWeek === 0 || dayOfWeek === 6) continue; // Skip weekends
+
+      // Random check-in between 07:30 and 09:15
+      const inHour = 7 + Math.floor(Math.random() * 2);
+      const inMin = Math.floor(Math.random() * 60);
+      const chkIn = new Date(date);
+      chkIn.setHours(inHour, inMin, 0, 0);
+
+      // Random check-out between 17:00 and 18:30
+      const outHour = 17 + Math.floor(Math.random() * 2);
+      const outMin = Math.floor(Math.random() * 30);
+      const chkOut = new Date(date);
+      chkOut.setHours(outHour, outMin, 0, 0);
+
+      const workHour = Math.round(((chkOut.getTime() - chkIn.getTime()) / 3600000) * 100) / 100;
+      let status = 'PRESENT';
+      if (inHour > 9 || (inHour === 9 && inMin > 0)) status = 'LATE';
+      if (workHour < 4) status = 'HALF_DAY';
+
+      try {
+        await prisma.attendance.upsert({
+          where: { emplId_atndDt: { emplId: emp.id, atndDt: date } },
+          update: {},
+          create: {
+            emplId: emp.id,
+            atndDt: date,
+            chkInTm: chkIn,
+            chkOutTm: chkOut,
+            workHour,
+            atndSttsCd: status,
+            creatBy: 'SYSTEM',
+          },
+        });
+      } catch {
+        // Ignore duplicate constraint errors
+      }
+    }
+  }
+
+  // 8. Create sample leave requests
+  const sampleLeaves = [
+    { emplIdx: 1, lvTypeCd: 'ANNUAL', startOffset: 5, endOffset: 6, rsn: 'Việc gia đình', status: 'APPROVED' },
+    { emplIdx: 3, lvTypeCd: 'SICK', startOffset: 3, endOffset: 3, rsn: 'Khám sức khỏe định kỳ', status: 'APPROVED' },
+    { emplIdx: 5, lvTypeCd: 'ANNUAL', startOffset: -2, endOffset: -1, rsn: 'Du lịch', status: 'APPROVED' },
+    { emplIdx: 6, lvTypeCd: 'ANNUAL', startOffset: 7, endOffset: 8, rsn: 'Nghỉ phép cá nhân', status: 'PENDING' },
+    { emplIdx: 2, lvTypeCd: 'BEREAVEMENT', startOffset: 10, endOffset: 12, rsn: 'Tang gia', status: 'PENDING' },
+    { emplIdx: 7, lvTypeCd: 'ANNUAL', startOffset: -5, endOffset: -4, rsn: 'Về quê', status: 'REJECTED' },
+  ];
+
+  for (const sl of sampleLeaves) {
+    const emp = workingEmployees[sl.emplIdx % workingEmployees.length];
+    const startDt = new Date(today);
+    startDt.setDate(startDt.getDate() + sl.startOffset);
+    const endDt = new Date(today);
+    endDt.setDate(endDt.getDate() + sl.endOffset);
+
+    // Calculate days (simple, no weekend check for seed)
+    let days = 0;
+    const cur = new Date(startDt);
+    while (cur <= endDt) {
+      if (cur.getDay() !== 0 && cur.getDay() !== 6) days++;
+      cur.setDate(cur.getDate() + 1);
+    }
+    if (days === 0) days = 1;
+
+    try {
+      await prisma.leaveRequest.create({
+        data: {
+          emplId: emp.id,
+          lvTypeCd: sl.lvTypeCd,
+          startDt,
+          endDt,
+          lvDays: days,
+          rsn: sl.rsn,
+          aprvlSttsCd: sl.status,
+          aprvrId: sl.status !== 'PENDING' ? nvAn?.id : null,
+          aprvlDt: sl.status !== 'PENDING' ? new Date() : null,
+          creatBy: 'SYSTEM',
+        },
+      });
+    } catch {
+      // Ignore if already exists
+    }
+  }
+
   // eslint-disable-next-line no-console
   console.log('Seed completed:');
   // eslint-disable-next-line no-console
@@ -267,6 +385,12 @@ async function main() {
   console.log(`  Departments: 6 (Company + 3 PB + 2 Tổ)`);
   // eslint-disable-next-line no-console
   console.log(`  Employees: ${employeeData.length}`);
+  // eslint-disable-next-line no-console
+  console.log(`  Leave types: ${leaveTypes.length}`);
+  // eslint-disable-next-line no-console
+  console.log(`  Attendance records: ~${workingEmployees.length * 10} (2 weeks)`);
+  // eslint-disable-next-line no-console
+  console.log(`  Leave requests: ${sampleLeaves.length}`);
 }
 
 main()

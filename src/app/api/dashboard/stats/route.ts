@@ -10,30 +10,45 @@ async function getHandler(_req: AuthenticatedRequest) {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const [totalEmployees, activeEmployees, onLeaveToday, departments] = await Promise.all([
-      prisma.employee.count({
-        where: { delYn: 'N' },
-      }),
-      prisma.employee.count({
-        where: { delYn: 'N', emplSttsCd: 'WORKING' },
-      }),
-      prisma.leaveRequest.count({
-        where: {
-          aprvlSttsCd: 'APPROVED',
-          startDt: { lte: today },
-          endDt: { gte: today },
-        },
-      }),
-      prisma.department.count({
-        where: { delYn: 'N', useYn: 'Y' },
-      }),
-    ]);
+    const [totalEmployees, activeEmployees, onLeaveToday, departments, checkedInToday, pendingLeaves] =
+      await Promise.all([
+        prisma.employee.count({
+          where: { delYn: 'N' },
+        }),
+        prisma.employee.count({
+          where: { delYn: 'N', emplSttsCd: 'WORKING' },
+        }),
+        prisma.leaveRequest.count({
+          where: {
+            aprvlSttsCd: 'APPROVED',
+            startDt: { lte: today },
+            endDt: { gte: today },
+          },
+        }),
+        prisma.department.count({
+          where: { delYn: 'N', useYn: 'Y' },
+        }),
+        prisma.attendance.count({
+          where: {
+            atndDt: { gte: today, lt: tomorrow },
+            employee: { delYn: 'N' },
+          },
+        }),
+        prisma.leaveRequest.count({
+          where: {
+            aprvlSttsCd: 'PENDING',
+            employee: { delYn: 'N' },
+          },
+        }),
+      ]);
 
     return successResponse({
       totalEmployees,
       activeEmployees,
       onLeaveToday,
       departments,
+      checkedInToday,
+      pendingLeaves,
     });
   } catch (error) {
     return handleApiError(error);

@@ -74,7 +74,13 @@ export default function DashboardPage() {
   }, []);
 
   const displayName = user?.displayName || user?.email?.split('@')[0] || 'bạn';
-  const now = new Date();
+  const [now, setNow] = React.useState(new Date());
+
+  React.useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+
   const hour = now.getHours();
   const greeting = hour < 12 ? 'Chào buổi sáng' : hour < 18 ? 'Chào buổi chiều' : 'Chào buổi tối';
   const dateStr = now.toLocaleDateString('vi-VN', {
@@ -105,28 +111,28 @@ export default function DashboardPage() {
         className="relative overflow-hidden rounded-[var(--radius-2xl)] p-8 md:p-10 mb-8"
         style={{
           background:
-            'linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #312e81 70%, #4338ca 100%)',
+            'linear-gradient(135deg, var(--color-bg-inverse) 0%, var(--color-brand-950) 40%, var(--color-brand-900) 70%, var(--color-brand-700) 100%)',
         }}
       >
         {/* Gradient mesh orbs */}
         <div
           className="absolute -top-24 -right-24 w-72 h-72 rounded-full opacity-25"
           style={{
-            background: 'radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, color-mix(in srgb, var(--color-brand-500) 50%, transparent) 0%, transparent 70%)',
             filter: 'blur(40px)',
           }}
         />
         <div
           className="absolute -bottom-20 -left-20 w-56 h-56 rounded-full opacity-15"
           style={{
-            background: 'radial-gradient(circle, rgba(6, 182, 212, 0.5) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, color-mix(in srgb, var(--color-accent-500) 50%, transparent) 0%, transparent 70%)',
             filter: 'blur(30px)',
           }}
         />
         <div
           className="absolute top-1/3 right-1/4 w-32 h-32 rounded-full opacity-10"
           style={{
-            background: 'radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, color-mix(in srgb, var(--color-brand-400) 50%, transparent) 0%, transparent 70%)',
             filter: 'blur(20px)',
           }}
         />
@@ -138,7 +144,7 @@ export default function DashboardPage() {
               <span
                 className="uppercase tracking-[0.15em]"
                 style={{
-                  color: 'rgba(34, 211, 238, 0.9)',
+                  color: 'color-mix(in srgb, var(--color-accent-400) 90%, transparent)',
                   fontSize: 'var(--font-size-xs)',
                   fontWeight: 'var(--font-weight-semibold)',
                 }}
@@ -152,7 +158,7 @@ export default function DashboardPage() {
                 fontSize: 'clamp(1.875rem, 4vw, 2.75rem)',
                 fontWeight: 'var(--font-weight-bold)',
                 lineHeight: 'var(--line-height-tight)',
-                color: '#ffffff',
+                color: 'var(--color-text-inverse)',
                 letterSpacing: '-0.02em',
               }}
             >
@@ -160,7 +166,7 @@ export default function DashboardPage() {
               <br />
               <span
                 style={{
-                  background: 'linear-gradient(90deg, #818cf8, #22d3ee)',
+                  background: 'linear-gradient(90deg, var(--color-brand-400), var(--color-accent-400))',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                 }}
@@ -171,7 +177,7 @@ export default function DashboardPage() {
             <p
               className="mt-3 max-w-md"
               style={{
-                color: 'rgba(248, 250, 252, 0.5)',
+                color: 'var(--color-text-inverse-muted)',
                 fontSize: 'var(--font-size-sm)',
                 lineHeight: 'var(--line-height-relaxed)',
               }}
@@ -192,7 +198,7 @@ export default function DashboardPage() {
             <Clock className="h-4 w-4 text-cyan-400" />
             <span
               style={{
-                color: '#ffffff',
+                color: 'var(--color-text-inverse)',
                 fontSize: 'var(--font-size-sm)',
                 fontWeight: 'var(--font-weight-medium)',
                 fontFamily: 'var(--font-family-mono)',
@@ -218,14 +224,14 @@ export default function DashboardPage() {
             label: 'Đang làm việc',
             value: stats.activeEmployees,
             icon: <UserCheck className="h-5 w-5" />,
-            gradient: 'linear-gradient(135deg, var(--color-success-500), #059669)',
+            gradient: 'linear-gradient(135deg, var(--color-success-500), var(--color-success-600))',
             href: '/employees?status=WORKING',
           },
           {
             label: 'Nghỉ phép hôm nay',
             value: stats.onLeaveToday,
             icon: <CalendarDays className="h-5 w-5" />,
-            gradient: 'linear-gradient(135deg, var(--color-warning-500), #d97706)',
+            gradient: 'linear-gradient(135deg, var(--color-warning-500), var(--color-warning-600))',
             href: '/leave',
           },
           {
@@ -257,7 +263,7 @@ export default function DashboardPage() {
                 className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-xl)] text-white"
                 style={{
                   background: card.gradient,
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  boxShadow: '0 4px 12px color-mix(in srgb, var(--color-bg-inverse) 10%, transparent)',
                 }}
               >
                 {card.icon}
@@ -461,11 +467,12 @@ export default function DashboardPage() {
 
           {emplStats?.byDepartment && emplStats.byDepartment.length > 0 ? (
             <div className="flex flex-col gap-3">
-              {emplStats.byDepartment
+              {(() => {
+                const maxCount = Math.max(...emplStats.byDepartment.map((d) => d.count), 0);
+                return emplStats.byDepartment
                 .filter((d) => d.count > 0)
                 .sort((a, b) => b.count - a.count)
                 .map((dept, i) => {
-                  const maxCount = Math.max(...emplStats.byDepartment.map((d) => d.count));
                   const barPercent = maxCount > 0 ? (dept.count / maxCount) * 100 : 0;
                   const colors = [
                     'var(--color-brand-500)',
@@ -512,7 +519,8 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   );
-                })}
+                });
+              })()}
             </div>
           ) : (
             <p
@@ -559,14 +567,14 @@ export default function DashboardPage() {
               desc: 'Theo dõi giờ làm',
               icon: <Clock className="h-5 w-5" />,
               href: '/attendance',
-              gradient: 'linear-gradient(135deg, var(--color-success-500), #059669)',
+              gradient: 'linear-gradient(135deg, var(--color-success-500), var(--color-success-600))',
             },
             {
               label: 'Nghỉ phép',
               desc: 'Duyệt yêu cầu',
               icon: <CalendarDays className="h-5 w-5" />,
               href: '/leave',
-              gradient: 'linear-gradient(135deg, var(--color-warning-500), #d97706)',
+              gradient: 'linear-gradient(135deg, var(--color-warning-500), var(--color-warning-600))',
             },
           ].map((action, i) => (
             <button
@@ -589,7 +597,7 @@ export default function DashboardPage() {
                 className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-xl)] mb-3 text-white transition-transform duration-200 group-hover:scale-110"
                 style={{
                   background: action.gradient,
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  boxShadow: '0 4px 12px color-mix(in srgb, var(--color-bg-inverse) 10%, transparent)',
                 }}
               >
                 {action.icon}

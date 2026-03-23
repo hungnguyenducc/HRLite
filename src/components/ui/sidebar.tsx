@@ -56,7 +56,7 @@ export function Sidebar({
       {mobileOpen && (
         <div
           className="fixed inset-0 z-[var(--z-modal-backdrop)] lg:hidden"
-          style={{ background: 'rgba(15, 23, 42, 0.5)', backdropFilter: 'blur(8px)' }}
+          style={{ background: 'color-mix(in srgb, var(--color-bg-inverse) 50%, transparent)', backdropFilter: 'blur(8px)' }}
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -72,21 +72,21 @@ export function Sidebar({
           className,
         )}
         style={{
-          background: 'linear-gradient(180deg, #0f172a 0%, #1e1b4b 60%, #1a1650 100%)',
+          background: 'linear-gradient(180deg, var(--color-bg-inverse) 0%, var(--color-brand-950) 60%, var(--color-brand-900) 100%)',
         }}
       >
         {/* Ambient glow — top */}
         <div
           className="absolute -top-20 -right-20 w-56 h-56 rounded-full pointer-events-none"
           style={{
-            background: 'radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, color-mix(in srgb, var(--color-brand-500) 12%, transparent) 0%, transparent 70%)',
           }}
         />
         {/* Ambient glow — bottom */}
         <div
           className="absolute -bottom-16 -left-16 w-40 h-40 rounded-full pointer-events-none"
           style={{
-            background: 'radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, color-mix(in srgb, var(--color-accent-500) 8%, transparent) 0%, transparent 70%)',
           }}
         />
 
@@ -99,7 +99,7 @@ export function Sidebar({
                   className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-lg)] shrink-0"
                   style={{
                     background: 'linear-gradient(135deg, var(--color-brand-500), var(--color-accent-500))',
-                    boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+                    boxShadow: '0 4px 12px color-mix(in srgb, var(--color-brand-500) 30%, transparent)',
                   }}
                 >
                   <span
@@ -107,7 +107,7 @@ export function Sidebar({
                       fontFamily: 'var(--font-family-heading)',
                       fontSize: 'var(--font-size-sm)',
                       fontWeight: 'var(--font-weight-bold)',
-                      color: '#fff',
+                      color: 'var(--color-text-inverse)',
                       letterSpacing: '-0.02em',
                     }}
                   >
@@ -121,7 +121,7 @@ export function Sidebar({
                       fontFamily: 'var(--font-family-heading)',
                       fontSize: 'var(--font-size-lg)',
                       fontWeight: 'var(--font-weight-bold)',
-                      color: '#ffffff',
+                      color: 'var(--color-text-inverse)',
                       letterSpacing: '-0.02em',
                     }}
                   >
@@ -130,8 +130,8 @@ export function Sidebar({
                   <span
                     className="block mt-0.5"
                     style={{
-                      fontSize: '0.625rem',
-                      color: 'rgba(255, 255, 255, 0.3)',
+                      fontSize: 'var(--font-size-2xs)',
+                      color: 'var(--color-text-inverse-faint)',
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
                       fontWeight: 'var(--font-weight-medium)',
@@ -146,7 +146,7 @@ export function Sidebar({
                 className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-lg)] mx-auto"
                 style={{
                   background: 'linear-gradient(135deg, var(--color-brand-500), var(--color-accent-500))',
-                  boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+                  boxShadow: '0 4px 12px color-mix(in srgb, var(--color-brand-500) 30%, transparent)',
                 }}
               >
                 <span
@@ -154,7 +154,7 @@ export function Sidebar({
                     fontFamily: 'var(--font-family-heading)',
                     fontSize: 'var(--font-size-sm)',
                     fontWeight: 'var(--font-weight-bold)',
-                    color: '#fff',
+                    color: 'var(--color-text-inverse)',
                     letterSpacing: '-0.02em',
                   }}
                 >
@@ -197,7 +197,7 @@ export function Sidebar({
           <div
             className="h-px"
             style={{
-              background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent)',
+              background: 'linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-text-inverse) 6%, transparent), transparent)',
             }}
           />
         </div>
@@ -220,9 +220,9 @@ export function SidebarGroup({ label, children }: { label?: string; children: Re
         <p
           className="px-3 pt-3 pb-1.5"
           style={{
-            fontSize: '0.65rem',
+            fontSize: 'var(--font-size-2xs)',
             fontWeight: 'var(--font-weight-semibold)',
-            color: 'rgba(255, 255, 255, 0.25)',
+            color: 'var(--color-text-inverse-subtle)',
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
           }}
@@ -260,12 +260,13 @@ export function SidebarItem({ icon, label, active, onClick }: SidebarItemProps) 
         fontWeight: active ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)',
         ...(active
           ? {
-              background: 'rgba(99, 102, 241, 0.12)',
-              boxShadow: 'inset 0 0 0 1px rgba(99, 102, 241, 0.15)',
+              background: 'color-mix(in srgb, var(--color-brand-500) 12%, transparent)',
+              boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--color-brand-500) 15%, transparent)',
             }
           : {}),
       }}
       title={collapsed ? label : undefined}
+      aria-label={label}
     >
       {/* Active indicator — gradient accent bar */}
       {active && !collapsed && (
@@ -273,7 +274,7 @@ export function SidebarItem({ icon, label, active, onClick }: SidebarItemProps) 
           className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
           style={{
             background: 'linear-gradient(180deg, var(--color-brand-400), var(--color-accent-400))',
-            boxShadow: '0 0 8px rgba(99, 102, 241, 0.4)',
+            boxShadow: '0 0 8px color-mix(in srgb, var(--color-brand-500) 40%, transparent)',
           }}
         />
       )}
@@ -282,7 +283,7 @@ export function SidebarItem({ icon, label, active, onClick }: SidebarItemProps) 
           className="absolute left-1/2 -translate-x-1/2 bottom-0.5 w-1 h-1 rounded-full"
           style={{
             background: 'var(--color-accent-400)',
-            boxShadow: '0 0 6px rgba(6, 182, 212, 0.5)',
+            boxShadow: '0 0 6px color-mix(in srgb, var(--color-accent-500) 50%, transparent)',
           }}
         />
       )}

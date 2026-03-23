@@ -114,7 +114,7 @@ function TopHeader() {
       className="flex h-16 shrink-0 items-center justify-between border-b px-4 lg:px-8"
       style={{
         borderColor: 'var(--color-border)',
-        background: 'rgba(248, 250, 252, 0.8)',
+        background: 'color-mix(in srgb, var(--color-bg-primary) 80%, transparent)',
         backdropFilter: 'blur(12px)',
       }}
     >
@@ -131,14 +131,14 @@ function TopHeader() {
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
           )}
           aria-expanded={dropdownOpen}
-          aria-haspopup="true"
+          aria-haspopup="menu"
         >
           {/* Avatar */}
           <div
             className="flex h-9 w-9 items-center justify-center rounded-full"
             style={{
               background: 'linear-gradient(135deg, var(--color-brand-500), var(--color-accent-500))',
-              color: '#ffffff',
+              color: 'var(--color-text-inverse)',
               fontFamily: 'var(--font-family-heading)',
               fontSize: 'var(--font-size-sm)',
               fontWeight: 'var(--font-weight-bold)',

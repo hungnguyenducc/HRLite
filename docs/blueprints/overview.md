@@ -14,10 +14,10 @@ Xây dựng công cụ quản lý nhân sự nội bộ nhẹ, dễ sử dụng 
 | # | Module | Mô tả | Độ ưu tiên | Sprint | Trạng thái |
 |---|--------|--------|-----------|--------|-----------|
 | 001 | Xác thực (Auth) | Đăng ký, đăng nhập, phân quyền, điều khoản | Cao | Sprint 1 | ✅ Hoàn thành |
-| 002 | Quản lý phòng ban | CRUD phòng ban, cây tổ chức | Cao | Sprint 2 | 📝 Đã có blueprint |
-| 003 | Quản lý nhân viên | CRUD nhân viên, hồ sơ, tìm kiếm, liên kết User | Cao | Sprint 2 | 📝 Đã có blueprint |
-| 004 | Chấm công | Check-in/out, tổng hợp giờ làm | Cao | Sprint 3 | ⏳ Chờ |
-| 005 | Nghỉ phép | Đăng ký, phê duyệt, theo dõi số ngày | Trung bình | Sprint 3 | ⏳ Chờ |
+| 002 | Quản lý phòng ban | CRUD phòng ban, cây tổ chức | Cao | Sprint 2 | ✅ Hoàn thành |
+| 003 | Quản lý nhân viên | CRUD nhân viên, hồ sơ, tìm kiếm, liên kết User | Cao | Sprint 2 | ✅ Hoàn thành |
+| 004 | Chấm công | Check-in/out, tổng hợp giờ làm, báo cáo tháng | Cao | Sprint 3 | 📝 Đã có blueprint |
+| 005 | Nghỉ phép | Đăng ký, phê duyệt, theo dõi số ngày, số phép còn lại | Trung bình | Sprint 3 | 📝 Đã có blueprint |
 | 006 | Báo cáo | Dashboard, báo cáo nhân sự, xuất Excel | Trung bình | Sprint 4 | ⏳ Chờ |
 
 ## Tech Stack và lý do lựa chọn

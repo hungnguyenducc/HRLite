@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { hashPassword } from '@/lib/auth/password';
 import { TEST_USERS, TEST_TERMS } from './auth';
 
 /** Reset toàn bộ dữ liệu test theo thứ tự FK */
@@ -54,12 +53,11 @@ export async function seedTerms(prisma: PrismaClient) {
 
 /** Seed admin user */
 export async function seedAdminUser(prisma: PrismaClient) {
-  const hash = await hashPassword(TEST_USERS.admin.password);
   return prisma.user.create({
     data: {
       id: TEST_USERS.admin.id,
       email: TEST_USERS.admin.email,
-      passwdHash: hash,
+      firebaseUid: 'firebase-admin-test-uid',
       displayName: 'Admin Test',
       roleCd: 'ADMIN',
       sttsCd: 'ACTIVE',
@@ -71,12 +69,11 @@ export async function seedAdminUser(prisma: PrismaClient) {
 
 /** Seed normal user */
 export async function seedNormalUser(prisma: PrismaClient) {
-  const hash = await hashPassword(TEST_USERS.user.password);
   return prisma.user.create({
     data: {
       id: TEST_USERS.user.id,
       email: TEST_USERS.user.email,
-      passwdHash: hash,
+      firebaseUid: 'firebase-user-test-uid',
       displayName: 'User Test',
       roleCd: 'USER',
       sttsCd: 'ACTIVE',

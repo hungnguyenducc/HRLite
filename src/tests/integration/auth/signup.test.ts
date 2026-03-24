@@ -50,11 +50,10 @@ describe('POST /api/auth/signup', () => {
     expect(data.data.accessToken).toBeUndefined();
     expect(data.data.refreshToken).toBeUndefined();
 
-    // Kiểm tra cookies được thiết lập
+    // Kiểm tra session cookie được thiết lập
     const setCookies = response.headers.getSetCookie();
     const cookieStr = setCookies.join('; ');
-    expect(cookieStr).toContain('access_token=');
-    expect(cookieStr).toContain('refresh_token=');
+    expect(cookieStr).toContain('__session=');
 
     // Kiểm tra user được tạo trong DB
     const dbUser = await prisma.user.findUnique({
@@ -70,12 +69,6 @@ describe('POST /api/auth/signup', () => {
     expect(agreements).toHaveLength(2);
     expect(agreements.every((a) => a.agreYn === 'Y')).toBe(true);
 
-    // Kiểm tra refresh token được lưu trong DB
-    const tokens = await prisma.refreshToken.findMany({
-      where: { userId: dbUser!.id },
-    });
-    expect(tokens).toHaveLength(1);
-    expect(tokens[0].dscdDt).toBeNull();
   });
 
   it('nên trả về 400 khi email không hợp lệ', async () => {

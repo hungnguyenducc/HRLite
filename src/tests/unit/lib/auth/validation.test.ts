@@ -1,7 +1,8 @@
 import {
   signupSchema,
   loginSchema,
-  refreshSchema,
+  signupFirebaseSchema,
+  sessionSchema,
   updateProfileSchema,
   agreeTermsSchema,
 } from '@/lib/auth/validation';
@@ -13,13 +14,12 @@ const INVALID_UUID = 'not-a-uuid';
 
 describe('Validation', () => {
   // ─────────────────────────────────────────────
-  // signupSchema
+  // signupSchema (client-side, before Firebase)
   // ─────────────────────────────────────────────
   describe('signupSchema', () => {
     const validInput = {
       email: 'user@example.com',
       password: 'Password1',
-      agreedTermsIds: [VALID_UUID],
     };
 
     it('nen chap nhan du lieu hop le voi day du truong', () => {
@@ -207,55 +207,6 @@ describe('Validation', () => {
       });
     });
 
-    // ── agreedTermsIds ──
-    describe('agreedTermsIds', () => {
-      it('nen chap nhan khi agreedTermsIds la mang rong', () => {
-        const result = signupSchema.safeParse({ ...validInput, agreedTermsIds: [] });
-
-        expect(result.success).toBe(true);
-      });
-
-      it('nen tu choi khi agreedTermsIds chua UUID khong hop le', () => {
-        const result = signupSchema.safeParse({
-          ...validInput,
-          agreedTermsIds: [INVALID_UUID],
-        });
-
-        expect(result.success).toBe(false);
-        if (!result.success) {
-          const messages = result.error.issues.map((i) => i.message);
-          expect(messages).toContain('ID điều khoản không hợp lệ');
-        }
-      });
-
-      it('nen chap nhan nhieu UUID hop le', () => {
-        const result = signupSchema.safeParse({
-          ...validInput,
-          agreedTermsIds: [VALID_UUID, VALID_UUID_2],
-        });
-
-        expect(result.success).toBe(true);
-      });
-
-      it('nen tu choi khi agreedTermsIds khong phai mang', () => {
-        const result = signupSchema.safeParse({
-          ...validInput,
-          agreedTermsIds: VALID_UUID,
-        });
-
-        expect(result.success).toBe(false);
-      });
-
-      it('nen tu choi khi agreedTermsIds chua phan tu khong phai string', () => {
-        const result = signupSchema.safeParse({
-          ...validInput,
-          agreedTermsIds: [123],
-        });
-
-        expect(result.success).toBe(false);
-      });
-    });
-
     // ── missing fields ──
     it('nen tu choi khi thieu email', () => {
       const { email: _email, ...rest } = validInput;
@@ -271,13 +222,6 @@ describe('Validation', () => {
       expect(result.success).toBe(false);
     });
 
-    it('nen tu choi khi thieu agreedTermsIds', () => {
-      const { agreedTermsIds: _agreedTermsIds, ...rest } = validInput;
-      const result = signupSchema.safeParse(rest);
-
-      expect(result.success).toBe(false);
-    });
-
     it('nen tu choi khi input la null', () => {
       const result = signupSchema.safeParse(null);
 
@@ -286,6 +230,90 @@ describe('Validation', () => {
 
     it('nen tu choi khi input la undefined', () => {
       const result = signupSchema.safeParse(undefined);
+
+      expect(result.success).toBe(false);
+    });
+  });
+
+  // ─────────────────────────────────────────────
+  // signupFirebaseSchema (server-side)
+  // ─────────────────────────────────────────────
+  describe('signupFirebaseSchema', () => {
+    const validInput = {
+      idToken: 'firebase-id-token-value',
+      agreedTermsIds: [VALID_UUID],
+    };
+
+    it('nen chap nhan du lieu hop le', () => {
+      const result = signupFirebaseSchema.safeParse(validInput);
+
+      expect(result.success).toBe(true);
+    });
+
+    it('nen chap nhan voi displayName', () => {
+      const result = signupFirebaseSchema.safeParse({
+        ...validInput,
+        displayName: 'Nguyen Van A',
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it('nen tu choi khi idToken rong', () => {
+      const result = signupFirebaseSchema.safeParse({ ...validInput, idToken: '' });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('nen tu choi khi thieu idToken', () => {
+      const result = signupFirebaseSchema.safeParse({ agreedTermsIds: [VALID_UUID] });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('nen chap nhan agreedTermsIds rong', () => {
+      const result = signupFirebaseSchema.safeParse({ ...validInput, agreedTermsIds: [] });
+
+      expect(result.success).toBe(true);
+    });
+
+    it('nen tu choi khi agreedTermsIds chua UUID khong hop le', () => {
+      const result = signupFirebaseSchema.safeParse({
+        ...validInput,
+        agreedTermsIds: [INVALID_UUID],
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('nen chap nhan nhieu UUID hop le', () => {
+      const result = signupFirebaseSchema.safeParse({
+        ...validInput,
+        agreedTermsIds: [VALID_UUID, VALID_UUID_2],
+      });
+
+      expect(result.success).toBe(true);
+    });
+  });
+
+  // ─────────────────────────────────────────────
+  // sessionSchema
+  // ─────────────────────────────────────────────
+  describe('sessionSchema', () => {
+    it('nen chap nhan idToken hop le', () => {
+      const result = sessionSchema.safeParse({ idToken: 'some-token-value' });
+
+      expect(result.success).toBe(true);
+    });
+
+    it('nen tu choi khi idToken rong', () => {
+      const result = sessionSchema.safeParse({ idToken: '' });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('nen tu choi khi thieu idToken', () => {
+      const result = sessionSchema.safeParse({});
 
       expect(result.success).toBe(false);
     });
@@ -350,45 +378,6 @@ describe('Validation', () => {
       const result = loginSchema.safeParse({});
 
       expect(result.success).toBe(false);
-    });
-  });
-
-  // ─────────────────────────────────────────────
-  // refreshSchema
-  // ─────────────────────────────────────────────
-  describe('refreshSchema', () => {
-    it('nen chap nhan refreshToken hop le', () => {
-      const result = refreshSchema.safeParse({ refreshToken: 'some-token-value' });
-
-      expect(result.success).toBe(true);
-    });
-
-    it('nen tu choi khi refreshToken rong', () => {
-      const result = refreshSchema.safeParse({ refreshToken: '' });
-
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        const messages = result.error.issues.map((i) => i.message);
-        expect(messages).toContain('Refresh token không được để trống');
-      }
-    });
-
-    it('nen tu choi khi thieu refreshToken', () => {
-      const result = refreshSchema.safeParse({});
-
-      expect(result.success).toBe(false);
-    });
-
-    it('nen tu choi khi refreshToken la so', () => {
-      const result = refreshSchema.safeParse({ refreshToken: 12345 });
-
-      expect(result.success).toBe(false);
-    });
-
-    it('nen chap nhan refreshToken dai', () => {
-      const result = refreshSchema.safeParse({ refreshToken: 'x'.repeat(1000) });
-
-      expect(result.success).toBe(true);
     });
   });
 
@@ -489,7 +478,6 @@ describe('Validation', () => {
       });
 
       it('nen chap nhan phone rong', () => {
-        // phone la string().optional(), chuoi rong van hop le vi khong co min()
         const result = updateProfileSchema.safeParse({ phone: '' });
 
         expect(result.success).toBe(true);

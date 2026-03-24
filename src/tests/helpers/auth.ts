@@ -9,13 +9,11 @@ export const TEST_USERS = {
     id: '00000000-0000-0000-0000-000000000001',
     email: 'admin@test.hrlite.local',
     role: 'ADMIN',
-    password: 'Admin@12345',
   },
   user: {
     id: '00000000-0000-0000-0000-000000000002',
     email: 'user@test.hrlite.local',
     role: 'USER',
-    password: 'User@12345',
   },
 } as const;
 

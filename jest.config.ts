@@ -15,7 +15,6 @@ const config: Config = {
         '^.+\\.tsx?$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.jest.json' }],
         '^.+\\.js$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.jest.json' }],
       },
-      transformIgnorePatterns: ['node_modules/(?!jose/.*)'],
     },
     {
       displayName: 'integration',
@@ -30,7 +29,6 @@ const config: Config = {
         '^.+\\.tsx?$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.jest.json' }],
         '^.+\\.js$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.jest.json' }],
       },
-      transformIgnorePatterns: ['node_modules/(?!jose/.*)'],
     },
   ],
   collectCoverageFrom: [

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { z } from 'zod';
 import { ArrowLeft, Mail } from 'lucide-react';
 import { Button, Input, useToast } from '@/components/ui';
+import { firebaseResetPassword } from '@/lib/firebase/auth';
+import { mapFirebaseError } from '@/lib/firebase/errors';
 
 const forgotPasswordSchema = z.object({
   email: z.string().min(1, 'Email không được để trống').email('Email không hợp lệ'),
@@ -31,29 +33,13 @@ export default function ForgotPasswordPage() {
     setEmailError(undefined);
 
     try {
-      const res = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: result.data.email }),
-      });
-
-      const data: { success: boolean; error?: string } = await res.json();
-
-      if (!res.ok || !data.success) {
-        addToast({
-          variant: 'error',
-          title: 'Gửi yêu cầu thất bại',
-          description: data.error || 'Không thể gửi email. Vui lòng thử lại.',
-        });
-        return;
-      }
-
+      await firebaseResetPassword(result.data.email);
       setSent(true);
-    } catch {
+    } catch (error) {
       addToast({
         variant: 'error',
-        title: 'Lỗi kết nối',
-        description: 'Không thể kết nối đến máy chủ. Vui lòng thử lại.',
+        title: 'Gửi yêu cầu thất bại',
+        description: mapFirebaseError(error),
       });
     } finally {
       setLoading(false);

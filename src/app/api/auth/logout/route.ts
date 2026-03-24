@@ -1,34 +1,17 @@
-import prisma from '@/lib/db';
-import { hashToken } from '@/lib/auth/jwt';
-import { withAuth, AuthenticatedRequest } from '@/lib/auth/middleware';
+import { adminAuth } from '@/lib/firebase/admin';
+import { withAuth, AuthenticatedRequest, SESSION_COOKIE_NAME } from '@/lib/auth/middleware';
 import { successResponse } from '@/lib/api-response';
 import { handleApiError } from '@/lib/errors';
 
-async function handler(req: AuthenticatedRequest) {
+async function handler(req: AuthenticatedRequest, _context: { params: Promise<Record<string, string>> }) {
   try {
-    // Discard the current refresh token
-    const refreshTokenValue = req.cookies.get('refresh_token')?.value;
+    // Revoke Firebase refresh tokens
+    await adminAuth.revokeRefreshTokens(req.user.firebaseUid);
 
-    if (refreshTokenValue) {
-      const tknHash = await hashToken(refreshTokenValue);
-      await prisma.refreshToken.updateMany({
-        where: { tknHash, dscdDt: null },
-        data: { dscdDt: new Date() },
-      });
-    }
-
-    // Build response and clear cookies
+    // Clear session cookie
     const response = successResponse({ message: 'Đăng xuất thành công.' });
 
-    response.cookies.set('access_token', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 0,
-      path: '/',
-    });
-
-    response.cookies.set('refresh_token', '', {
+    response.cookies.set(SESSION_COOKIE_NAME, '', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ============================================================
@@ -13,8 +14,9 @@ datasource db {
 
 model User {
   id          String    @id @default(uuid()) @map("USER_ID")
+  firebaseUid String?   @unique @map("FIREBASE_UID") @db.VarChar(128)
   email       String    @unique @map("EML_ADDR")
-  passwdHash  String    @map("PASSWD_HASH")
+  passwdHash  String?   @map("PASSWD_HASH")
   displayName String?   @map("INDCT_NM")
   phone       String?   @map("TELNO")
   photoUrl    String?   @map("PHOTO_URL")

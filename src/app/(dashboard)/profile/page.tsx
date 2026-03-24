@@ -25,6 +25,8 @@ import {
 } from '@/components/ui';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useRouter } from 'next/navigation';
+import { firebaseChangePassword } from '@/lib/firebase/auth';
+import { mapFirebaseError } from '@/lib/firebase/errors';
 
 const profileSchema = z.object({
   displayName: z.string().optional(),
@@ -283,34 +285,14 @@ function SecurityTab() {
 
     setSaving(true);
     try {
-      const res = await fetch('/api/users/me', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          currentPassword: result.data.currentPassword,
-          newPassword: result.data.newPassword,
-        }),
-      });
-
-      const data: { success: boolean; error?: string } = await res.json();
-
-      if (!res.ok || !data.success) {
-        addToast({
-          variant: 'error',
-          title: 'Đổi mật khẩu thất bại',
-          description: data.error || 'Mật khẩu hiện tại không chính xác.',
-        });
-        return;
-      }
-
+      await firebaseChangePassword(result.data.currentPassword, result.data.newPassword);
       addToast({ variant: 'success', title: 'Đã đổi mật khẩu thành công' });
       setForm({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
-    } catch {
+    } catch (error) {
       addToast({
         variant: 'error',
-        title: 'Lỗi kết nối',
-        description: 'Không thể kết nối đến máy chủ.',
+        title: 'Đổi mật khẩu thất bại',
+        description: mapFirebaseError(error),
       });
     } finally {
       setSaving(false);
@@ -489,12 +471,18 @@ function TermsTab() {
 }
 
 function DangerZone() {
+  const { user } = useAuth();
   const { addToast } = useToast();
   const router = useRouter();
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
+  const [confirmEmail, setConfirmEmail] = React.useState('');
+
+  const emailMatches = confirmEmail === user?.email;
 
   const handleDelete = async () => {
+    if (!emailMatches) return;
+
     setDeleting(true);
     try {
       const res = await fetch('/api/users/me', {
@@ -513,6 +501,7 @@ function DangerZone() {
         return;
       }
 
+      addToast({ variant: 'success', title: 'Tài khoản đã được xóa' });
       router.push('/login');
     } catch {
       addToast({
@@ -523,6 +512,7 @@ function DangerZone() {
     } finally {
       setDeleting(false);
       setDeleteOpen(false);
+      setConfirmEmail('');
     }
   };
 
@@ -553,7 +543,10 @@ function DangerZone() {
             >
               Sau khi xóa tài khoản, tất cả dữ liệu sẽ bị mất và không thể khôi phục.
             </p>
-            <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+            <Dialog open={deleteOpen} onOpenChange={(open) => {
+              setDeleteOpen(open);
+              if (!open) setConfirmEmail('');
+            }}>
               <DialogTrigger asChild>
                 <Button variant="danger" size="sm">
                   Xóa tài khoản
@@ -567,19 +560,33 @@ function DangerZone() {
                   </DialogDescription>
                 </DialogHeader>
                 <DialogBody>
-                  <p
-                    className="text-[var(--color-text-primary)]"
-                    style={{ fontSize: 'var(--font-size-sm)' }}
-                  >
-                    Bạn có chắc chắn muốn xóa tài khoản?
-                  </p>
+                  <div className="flex flex-col gap-3">
+                    <p
+                      className="text-[var(--color-text-primary)]"
+                      style={{ fontSize: 'var(--font-size-sm)' }}
+                    >
+                      Nhập email <strong>{user?.email}</strong> để xác nhận:
+                    </p>
+                    <Input
+                      type="email"
+                      placeholder="Nhập email xác nhận"
+                      value={confirmEmail}
+                      onChange={(e) => setConfirmEmail(e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
                 </DialogBody>
                 <DialogFooter>
                   <Button variant="secondary" onClick={() => setDeleteOpen(false)}>
                     Hủy
                   </Button>
-                  <Button variant="danger" loading={deleting} onClick={handleDelete}>
-                    Xóa tài khoản
+                  <Button
+                    variant="danger"
+                    loading={deleting}
+                    onClick={handleDelete}
+                    disabled={!emailMatches}
+                  >
+                    Xóa vĩnh viễn
                   </Button>
                 </DialogFooter>
               </DialogContent>

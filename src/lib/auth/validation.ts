@@ -1,6 +1,18 @@
 import { z } from 'zod';
 
-// Signup validation schema
+// Firebase signup validation schema (server-side — receives Firebase ID Token)
+export const signupFirebaseSchema = z.object({
+  idToken: z.string().min(1, { message: 'ID Token không được để trống' }),
+  displayName: z.string().min(1, { message: 'Tên hiển thị không được để trống' }).optional(),
+  agreedTermsIds: z.array(z.string().uuid({ message: 'ID điều khoản không hợp lệ' })),
+});
+
+// Session creation validation schema
+export const sessionSchema = z.object({
+  idToken: z.string().min(1, { message: 'ID Token không được để trống' }),
+});
+
+// Client-side signup validation (before calling Firebase)
 export const signupSchema = z.object({
   email: z.string().email({ message: 'Địa chỉ email không hợp lệ' }),
   password: z
@@ -10,18 +22,12 @@ export const signupSchema = z.object({
     .regex(/[a-z]/, { message: 'Mật khẩu phải chứa ít nhất 1 chữ thường' })
     .regex(/[0-9]/, { message: 'Mật khẩu phải chứa ít nhất 1 chữ số' }),
   displayName: z.string().min(1, { message: 'Tên hiển thị không được để trống' }).optional(),
-  agreedTermsIds: z.array(z.string().uuid({ message: 'ID điều khoản không hợp lệ' })),
 });
 
-// Login validation schema
+// Client-side login validation
 export const loginSchema = z.object({
   email: z.string().email({ message: 'Địa chỉ email không hợp lệ' }),
   password: z.string().min(1, { message: 'Mật khẩu không được để trống' }),
-});
-
-// Refresh token validation schema
-export const refreshSchema = z.object({
-  refreshToken: z.string().min(1, { message: 'Refresh token không được để trống' }),
 });
 
 // Update profile validation schema
@@ -42,9 +48,10 @@ export const agreeTermsSchema = z.object({
     .min(1, { message: 'Phải chọn ít nhất một điều khoản' }),
 });
 
-// Type exports for convenience
+// Type exports
+export type SignupFirebaseInput = z.infer<typeof signupFirebaseSchema>;
+export type SessionInput = z.infer<typeof sessionSchema>;
 export type SignupInput = z.infer<typeof signupSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
-export type RefreshInput = z.infer<typeof refreshSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type AgreeTermsInput = z.infer<typeof agreeTermsSchema>;

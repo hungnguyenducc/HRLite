@@ -111,7 +111,7 @@ function TopHeader() {
 
   return (
     <header
-      className="flex h-16 shrink-0 items-center justify-between border-b px-4 lg:px-8"
+      className="relative z-[var(--z-dropdown)] flex h-16 shrink-0 items-center justify-between border-b px-4 lg:px-8"
       style={{
         borderColor: 'var(--color-border)',
         background: 'color-mix(in srgb, var(--color-bg-primary) 80%, transparent)',

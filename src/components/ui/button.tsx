@@ -19,22 +19,22 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: [
-          'bg-[var(--color-brand-600)] text-[var(--color-text-inverse)]',
+          'bg-[var(--color-brand-600)] btn-text-inverse',
           'hover:bg-[var(--color-brand-700)]',
           'shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]',
         ].join(' '),
         secondary: [
-          'bg-[var(--color-bg-tertiary)] text-[var(--color-text-primary)]',
+          'bg-[var(--color-bg-tertiary)] btn-text-primary',
           'hover:bg-[var(--color-border)]',
         ].join(' '),
         danger: [
-          'bg-[var(--color-error-500)] text-[var(--color-text-inverse)]',
+          'bg-[var(--color-error-500)] btn-text-inverse',
           'hover:bg-[var(--color-error-700)]',
           'shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]',
         ].join(' '),
-        ghost: ['text-[var(--color-text-brand)]', 'hover:bg-[var(--color-brand-50)]'].join(' '),
+        ghost: ['btn-text-brand', 'hover:bg-[var(--color-brand-50)]'].join(' '),
         outline: [
-          'border border-[var(--color-border)] bg-transparent text-[var(--color-text-primary)]',
+          'border border-[var(--color-border)] bg-transparent btn-text-primary',
           'hover:bg-[var(--color-bg-secondary)] hover:border-[var(--color-text-tertiary)]',
         ].join(' '),
       },

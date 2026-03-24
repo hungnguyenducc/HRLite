@@ -1,5 +1,6 @@
 import prisma from '@/lib/db';
-import { withAuth, AuthenticatedRequest } from '@/lib/auth/middleware';
+import { adminAuth } from '@/lib/firebase/admin';
+import { withAuth, AuthenticatedRequest, SESSION_COOKIE_NAME } from '@/lib/auth/middleware';
 import { updateProfileSchema } from '@/lib/auth/validation';
 import { successResponse, errorResponse } from '@/lib/api-response';
 import { handleApiError } from '@/lib/errors';
@@ -80,43 +81,54 @@ async function patchHandler(req: AuthenticatedRequest) {
   }
 }
 
-// DELETE /api/users/me - Soft delete account
+// DELETE /api/users/me - Soft delete account + Firebase delete
 async function deleteHandler(req: AuthenticatedRequest) {
   try {
     const userId = req.user.sub;
+    const firebaseUid = req.user.firebaseUid;
     const now = new Date();
 
-    // Soft delete: mask email, set DEL_YN='Y', set DEL_DT
+    // Soft delete in DB
     await prisma.user.update({
       where: { id: userId },
       data: {
         delYn: 'Y',
         deleteDt: now,
         withdrawDt: now,
-        email: `deleted_${userId}@withdrawn.local`,
+        email: `withdrawn_${userId}@deleted.local`,
+        phone: null,
+        photoUrl: null,
         sttsCd: 'WITHDRAWN',
         updtBy: userId,
       },
     });
 
-    // Discard all refresh tokens
+    // Discard all legacy refresh tokens
     await prisma.refreshToken.updateMany({
       where: { userId, dscdDt: null },
       data: { dscdDt: now },
     });
 
-    // Clear cookies
+    // Revoke all Firebase tokens and delete user
+    try {
+      await adminAuth.revokeRefreshTokens(firebaseUid);
+      await adminAuth.deleteUser(firebaseUid);
+    } catch (fbError) {
+      // Only ignore "user not found"; other errors are logged but not blocking
+      const code = (fbError as { code?: string }).code;
+      if (code !== 'auth/user-not-found') {
+        // In production, this should be sent to a logger service
+        if (process.env.NODE_ENV === 'development') {
+          // eslint-disable-next-line no-console
+          console.error('Firebase withdrawal error:', fbError);
+        }
+      }
+    }
+
+    // Clear session cookie
     const response = successResponse({ message: 'Tài khoản đã được xóa thành công.' });
 
-    response.cookies.set('access_token', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 0,
-      path: '/',
-    });
-
-    response.cookies.set('refresh_token', '', {
+    response.cookies.set(SESSION_COOKIE_NAME, '', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

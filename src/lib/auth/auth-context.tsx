@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { firebaseSignOut } from '@/lib/firebase/auth';
 
 interface User {
   id: string;
@@ -30,27 +31,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const res = await fetch('/api/users/me', { credentials: 'include' });
 
-      if (res.status === 401) {
-        const refreshRes = await fetch('/api/auth/refresh', {
-          method: 'POST',
-          credentials: 'include',
-        });
-
-        if (refreshRes.ok) {
-          const retryRes = await fetch('/api/users/me', { credentials: 'include' });
-          if (retryRes.ok) {
-            const retryData: { success: boolean; data: User } = await retryRes.json();
-            if (retryData.success) {
-              setUser(retryData.data);
-              return;
-            }
-          }
-        }
-
-        setUser(null);
-        return;
-      }
-
       if (res.ok) {
         const data: { success: boolean; data: User } = await res.json();
         if (data.success) {
@@ -73,6 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = React.useCallback(async () => {
     try {
+      await firebaseSignOut();
       await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',

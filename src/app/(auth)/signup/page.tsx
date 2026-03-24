@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { Button, Input, Badge, useToast } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { firebaseSignUp } from '@/lib/firebase/auth';
+import { mapFirebaseError } from '@/lib/firebase/errors';
 
 const signupSchema = z
   .object({
@@ -164,13 +166,16 @@ export default function SignupPage() {
         .filter(([, agreed]) => agreed)
         .map(([id]) => id);
 
+      // Step 1: Create user in Firebase
+      const { idToken, user: firebaseUser } = await firebaseSignUp(result.data.email, result.data.password);
+
+      // Step 2: Register in server DB + create session
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          email: result.data.email,
-          password: result.data.password,
+          idToken,
           displayName: result.data.fullName || undefined,
           agreedTermsIds: agreedTermIds,
         }),
@@ -179,6 +184,12 @@ export default function SignupPage() {
       const data: { success: boolean; error?: string } = await res.json();
 
       if (!res.ok || !data.success) {
+        // Rollback: delete Firebase user if server registration failed
+        try {
+          await firebaseUser.delete();
+        } catch {
+          // Firebase user may remain orphaned if delete fails
+        }
         addToast({
           variant: 'error',
           title: 'Đăng ký thất bại',
@@ -193,11 +204,11 @@ export default function SignupPage() {
         description: 'Chào mừng bạn đến với HRLite!',
       });
       router.push('/dashboard');
-    } catch {
+    } catch (error) {
       addToast({
         variant: 'error',
-        title: 'Lỗi kết nối',
-        description: 'Không thể kết nối đến máy chủ. Vui lòng thử lại.',
+        title: 'Đăng ký thất bại',
+        description: mapFirebaseError(error),
       });
     } finally {
       setLoading(false);
@@ -243,7 +254,6 @@ export default function SignupPage() {
               onChange={handleChange('fullName')}
               error={errors.fullName}
               autoComplete="name"
-              helperText="Không bắt buộc"
             />
           </div>
 
@@ -316,10 +326,20 @@ export default function SignupPage() {
           </div>
 
           {terms.length > 0 && (
-            <fieldset className="flex flex-col gap-[var(--spacing-3)] mt-[var(--spacing-1)] animate-fade-up-delay-3">
+            <fieldset
+              className={cn(
+                'flex flex-col gap-[var(--spacing-3)] mt-[var(--spacing-1)] animate-fade-up-delay-3',
+                'rounded-[var(--radius-lg)] p-4 transition-all duration-200',
+                termsError
+                  ? 'border-2 border-[var(--color-error-500)] bg-[var(--color-error-50)]'
+                  : 'border border-[var(--color-border)]',
+              )}
+            >
               <legend
-                className="text-[var(--font-size-sm)] font-[var(--font-weight-medium)] mb-[var(--spacing-1)]"
-                style={{ color: 'var(--color-text-primary)' }}
+                className={cn(
+                  'text-[var(--font-size-sm)] font-[var(--font-weight-medium)] px-1',
+                  termsError ? 'text-[var(--color-error-700)]' : 'text-[var(--color-text-primary)]',
+                )}
               >
                 Điều khoản sử dụng
               </legend>
@@ -332,7 +352,12 @@ export default function SignupPage() {
                     type="checkbox"
                     checked={agreedTerms[term.id] ?? false}
                     onChange={() => handleTermToggle(term.id)}
-                    className="mt-0.5 h-4 w-4 rounded-[var(--radius-sm)] border-[var(--color-border)] text-[var(--color-brand-600)] focus:ring-[var(--color-border-focus)] cursor-pointer"
+                    className={cn(
+                      'mt-0.5 h-4 w-4 rounded-[var(--radius-sm)] cursor-pointer focus:ring-[var(--color-border-focus)]',
+                      termsError && !(agreedTerms[term.id])
+                        ? 'border-[var(--color-error-500)] text-[var(--color-error-500)]'
+                        : 'border-[var(--color-border)] text-[var(--color-brand-600)]',
+                    )}
                     aria-required={term.required ? 'true' : undefined}
                   />
                   <span
@@ -348,7 +373,7 @@ export default function SignupPage() {
               ))}
               {termsError && (
                 <p
-                  className="text-[var(--font-size-xs)] text-[var(--color-error-500)]"
+                  className="text-[var(--font-size-sm)] font-[var(--font-weight-medium)] text-[var(--color-error-600)]"
                   role="alert"
                 >
                   {termsError}

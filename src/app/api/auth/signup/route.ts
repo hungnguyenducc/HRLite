@@ -1,29 +1,38 @@
 import { NextRequest } from 'next/server';
+import { adminAuth } from '@/lib/firebase/admin';
 import prisma from '@/lib/db';
-import { hashPassword } from '@/lib/auth/password';
-import { generateAccessToken, generateRefreshToken, hashToken } from '@/lib/auth/jwt';
-import { signupSchema } from '@/lib/auth/validation';
 import { successResponse, errorResponse } from '@/lib/api-response';
+import { handleApiError } from '@/lib/errors';
 import { checkRateLimit, RATE_LIMITS, rateLimitResponse } from '@/lib/auth/rate-limit';
-import { RateLimitError, handleApiError } from '@/lib/errors';
+import { RateLimitError } from '@/lib/errors';
+import { SESSION_COOKIE_NAME } from '@/lib/auth/middleware';
+
+const SESSION_MAX_AGE = Number(process.env.SESSION_COOKIE_MAX_AGE) || 432000;
 
 export async function POST(req: NextRequest) {
   try {
-    // Rate limit: 3 requests per minute per IP
     checkRateLimit(req, 'signup', RATE_LIMITS.signup);
 
     const body = await req.json();
+    const { idToken, displayName, agreedTermsIds } = body;
 
-    // Validate input
-    const parsed = signupSchema.safeParse(body);
-    if (!parsed.success) {
-      const firstError = parsed.error.errors[0]?.message ?? 'Dữ liệu không hợp lệ';
-      return errorResponse(firstError, 400);
+    if (!idToken || typeof idToken !== 'string') {
+      return errorResponse('ID Token không hợp lệ.', 400);
     }
 
-    const { email, password, displayName, agreedTermsIds } = parsed.data;
+    if (!Array.isArray(agreedTermsIds)) {
+      return errorResponse('Danh sách điều khoản không hợp lệ.', 400);
+    }
 
-    // Check email uniqueness
+    // Verify Firebase ID Token
+    const decoded = await adminAuth.verifyIdToken(idToken);
+    const { uid: firebaseUid, email } = decoded;
+
+    if (!email) {
+      return errorResponse('Email không tồn tại trong token.', 400);
+    }
+
+    // Check email uniqueness in DB
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -33,10 +42,7 @@ export async function POST(req: NextRequest) {
 
     // Verify that all agreed terms exist and are active
     const terms = await prisma.terms.findMany({
-      where: {
-        id: { in: agreedTermsIds },
-        actvYn: 'Y',
-      },
+      where: { id: { in: agreedTermsIds }, actvYn: 'Y' },
     });
     if (terms.length !== agreedTermsIds.length) {
       return errorResponse('Một hoặc nhiều điều khoản không hợp lệ hoặc không còn hiệu lực.', 400);
@@ -52,10 +58,7 @@ export async function POST(req: NextRequest) {
       return errorResponse('Vui lòng đồng ý tất cả các điều khoản bắt buộc.', 400);
     }
 
-    // Hash password
-    const passwdHash = await hashPassword(password);
-
-    // Get IP address from request
+    // Get IP and device info
     const ipAddr = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? undefined;
     const dvcInfo = req.headers.get('user-agent') ?? undefined;
 
@@ -63,16 +66,15 @@ export async function POST(req: NextRequest) {
     const user = await prisma.$transaction(async (tx) => {
       const newUser = await tx.user.create({
         data: {
+          firebaseUid,
           email,
-          passwdHash,
-          displayName,
+          displayName: displayName || null,
           creatBy: 'SYSTEM',
         },
       });
 
-      // Create term agreements
       await tx.userAgreement.createMany({
-        data: agreedTermsIds.map((trmsId) => ({
+        data: agreedTermsIds.map((trmsId: string) => ({
           userId: newUser.id,
           trmsId,
           agreYn: 'Y',
@@ -85,52 +87,28 @@ export async function POST(req: NextRequest) {
       return newUser;
     });
 
-    // Generate tokens
-    const tokenPayload = { sub: user.id, email: user.email, role: user.roleCd };
-    const accessToken = await generateAccessToken(tokenPayload);
-    const refreshToken = await generateRefreshToken(tokenPayload);
-
-    // Store refresh token hash
-    const tknHash = await hashToken(refreshToken);
-    const refreshExpiry = new Date();
-    refreshExpiry.setDate(refreshExpiry.getDate() + 7);
-
-    await prisma.refreshToken.create({
-      data: {
-        userId: user.id,
-        tknHash,
-        dvcInfo,
-        expryDt: refreshExpiry,
-      },
+    // Create Firebase session cookie
+    const sessionCookie = await adminAuth.createSessionCookie(idToken, {
+      expiresIn: SESSION_MAX_AGE * 1000,
     });
 
-    // Build response with cookies (tokens only in HttpOnly cookies, not body)
     const response = successResponse(
       {
         user: {
           id: user.id,
           email: user.email,
           displayName: user.displayName,
-          roleCd: user.roleCd,
+          role: user.roleCd,
         },
       },
       201,
     );
 
-    // Set HTTP-only cookies
-    response.cookies.set('access_token', accessToken, {
+    response.cookies.set(SESSION_COOKIE_NAME, sessionCookie, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 30 * 60, // 30 minutes
-      path: '/',
-    });
-
-    response.cookies.set('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60, // 7 days
+      sameSite: 'strict',
+      maxAge: SESSION_MAX_AGE,
       path: '/',
     });
 

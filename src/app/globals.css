@@ -15,6 +15,18 @@
   }
 }
 
+@layer components {
+  .btn-text-inverse {
+    color: var(--color-text-inverse);
+  }
+  .btn-text-primary {
+    color: var(--color-text-primary);
+  }
+  .btn-text-brand {
+    color: var(--color-text-brand);
+  }
+}
+
 @layer utilities {
   .scrollbar-none {
     -ms-overflow-style: none;

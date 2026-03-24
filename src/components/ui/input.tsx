@@ -11,7 +11,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, label, error, helperText, id, disabled, ...props }, ref) => {
+  ({ className, type, label, error, helperText, id, disabled, required, ...props }, ref) => {
     const generatedId = React.useId();
     const inputId = id || generatedId;
 
@@ -26,6 +26,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             )}
           >
             {label}
+            {required && <span className="text-[var(--color-error-500)] ml-0.5">*</span>}
           </LabelPrimitive.Root>
         )}
         <input
@@ -39,12 +40,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:border-transparent',
             'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-bg-secondary)]',
             error
-              ? 'border-[var(--color-border-error)] focus-visible:ring-[var(--color-error-500)]'
-              : 'border-[var(--color-border)] hover:border-[var(--color-text-tertiary)]',
+              ? 'border-2 border-[var(--color-error-500)] ring-1 ring-[var(--color-error-500)]/20 focus-visible:ring-[var(--color-error-500)]'
+              : 'border border-[var(--color-border)] hover:border-[var(--color-text-tertiary)]',
             className,
           )}
           ref={ref}
           disabled={disabled}
+          required={required}
           aria-invalid={error ? 'true' : undefined}
           aria-describedby={
             error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined

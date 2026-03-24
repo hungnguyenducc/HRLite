@@ -1,21 +1,63 @@
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const prisma = new PrismaClient();
 
+// Initialize Firebase Admin for seed
+if (getApps().length === 0) {
+  initializeApp({
+    credential: cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    }),
+  });
+}
+const adminAuth = getAuth();
+
+/**
+ * Create or get Firebase user. Returns the Firebase UID.
+ * If user already exists in Firebase, returns existing UID.
+ */
+async function ensureFirebaseUser(
+  email: string,
+  password: string,
+  displayName: string,
+): Promise<string> {
+  try {
+    // Check if user already exists in Firebase
+    const existing = await adminAuth.getUserByEmail(email);
+    return existing.uid;
+  } catch {
+    // User doesn't exist, create new
+    const created = await adminAuth.createUser({
+      email,
+      password,
+      displayName,
+    });
+    return created.uid;
+  }
+}
+
 async function main() {
-  // 1. Create default admin user
+  // 1. Create default admin user (in both Firebase and DB)
   const adminEmail = 'admin@hrlite.com';
   const adminPassword = 'Admin@123456';
-  const adminHash = await bcrypt.hash(adminPassword, 12);
+  const adminDisplayName = 'Quản trị viên';
+
+  const firebaseUid = await ensureFirebaseUser(adminEmail, adminPassword, adminDisplayName);
 
   const admin = await prisma.user.upsert({
     where: { email: adminEmail },
-    update: {},
+    update: { firebaseUid },
     create: {
       email: adminEmail,
-      passwdHash: adminHash,
-      displayName: 'Quản trị viên',
+      firebaseUid,
+      displayName: adminDisplayName,
       roleCd: 'ADMIN',
       sttsCd: 'ACTIVE',
       creatBy: 'SYSTEM',
@@ -378,7 +420,7 @@ async function main() {
   // eslint-disable-next-line no-console
   console.log('Seed completed:');
   // eslint-disable-next-line no-console
-  console.log(`  Admin: ${adminEmail} / ${adminPassword}`);
+  console.log(`  Admin: ${adminEmail} / ${adminPassword} (Firebase UID: ${firebaseUid})`);
   // eslint-disable-next-line no-console
   console.log(`  Terms: ${termsOfService.title}, ${privacyPolicy.title}`);
   // eslint-disable-next-line no-console

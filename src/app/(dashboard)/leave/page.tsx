@@ -50,9 +50,9 @@ import { cn } from '@/lib/utils';
 interface LeaveRecord {
   id: string;
   employee: {
-    id: string;
     emplNo: string;
     emplNm: string;
+    deptNm?: string | null;
   };
   leaveType: {
     lvTypeCd: string;
@@ -62,7 +62,9 @@ interface LeaveRecord {
   endDt: string;
   lvDays: number;
   rsn: string;
-  status: string;
+  aprvlSttsCd: string;
+  approver?: string | null;
+  aprvlDt?: string | null;
   creatDt: string;
 }
 
@@ -836,11 +838,11 @@ export default function LeavePage() {
         ),
       },
       {
-        key: 'status',
+        key: 'aprvlSttsCd',
         header: 'Trạng thái',
         render: (row) => {
-          const cfg = leaveStatusConfig[row.status] ?? {
-            label: row.status,
+          const cfg = leaveStatusConfig[row.aprvlSttsCd] ?? {
+            label: row.aprvlSttsCd,
             variant: 'default' as const,
           };
           return (
@@ -854,7 +856,7 @@ export default function LeavePage() {
         key: 'aprvlDt' as keyof LeaveRecord,
         header: 'Hành động',
         render: (row: LeaveRecord) => {
-          if (row.status !== 'PENDING') return null;
+          if (row.aprvlSttsCd !== 'PENDING') return null;
 
           return (
             <div className="flex items-center gap-1">

@@ -86,59 +86,226 @@ function DashboardSidebar() {
   );
 }
 
+interface NotificationItem {
+  id: string;
+  type: 'leave_pending';
+  title: string;
+  description: string;
+  href: string;
+  time: string;
+  read: boolean;
+}
+
 function NotificationBell() {
   const { user } = useAuth();
   const router = useRouter();
-  const [pendingCount, setPendingCount] = React.useState(0);
+  const [open, setOpen] = React.useState(false);
+  const [notifications, setNotifications] = React.useState<NotificationItem[]>([]);
+  const [readIds, setReadIds] = React.useState<Set<string>>(new Set());
+  const ref = React.useRef<HTMLDivElement>(null);
 
+  // Close on outside click
+  React.useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Fetch pending leave requests as notifications
   React.useEffect(() => {
     if (user?.role !== 'ADMIN') return;
 
-    const fetchPending = async () => {
+    const fetchNotifications = async () => {
       try {
-        const res = await fetch('/api/leave/stats', { credentials: 'include' });
-        if (res.ok) {
-          const json = await res.json();
-          setPendingCount(json.data?.pendingRequests ?? 0);
-        }
+        const res = await fetch('/api/leave?status=PENDING&limit=20', { credentials: 'include' });
+        if (!res.ok) return;
+        const json = await res.json();
+        if (!json.success) return;
+
+        const items: NotificationItem[] = (json.data || []).map((leave: { id: string; employee: { emplNm: string; emplNo: string }; leaveType: { lvTypeNm: string }; startDt: string; endDt: string; lvDays: number; creatDt: string }) => ({
+          id: leave.id,
+          type: 'leave_pending' as const,
+          title: `${leave.employee.emplNm} xin nghỉ phép`,
+          description: `${leave.leaveType.lvTypeNm} — ${leave.lvDays} ngày (${leave.startDt} → ${leave.endDt})`,
+          href: `/leave?status=PENDING`,
+          time: leave.creatDt,
+          read: readIds.has(leave.id),
+        }));
+        setNotifications(items);
       } catch {
         // Ignore
       }
     };
 
-    fetchPending();
-    const interval = setInterval(fetchPending, 30000);
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(interval);
-  }, [user?.role]);
+  }, [user?.role, readIds]);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const handleClick = (notification: NotificationItem) => {
+    setReadIds((prev) => new Set(prev).add(notification.id));
+    setOpen(false);
+    router.push(notification.href);
+  };
+
+  const markAllRead = () => {
+    setReadIds(new Set(notifications.map((n) => n.id)));
+  };
 
   if (user?.role !== 'ADMIN') return null;
 
+  const formatTime = (iso: string) => {
+    const d = new Date(iso);
+    const now = new Date();
+    const diffMs = now.getTime() - d.getTime();
+    const diffMin = Math.floor(diffMs / 60000);
+    if (diffMin < 1) return 'Vừa xong';
+    if (diffMin < 60) return `${diffMin} phút trước`;
+    const diffHour = Math.floor(diffMin / 60);
+    if (diffHour < 24) return `${diffHour} giờ trước`;
+    const diffDay = Math.floor(diffHour / 24);
+    return `${diffDay} ngày trước`;
+  };
+
   return (
-    <button
-      onClick={() => router.push('/leave?status=PENDING')}
-      className={cn(
-        'relative flex h-10 w-10 items-center justify-center rounded-[var(--radius-lg)]',
-        'hover:bg-[var(--color-bg-secondary)] transition-colors duration-[var(--duration-fast)]',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
-        'cursor-pointer',
-      )}
-      aria-label={`${pendingCount} yêu cầu chờ duyệt`}
-      title={`${pendingCount} yêu cầu chờ duyệt`}
-    >
-      <Bell className="h-5 w-5 text-[var(--color-text-tertiary)]" />
-      {pendingCount > 0 && (
-        <span
-          className="absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-white animate-in zoom-in"
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen(!open)}
+        className={cn(
+          'relative flex h-10 w-10 items-center justify-center rounded-[var(--radius-lg)]',
+          'hover:bg-[var(--color-bg-secondary)] transition-colors duration-[var(--duration-fast)]',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
+          'cursor-pointer',
+        )}
+        aria-label={`${unreadCount} thông báo chưa đọc`}
+      >
+        <Bell className="h-5 w-5 text-[var(--color-text-tertiary)]" />
+        {unreadCount > 0 && (
+          <span
+            className="absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-white animate-in zoom-in"
+            style={{
+              fontSize: 'var(--font-size-xs)',
+              fontWeight: 'var(--font-weight-bold)',
+              background: 'var(--color-error-500)',
+            }}
+          >
+            {unreadCount > 99 ? '99+' : unreadCount}
+          </span>
+        )}
+      </button>
+
+      {open && (
+        <div
+          className={cn(
+            'absolute right-0 top-full mt-2 z-[var(--z-dropdown)]',
+            'w-[380px] max-h-[480px] rounded-[var(--radius-xl)] border overflow-hidden',
+            'animate-in slide-in-from-top-2',
+          )}
           style={{
-            fontSize: 'var(--font-size-xs)',
-            fontWeight: 'var(--font-weight-bold)',
-            background: 'var(--color-error-500)',
+            borderColor: 'var(--color-border)',
+            background: 'var(--color-bg-card)',
+            boxShadow: 'var(--shadow-xl)',
           }}
         >
-          {pendingCount > 99 ? '99+' : pendingCount}
-        </span>
+          {/* Header */}
+          <div
+            className="flex items-center justify-between px-4 py-3 border-b"
+            style={{ borderColor: 'var(--color-border)' }}
+          >
+            <div className="flex items-center gap-2">
+              <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)' }}>
+                Thông báo
+              </span>
+              {unreadCount > 0 && (
+                <span
+                  className="flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-white"
+                  style={{ fontSize: 'var(--font-size-xs)', background: 'var(--color-brand-500)' }}
+                >
+                  {unreadCount}
+                </span>
+              )}
+            </div>
+            {unreadCount > 0 && (
+              <button
+                onClick={markAllRead}
+                className="cursor-pointer hover:underline"
+                style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-brand)' }}
+              >
+                Đánh dấu tất cả đã đọc
+              </button>
+            )}
+          </div>
+
+          {/* List */}
+          <div className="overflow-y-auto max-h-[400px]">
+            {notifications.length === 0 ? (
+              <div className="px-4 py-8 text-center" style={{ color: 'var(--color-text-tertiary)', fontSize: 'var(--font-size-sm)' }}>
+                <Bell className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                Không có thông báo mới
+              </div>
+            ) : (
+              notifications.map((n) => (
+                <button
+                  key={n.id}
+                  onClick={() => handleClick(n)}
+                  className={cn(
+                    'flex items-start gap-3 w-full px-4 py-3 text-left cursor-pointer',
+                    'hover:bg-[var(--color-bg-secondary)] transition-colors duration-[var(--duration-fast)]',
+                    'border-b',
+                    !n.read && 'bg-[var(--color-brand-50)]',
+                  )}
+                  style={{ borderColor: 'var(--color-border)' }}
+                >
+                  <div
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full mt-0.5"
+                    style={{
+                      background: 'var(--color-warning-50)',
+                      color: 'var(--color-warning-500)',
+                    }}
+                  >
+                    <CalendarDays className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className="truncate"
+                      style={{
+                        fontSize: 'var(--font-size-sm)',
+                        fontWeight: n.read ? 'var(--font-weight-normal)' : 'var(--font-weight-semibold)',
+                        color: 'var(--color-text-primary)',
+                      }}
+                    >
+                      {n.title}
+                    </p>
+                    <p
+                      className="truncate mt-0.5"
+                      style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-tertiary)' }}
+                    >
+                      {n.description}
+                    </p>
+                    <p
+                      className="mt-1"
+                      style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-tertiary)' }}
+                    >
+                      {formatTime(n.time)}
+                    </p>
+                  </div>
+                  {!n.read && (
+                    <div
+                      className="h-2 w-2 rounded-full shrink-0 mt-2"
+                      style={{ background: 'var(--color-brand-500)' }}
+                    />
+                  )}
+                </button>
+              ))
+            )}
+          </div>
+        </div>
       )}
-    </button>
+    </div>
   );
 }
 

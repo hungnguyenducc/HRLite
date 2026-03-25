@@ -13,6 +13,7 @@ import {
   LogOut,
   ChevronDown,
   User,
+  Bell,
 } from 'lucide-react';
 import {
   SidebarLayout,
@@ -85,6 +86,62 @@ function DashboardSidebar() {
   );
 }
 
+function NotificationBell() {
+  const { user } = useAuth();
+  const router = useRouter();
+  const [pendingCount, setPendingCount] = React.useState(0);
+
+  React.useEffect(() => {
+    if (user?.role !== 'ADMIN') return;
+
+    const fetchPending = async () => {
+      try {
+        const res = await fetch('/api/leave/stats', { credentials: 'include' });
+        if (res.ok) {
+          const json = await res.json();
+          setPendingCount(json.data?.pendingRequests ?? 0);
+        }
+      } catch {
+        // Ignore
+      }
+    };
+
+    fetchPending();
+    const interval = setInterval(fetchPending, 30000);
+    return () => clearInterval(interval);
+  }, [user?.role]);
+
+  if (user?.role !== 'ADMIN') return null;
+
+  return (
+    <button
+      onClick={() => router.push('/leave?status=PENDING')}
+      className={cn(
+        'relative flex h-10 w-10 items-center justify-center rounded-[var(--radius-lg)]',
+        'hover:bg-[var(--color-bg-secondary)] transition-colors duration-[var(--duration-fast)]',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
+        'cursor-pointer',
+      )}
+      aria-label={`${pendingCount} yêu cầu chờ duyệt`}
+      title={`${pendingCount} yêu cầu chờ duyệt`}
+    >
+      <Bell className="h-5 w-5 text-[var(--color-text-tertiary)]" />
+      {pendingCount > 0 && (
+        <span
+          className="absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-white animate-in zoom-in"
+          style={{
+            fontSize: 'var(--font-size-xs)',
+            fontWeight: 'var(--font-weight-bold)',
+            background: 'var(--color-error-500)',
+          }}
+        >
+          {pendingCount > 99 ? '99+' : pendingCount}
+        </span>
+      )}
+    </button>
+  );
+}
+
 function TopHeader() {
   const { user, logout } = useAuth();
   const router = useRouter();
@@ -122,6 +179,8 @@ function TopHeader() {
         <SidebarMobileTrigger />
       </div>
 
+      <div className="flex items-center gap-2">
+        <NotificationBell />
       <div className="relative" ref={dropdownRef} onKeyDown={handleKeyDown}>
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -248,6 +307,7 @@ function TopHeader() {
             </div>
           </div>
         )}
+      </div>
       </div>
     </header>
   );

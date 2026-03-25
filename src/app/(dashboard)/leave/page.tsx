@@ -335,6 +335,11 @@ export default function LeavePage() {
   const { addToast } = useToast();
   const isAdmin = user?.role === 'ADMIN';
 
+  // Read URL search params for initial filter (e.g., ?status=PENDING from notification bell)
+  const initialStatus = typeof window !== 'undefined'
+    ? new URLSearchParams(window.location.search).get('status') || 'all'
+    : 'all';
+
   // Tab state
   const [activeTab, setActiveTab] = React.useState('requests');
 
@@ -343,7 +348,7 @@ export default function LeavePage() {
   // List state
   const [leaves, setLeaves] = React.useState<LeaveRecord[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const [statusFilter, setStatusFilter] = React.useState<string>('all');
+  const [statusFilter, setStatusFilter] = React.useState<string>(initialStatus);
   const [typeFilter, setTypeFilter] = React.useState<string>('all');
   const [yearFilter, setYearFilter] = React.useState<string>(String(new Date().getFullYear()));
   const [page, setPage] = React.useState(1);
@@ -363,6 +368,11 @@ export default function LeavePage() {
 
   // Action loading
   const [actionLoading, setActionLoading] = React.useState<string | null>(null);
+
+  // Reject dialog
+  const [rejectDialogOpen, setRejectDialogOpen] = React.useState(false);
+  const [rejectTargetId, setRejectTargetId] = React.useState<string | null>(null);
+  const [rejectReason, setRejectReason] = React.useState('');
 
   // ═══ Tab 2: Leave Types ═══
 
@@ -566,12 +576,16 @@ export default function LeavePage() {
   };
 
   const handleLeaveAction = React.useCallback(
-    async (id: string, action: 'approve' | 'reject' | 'cancel') => {
+    async (id: string, action: 'approve' | 'reject' | 'cancel', body?: Record<string, unknown>) => {
       setActionLoading(`${id}-${action}`);
       try {
         const res = await fetch(`/api/leave/${id}/${action}`, {
           method: 'PATCH',
           credentials: 'include',
+          ...(body && {
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          }),
         });
         const json = await res.json();
 
@@ -585,9 +599,9 @@ export default function LeavePage() {
         }
 
         const actionLabels = {
-          approve: 'Đã duyệt',
-          reject: 'Đã từ chối',
-          cancel: 'Đã hủy',
+          approve: 'Đã duyệt yêu cầu nghỉ phép',
+          reject: 'Đã từ chối yêu cầu nghỉ phép',
+          cancel: 'Đã hủy yêu cầu nghỉ phép',
         };
         addToast({ variant: 'success', title: actionLabels[action] });
         fetchLeaves();
@@ -600,6 +614,20 @@ export default function LeavePage() {
     },
     [addToast, fetchLeaves, fetchStats],
   );
+
+  const openRejectDialog = React.useCallback((id: string) => {
+    setRejectTargetId(id);
+    setRejectReason('');
+    setRejectDialogOpen(true);
+  }, []);
+
+  const handleRejectConfirm = React.useCallback(async () => {
+    if (!rejectTargetId) return;
+    await handleLeaveAction(rejectTargetId, 'reject', rejectReason.trim() ? { reason: rejectReason.trim() } : undefined);
+    setRejectDialogOpen(false);
+    setRejectTargetId(null);
+    setRejectReason('');
+  }, [rejectTargetId, rejectReason, handleLeaveAction]);
 
   // ─── Leave type handlers ───────────────────────
 
@@ -824,55 +852,55 @@ export default function LeavePage() {
       },
       {
         key: 'aprvlDt' as keyof LeaveRecord,
-        header: '',
+        header: 'Hành động',
         render: (row: LeaveRecord) => {
           if (row.status !== 'PENDING') return null;
 
-          // Ownership check is enforced server-side on cancel action.
-          // Frontend shows cancel button optimistically; API returns 403 if not owner.
-          const canCancel = true;
-
           return (
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-1">
               {isAdmin && (
                 <>
                   <Button
                     variant="ghost"
-                    size="icon"
+                    size="sm"
                     onClick={() => handleLeaveAction(row.id, 'approve')}
                     loading={actionLoading === `${row.id}-approve`}
                     aria-label="Duyệt"
+                    className="text-[var(--color-success-600)] hover:bg-[var(--color-success-50)] cursor-pointer"
                   >
-                    <Check className="h-4 w-4" style={{ color: 'var(--color-success-500)' }} />
+                    <Check className="h-4 w-4" />
+                    Duyệt
                   </Button>
                   <Button
                     variant="ghost"
-                    size="icon"
-                    onClick={() => handleLeaveAction(row.id, 'reject')}
+                    size="sm"
+                    onClick={() => openRejectDialog(row.id)}
                     loading={actionLoading === `${row.id}-reject`}
                     aria-label="Từ chối"
+                    className="text-[var(--color-error-600)] hover:bg-[var(--color-error-50)] cursor-pointer"
                   >
-                    <X className="h-4 w-4" style={{ color: 'var(--color-error-500)' }} />
+                    <X className="h-4 w-4" />
+                    Từ chối
                   </Button>
                 </>
               )}
-              {(canCancel || isAdmin) && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleLeaveAction(row.id, 'cancel')}
-                  loading={actionLoading === `${row.id}-cancel`}
-                  aria-label="Hủy"
-                >
-                  <Ban className="h-4 w-4" style={{ color: 'var(--color-text-tertiary)' }} />
-                </Button>
-              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleLeaveAction(row.id, 'cancel')}
+                loading={actionLoading === `${row.id}-cancel`}
+                aria-label="Hủy"
+                className="text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] cursor-pointer"
+              >
+                <Ban className="h-3.5 w-3.5" />
+                Hủy
+              </Button>
             </div>
           );
         },
       },
     ],
-    [isAdmin, actionLoading, handleLeaveAction],
+    [isAdmin, actionLoading, handleLeaveAction, openRejectDialog],
   );
 
   // ─── Leave type table columns ──────────────────
@@ -1637,6 +1665,68 @@ export default function LeavePage() {
               onClick={handleLeaveTypeDelete}
             >
               Xóa
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Reject Reason Dialog ──────────────────── */}
+      <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
+        <DialogContent size="sm">
+          <DialogHeader>
+            <DialogTitle>
+              <span className="flex items-center gap-2">
+                <div
+                  className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-lg)]"
+                  style={{
+                    background: 'var(--color-error-50)',
+                    color: 'var(--color-error-500)',
+                  }}
+                >
+                  <X className="h-4 w-4" />
+                </div>
+                Từ chối yêu cầu nghỉ phép
+              </span>
+            </DialogTitle>
+            <DialogDescription>
+              Nhập lý do từ chối (không bắt buộc). Lý do sẽ được gửi qua email thông báo cho nhân viên.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogBody>
+            <textarea
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              placeholder="Nhập lý do từ chối..."
+              maxLength={500}
+              rows={3}
+              className={cn(
+                'w-full rounded-[var(--radius-lg)] border px-3 py-2 resize-none',
+                'focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)]',
+              )}
+              style={{
+                borderColor: 'var(--color-border)',
+                fontSize: 'var(--font-size-sm)',
+                background: 'var(--color-bg-secondary)',
+              }}
+            />
+            <p
+              className="text-right mt-1"
+              style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-tertiary)' }}
+            >
+              {rejectReason.length}/500
+            </p>
+          </DialogBody>
+          <DialogFooter>
+            <Button variant="secondary" size="sm" onClick={() => setRejectDialogOpen(false)}>
+              Hủy
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              loading={actionLoading?.endsWith('-reject') ?? false}
+              onClick={handleRejectConfirm}
+            >
+              Xác nhận từ chối
             </Button>
           </DialogFooter>
         </DialogContent>

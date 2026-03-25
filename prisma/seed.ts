@@ -64,6 +64,46 @@ async function main() {
     },
   });
 
+  // 1b. Create second admin user (skylinek4dhv@gmail.com)
+  const admin2Email = 'skylinek4dhv@gmail.com';
+  const admin2Password = 'Admin@123456';
+  const admin2DisplayName = 'Hung Nguyen (Admin)';
+
+  const admin2FirebaseUid = await ensureFirebaseUser(admin2Email, admin2Password, admin2DisplayName);
+
+  await prisma.user.upsert({
+    where: { email: admin2Email },
+    update: { firebaseUid: admin2FirebaseUid },
+    create: {
+      email: admin2Email,
+      firebaseUid: admin2FirebaseUid,
+      displayName: admin2DisplayName,
+      roleCd: 'ADMIN',
+      sttsCd: 'ACTIVE',
+      creatBy: 'SYSTEM',
+    },
+  });
+
+  // 1c. Create employee user (hungnd@astratech.vn)
+  const userEmail = 'hungnd@astratech.vn';
+  const userPassword = 'User@123456';
+  const userDisplayName = 'Nguyễn Đức Hưng';
+
+  const userFirebaseUid = await ensureFirebaseUser(userEmail, userPassword, userDisplayName);
+
+  const userEmployee = await prisma.user.upsert({
+    where: { email: userEmail },
+    update: { firebaseUid: userFirebaseUid },
+    create: {
+      email: userEmail,
+      firebaseUid: userFirebaseUid,
+      displayName: userDisplayName,
+      roleCd: 'USER',
+      sttsCd: 'ACTIVE',
+      creatBy: 'SYSTEM',
+    },
+  });
+
   // 2. Create default terms
   const termsOfService = await prisma.terms.upsert({
     where: { typeCd_verNo: { typeCd: 'TERMS_OF_SERVICE', verNo: '1' } },
@@ -101,18 +141,21 @@ async function main() {
     },
   });
 
-  // 3. Create agreement records for admin
-  for (const term of [termsOfService, privacyPolicy]) {
-    await prisma.userAgreement.upsert({
-      where: { userId_trmsId: { userId: admin.id, trmsId: term.id } },
-      update: {},
-      create: {
-        userId: admin.id,
-        trmsId: term.id,
-        agreYn: 'Y',
-        agreDt: new Date(),
-      },
-    });
+  // 3. Create agreement records for all users
+  const allUsers = [admin, { id: (await prisma.user.findUnique({ where: { email: admin2Email } }))!.id }, userEmployee];
+  for (const user of allUsers) {
+    for (const term of [termsOfService, privacyPolicy]) {
+      await prisma.userAgreement.upsert({
+        where: { userId_trmsId: { userId: user.id, trmsId: term.id } },
+        update: {},
+        create: {
+          userId: user.id,
+          trmsId: term.id,
+          agreYn: 'Y',
+          agreDt: new Date(),
+        },
+      });
+    }
   }
 
   // 4. Create departments (org tree)
@@ -260,6 +303,14 @@ async function main() {
       deptId: deptSales.id,
       posiNm: 'Nhân viên kinh doanh',
       sttsCd: 'ON_LEAVE',
+    },
+    {
+      emplNo: 'NV-0011',
+      emplNm: 'Nguyễn Đức Hưng',
+      email: 'hungnd@astratech.vn',
+      deptId: deptTech.id,
+      posiNm: 'Software Engineer',
+      userId: userEmployee.id,
     },
   ];
 
@@ -420,7 +471,11 @@ async function main() {
   // eslint-disable-next-line no-console
   console.log('Seed completed:');
   // eslint-disable-next-line no-console
-  console.log(`  Admin: ${adminEmail} / ${adminPassword} (Firebase UID: ${firebaseUid})`);
+  console.log(`  Admin 1: ${adminEmail} / ${adminPassword}`);
+  // eslint-disable-next-line no-console
+  console.log(`  Admin 2: ${admin2Email} / ${admin2Password}`);
+  // eslint-disable-next-line no-console
+  console.log(`  User: ${userEmail} / ${userPassword}`);
   // eslint-disable-next-line no-console
   console.log(`  Terms: ${termsOfService.title}, ${privacyPolicy.title}`);
   // eslint-disable-next-line no-console

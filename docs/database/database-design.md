@@ -105,6 +105,7 @@ TB_EMPL (Nhân viên)
 | APRVL_STTS_CD | VARCHAR(20) | Mã trạng thái phê duyệt | NOT NULL |
 | APRVR_ID | UUID | ID người phê duyệt | FK → TB_EMPL |
 | APRVL_DT | TIMESTAMP | Thời gian phê duyệt | |
+| RJCT_RSN | TEXT | Lý do từ chối | |
 | CREAT_DT | TIMESTAMP | Thời gian tạo | NOT NULL |
 | CREAT_BY | VARCHAR(100) | Người tạo | NOT NULL |
 | UPDT_DT | TIMESTAMP | Thời gian cập nhật | |

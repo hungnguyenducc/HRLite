@@ -193,6 +193,7 @@ model LeaveRequest {
   aprvlSttsCd String    @map("APRVL_STTS_CD")
   aprvrId     String?   @map("APRVR_ID")
   aprvlDt     DateTime? @map("APRVL_DT")
+  rjctRsn     String?   @map("RJCT_RSN")
   creatDt     DateTime  @default(now()) @map("CREAT_DT")
   creatBy     String    @map("CREAT_BY")
   updtDt      DateTime? @updatedAt @map("UPDT_DT")

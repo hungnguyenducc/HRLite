@@ -19,6 +19,7 @@ Xây dựng công cụ quản lý nhân sự nội bộ nhẹ, dễ sử dụng 
 | 004 | Chấm công | Check-in/out, tổng hợp giờ làm, báo cáo tháng | Cao | Sprint 3 | 📝 Đã có blueprint |
 | 005 | Nghỉ phép | Đăng ký, phê duyệt, theo dõi số ngày, số phép còn lại | Trung bình | Sprint 3 | 📝 Đã có blueprint |
 | 006 | Báo cáo | Dashboard, báo cáo nhân sự, xuất Excel | Trung bình | Sprint 4 | ⏳ Chờ |
+| 007 | Email Service | Gửi email thông báo qua AWS SES (nghỉ phép, chấm công, mời NV) | Cao | Sprint 4 | 📝 Đã có blueprint |
 
 ## Tech Stack và lý do lựa chọn
 
@@ -39,7 +40,9 @@ Quản lý phòng ban (002) ←── Quản lý nhân viên (003)
                                      │
                                      ├──→ Chấm công (004)
                                      │
-                                     ├──→ Nghỉ phép (005)
+                                     ├──→ Nghỉ phép (005) ──→ Email Service (007)
+                                     │
+                                     ├──→ Chấm công (004) ──→ Email Service (007) [giai đoạn sau]
                                      │
                                      └──→ Báo cáo (006) ←── tổng hợp từ tất cả module
 ```

@@ -1,5 +1,4 @@
 services:
-  # --- PostgreSQL ---
   postgres:
     image: postgres:16-alpine
     container_name: hrlite_db
@@ -18,70 +17,5 @@ services:
       timeout: 3s
       retries: 10
 
-  # --- DB Migration (chạy trước app) ---
-  migrator:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: migrator
-    container_name: hrlite_migrator
-    environment:
-      DATABASE_URL: postgresql://hrlite:hrlite@postgres:5432/hrlite
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: "no"
-
-  # --- HRLite App ---
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
-    container_name: hrlite_app
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    # WARNING: Giá trị mặc định chỉ dùng cho local dev, KHÔNG dùng trong production
-    environment:
-      DATABASE_URL: postgresql://hrlite:hrlite@postgres:5432/hrlite
-      NEXTAUTH_URL: http://localhost:3000
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-local-dev-secret-change-in-production}
-      JWT_SECRET: ${JWT_SECRET:-hrlite-jwt-secret-min-32-chars-here!!}
-      JWT_ACCESS_EXPIRES: ${JWT_ACCESS_EXPIRES:-30m}
-      JWT_REFRESH_EXPIRES: ${JWT_REFRESH_EXPIRES:-7d}
-    depends_on:
-      postgres:
-        condition: service_healthy
-      migrator:
-        condition: service_completed_successfully
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://0.0.0.0:3000/api/health"]
-      interval: 10s
-      timeout: 3s
-      start_period: 15s
-      retries: 3
-
-  # --- Jenkins ---
-  jenkins:
-    build:
-      context: ./docker/jenkins
-      dockerfile: Dockerfile
-    container_name: hrlite_jenkins
-    restart: unless-stopped
-    # WARNING: root chỉ dùng cho local dev, KHÔNG dùng trong production
-    user: root
-    ports:
-      - "8080:8080"
-      - "50000:50000"
-    volumes:
-      - jenkins_data:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      JAVA_OPTS: "-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
-      JENKINS_ADMIN_ID: admin
-      JENKINS_ADMIN_PASSWORD: admin
-
 volumes:
   postgres_data:
-  jenkins_data:

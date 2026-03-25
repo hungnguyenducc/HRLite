@@ -19,8 +19,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: [
-          'bg-[var(--color-brand-600)] btn-text-inverse',
-          'hover:bg-[var(--color-brand-700)]',
+          'bg-[var(--color-brand-600)] text-white',
+          'hover:bg-[var(--color-brand-700)] hover:cursor-pointer',
           'shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]',
         ].join(' '),
         secondary: [
@@ -28,8 +28,8 @@ const buttonVariants = cva(
           'hover:bg-[var(--color-border)]',
         ].join(' '),
         danger: [
-          'bg-[var(--color-error-500)] btn-text-inverse',
-          'hover:bg-[var(--color-error-700)]',
+          'bg-[var(--color-error-500)] text-white',
+          'hover:bg-[var(--color-error-700)] hover:cursor-pointer',
           'shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]',
         ].join(' '),
         ghost: ['btn-text-brand', 'hover:bg-[var(--color-brand-50)]'].join(' '),

@@ -250,7 +250,7 @@ export function SidebarItem({ icon, label, active, onClick }: SidebarItemProps) 
     <button
       onClick={onClick}
       className={cn(
-        'group flex items-center gap-3 w-full rounded-[var(--radius-lg)] px-3 py-2.5 relative',
+        'group flex items-center gap-3 w-full rounded-[var(--radius-lg)] px-3 py-2.5 relative cursor-pointer',
         'transition-all duration-[var(--duration-normal)]',
         active ? 'text-white' : 'text-white/45 hover:text-white/75 hover:bg-white/[0.04]',
         collapsed && 'justify-center px-0',

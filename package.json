@@ -23,6 +23,9 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:seed": "npx tsx prisma/seed.ts",
+    "db:seed:crawl": "npx tsx prisma/seed-crawl.ts",
+    "db:seed:customers": "npx tsx prisma/seed-customers.ts",
+    "db:seed:orders": "npx tsx prisma/seed-orders.ts",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
     "postinstall": "prisma generate"
   },

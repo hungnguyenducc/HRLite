@@ -206,6 +206,59 @@ model LeaveRequest {
   @@map("TB_LV_REQ")
 }
 
+// ============================================================
+// Customer module models
+// ============================================================
+
+model Customer {
+  id         String    @id @default(uuid()) @map("CUST_ID")
+  custNo     String    @unique @map("CUST_NO")
+  custNm     String    @map("CUST_NM")
+  email      String    @unique @map("EMAIL")
+  phoneNo    String?   @map("PHONE_NO")
+  birthDt    DateTime? @map("BIRTH_DT") @db.Date
+  gendrCd    String?   @map("GENDR_CD")
+  addr       String?   @map("ADDR")
+  city       String?   @map("CITY")
+  countryCd  String?   @map("CNTRY_CD")
+  photoUrl   String?   @map("PHOTO_URL")
+  custSttsCd String    @default("ACTIVE") @map("CUST_STTS_CD")
+  creatDt    DateTime  @default(now()) @map("CREAT_DT")
+  creatBy    String    @map("CREAT_BY")
+  updtDt     DateTime? @updatedAt @map("UPDT_DT")
+  updtBy     String?   @map("UPDT_BY")
+  delYn      String    @default("N") @map("DEL_YN")
+
+  // 1:N — 1 KH có nhiều đơn hàng
+  orders CustomerOrder[]
+
+  @@map("TB_CUST")
+}
+
+model CustomerOrder {
+  id         String    @id @default(uuid()) @map("CUST_ORD_ID")
+  ordNo      String    @unique @map("ORD_NO")
+  custId     String    @map("CUST_ID")
+  ordDt      DateTime  @default(now()) @map("ORD_DT")
+  ordSttsCd  String    @default("PENDING") @map("ORD_STTS_CD")
+  totAmt     Decimal   @map("TOT_AMT") @db.Decimal(12, 2)
+  prdctNm    String    @map("PRDCT_NM")
+  qty        Int       @map("QTY")
+  unitPrc    Decimal   @map("UNIT_PRC") @db.Decimal(12, 2)
+  payMthdCd  String?   @map("PAY_MTHD_CD")
+  rmk        String?   @map("RMK")
+  creatDt    DateTime  @default(now()) @map("CREAT_DT")
+  creatBy    String    @map("CREAT_BY")
+  updtDt     DateTime? @updatedAt @map("UPDT_DT")
+  updtBy     String?   @map("UPDT_BY")
+  delYn      String    @default("N") @map("DEL_YN")
+
+  // N:1 — Nhiều đơn hàng thuộc 1 KH
+  customer Customer @relation(fields: [custId], references: [id])
+
+  @@map("TB_CUST_ORD")
+}
+
 model LeaveType {
   lvTypeCd String @id @map("LV_TYPE_CD")
   lvTypeNm String @map("LV_TYPE_NM")

@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/crawl/random-users",
+      "schedule": "0 * * * *"
+    }
+  ]
+}

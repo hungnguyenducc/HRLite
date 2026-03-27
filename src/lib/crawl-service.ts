@@ -54,57 +54,58 @@ export async function crawlRandomUsers(count: number): Promise<CrawlResult> {
     throw new Error('Chưa có phòng ban nào trong DB');
   }
 
-  // 2. Đếm nhân viên hiện có
-  const existingCount = await prisma.employee.count();
-
-  // 3. Crawl từ API
+  // 2. Crawl từ API
   const users = await fetchRandomUsers(count);
   logger.info(`[Crawl] Đã fetch ${users.length} người dùng từ API`);
 
-  // 4. Lấy email hiện có để tránh trùng
-  const existingEmails = new Set(
-    (await prisma.employee.findMany({ select: { email: true } })).map((e) => e.email),
-  );
+  // 3. Lấy email + emplNo hiện có để tránh trùng
+  const [existingEmailRows, existingEmplNoRows] = await Promise.all([
+    prisma.employee.findMany({ select: { email: true } }),
+    prisma.employee.findMany({ select: { emplNo: true } }),
+  ]);
+  const existingEmails = new Set(existingEmailRows.map((e) => e.email));
+  const existingEmplNos = new Set(existingEmplNoRows.map((e) => e.emplNo));
 
-  // 5. Tạo nhân viên
-  let created = 0;
-  let skipped = 0;
+  // 4. Chuẩn bị dữ liệu batch insert
+  const newEmployees = [];
 
   for (const user of users) {
     const email = toGmailAddress(user);
 
     if (existingEmails.has(email)) {
-      skipped++;
       continue;
     }
 
-    const emplNo = generateEmplNo(created, existingCount);
+    const emplNo = generateEmplNo(existingEmplNos);
     const dept = departments[Math.floor(Math.random() * departments.length)];
 
-    try {
-      await prisma.employee.create({
-        data: {
-          emplNo,
-          emplNm: `${user.name.first} ${user.name.last}`,
-          email,
-          phoneNo: toVNPhoneNumber(),
-          deptId: dept.id,
-          posiNm: POSITIONS[Math.floor(Math.random() * POSITIONS.length)],
-          joinDt: randomJoinDate(),
-          emplSttsCd: 'WORKING',
-          creatBy: 'CRAWL_AUTO',
-        },
-      });
+    newEmployees.push({
+      emplNo,
+      emplNm: `${user.name.first} ${user.name.last}`,
+      email,
+      phoneNo: toVNPhoneNumber(),
+      deptId: dept.id,
+      posiNm: POSITIONS[Math.floor(Math.random() * POSITIONS.length)],
+      joinDt: randomJoinDate(),
+      emplSttsCd: 'WORKING',
+      creatBy: 'CRAWL_AUTO',
+    });
 
-      existingEmails.add(email);
-      created++;
-    } catch {
-      skipped++;
-    }
+    existingEmails.add(email);
+    existingEmplNos.add(emplNo);
   }
 
-  const totalInDb = existingCount + created;
-  logger.info(`[Crawl] Hoàn tất: crawl=${users.length}, tạo=${created}, bỏ qua=${skipped}, tổng DB=${totalInDb}`);
+  // 5. Batch insert — skipDuplicates tránh lỗi unique constraint
+  const result = await prisma.employee.createMany({
+    data: newEmployees,
+    skipDuplicates: true,
+  });
+
+  const created = result.count;
+  const skipped = users.length - created;
+  const totalInDb = existingEmplNos.size - newEmployees.length + newEmployees.length;
+
+  logger.info(`[Crawl] Hoàn tất: crawl=${users.length}, tạo=${created}, bỏ qua=${skipped}`);
 
   return { totalCrawled: users.length, created, skipped, totalInDb };
 }
@@ -135,9 +136,15 @@ async function fetchRandomUsers(count: number): Promise<RandomUser[]> {
   return allUsers;
 }
 
-function generateEmplNo(index: number, existingCount: number): string {
-  const num = existingCount + index + 1;
-  return `NV-${num.toString().padStart(4, '0')}`;
+function generateEmplNo(existingEmplNos: Set<string>): string {
+  const timestamp = Date.now().toString(36);
+  const rand = Math.random().toString(36).substring(2, 6);
+  const emplNo = `NV-${timestamp}${rand}`.toUpperCase().substring(0, 12);
+
+  if (existingEmplNos.has(emplNo)) {
+    return generateEmplNo(existingEmplNos);
+  }
+  return emplNo;
 }
 
 function toGmailAddress(user: RandomUser): string {

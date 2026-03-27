@@ -4,7 +4,7 @@ import { crawlRandomUsers } from '@/lib/crawl-service';
 import logger from '@/lib/logger';
 
 const CRON_SECRET = process.env.CRON_SECRET;
-const DEFAULT_COUNT = 100;
+const DEFAULT_COUNT = 20;
 
 /**
  * Xác thực request bằng CRON_SECRET

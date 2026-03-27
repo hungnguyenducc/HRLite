@@ -159,6 +159,9 @@ model Employee {
   // Leave requests (as approver)
   approvedLeaves LeaveRequest[] @relation("LeaveApprover")
 
+  // 1:N — 1 NV phụ trách nhiều khách hàng
+  customers Customer[]
+
   @@map("TB_EMPL")
 }
 
@@ -222,12 +225,16 @@ model Customer {
   city       String?   @map("CITY")
   countryCd  String?   @map("CNTRY_CD")
   photoUrl   String?   @map("PHOTO_URL")
+  emplId     String?   @map("EMPL_ID")
   custSttsCd String    @default("ACTIVE") @map("CUST_STTS_CD")
   creatDt    DateTime  @default(now()) @map("CREAT_DT")
   creatBy    String    @map("CREAT_BY")
   updtDt     DateTime? @updatedAt @map("UPDT_DT")
   updtBy     String?   @map("UPDT_BY")
   delYn      String    @default("N") @map("DEL_YN")
+
+  // N:1 — Nhiều KH thuộc 1 NV phụ trách
+  employee Employee? @relation(fields: [emplId], references: [id])
 
   // 1:N — 1 KH có nhiều đơn hàng
   orders CustomerOrder[]

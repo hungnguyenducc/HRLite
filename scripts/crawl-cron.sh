@@ -1,34 +1,28 @@
 #!/bin/bash
 # Script tự động crawl dữ liệu mỗi giờ
-# Gọi API endpoint POST /api/crawl/random-users
+# Chạy trực tiếp bằng Node.js — không cần server đang chạy
 #
 # Cài đặt crontab:
 #   crontab -e
 #   0 * * * * /Applications/Workspace/HRLite/scripts/crawl-cron.sh >> /Applications/Workspace/HRLite/logs/crawl.log 2>&1
 
-APP_URL="${APP_URL:-http://localhost:3002}"
-CRON_SECRET="${CRON_SECRET:-$(grep CRON_SECRET /Applications/Workspace/HRLite/.env 2>/dev/null | cut -d'"' -f2)}"
-COUNT=100
+PROJECT_DIR="/Applications/Workspace/HRLite"
+LOG_PREFIX="[$(date '+%Y-%m-%d %H:%M:%S')]"
 
 echo "=========================================="
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Bắt đầu crawl ${COUNT} người dùng"
+echo "${LOG_PREFIX} Bắt đầu crawl dữ liệu nhân viên"
 echo "=========================================="
 
-RESPONSE=$(curl -s -w "\n%{http_code}" \
-  -X POST "${APP_URL}/api/crawl/random-users" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ${CRON_SECRET}" \
-  -d "{\"count\": ${COUNT}}")
+cd "${PROJECT_DIR}" || { echo "${LOG_PREFIX} Không tìm thấy thư mục project"; exit 1; }
 
-HTTP_CODE=$(echo "$RESPONSE" | tail -1)
-BODY=$(echo "$RESPONSE" | sed '$d')
+# Chạy seed-crawl trực tiếp bằng tsx (không phụ thuộc server)
+npx tsx prisma/seed-crawl.ts 2>&1
 
-echo "HTTP Status: ${HTTP_CODE}"
-echo "Response: ${BODY}"
+EXIT_CODE=$?
 
-if [ "$HTTP_CODE" = "200" ]; then
-  echo "[$(date '+%Y-%m-%d %H:%M:%S')] Crawl thành công!"
+if [ $EXIT_CODE -eq 0 ]; then
+  echo "${LOG_PREFIX} Crawl thành công!"
 else
-  echo "[$(date '+%Y-%m-%d %H:%M:%S')] Crawl thất bại! HTTP ${HTTP_CODE}"
+  echo "${LOG_PREFIX} Crawl thất bại! Exit code: ${EXIT_CODE}"
   exit 1
 fi

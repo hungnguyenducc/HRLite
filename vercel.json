@@ -1,4 +1,8 @@
 {
+  "buildCommand": "npx prisma generate --schema=packages/database/prisma/schema.prisma && cd apps/frontend && npm run build",
+  "outputDirectory": "apps/frontend/.next",
+  "installCommand": "npm install",
+  "framework": "nextjs",
   "crons": [
     {
       "path": "/api/crawl/random-users",

@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { getTodayRange } from '../../common/utils/attendance-utils';
 
 @Injectable()
 export class DashboardService {
   constructor(private prisma: PrismaService) {}
 
   async getStats() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    const { start: today, end: tomorrow } = getTodayRange();
 
     const [
       totalEmployees,

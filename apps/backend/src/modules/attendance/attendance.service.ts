@@ -237,8 +237,8 @@ export class AttendanceService {
     }
 
     const { start, end } = getTodayRange();
-    const todayDate = new Date(start.getTime() + 7 * 60 * 60 * 1000);
-    const atndDt = new Date(Date.UTC(todayDate.getUTCFullYear(), todayDate.getUTCMonth(), todayDate.getUTCDate()));
+    const vnNow = new Date(start.getTime() + 7 * 60 * 60 * 1000);
+    const atndDt = new Date(Date.UTC(vnNow.getUTCFullYear(), vnNow.getUTCMonth(), vnNow.getUTCDate()));
 
     const now = new Date();
     const status = determineStatus(now);
@@ -293,8 +293,8 @@ export class AttendanceService {
     }
 
     const { start, end } = getTodayRange();
-    const todayDate = new Date(start.getTime() + 7 * 60 * 60 * 1000);
-    const atndDt = new Date(Date.UTC(todayDate.getUTCFullYear(), todayDate.getUTCMonth(), todayDate.getUTCDate()));
+    const vnNow = new Date(start.getTime() + 7 * 60 * 60 * 1000);
+    const atndDt = new Date(Date.UTC(vnNow.getUTCFullYear(), vnNow.getUTCMonth(), vnNow.getUTCDate()));
 
     const todayRecord = await this.prisma.attendance.findUnique({
       where: { emplId_atndDt: { emplId: employee.id, atndDt } },
@@ -356,8 +356,8 @@ export class AttendanceService {
     }
 
     const { start, end } = getTodayRange();
-    const todayDate = new Date(start.getTime() + 7 * 60 * 60 * 1000);
-    const atndDt = new Date(Date.UTC(todayDate.getUTCFullYear(), todayDate.getUTCMonth(), todayDate.getUTCDate()));
+    const vnNow = new Date(start.getTime() + 7 * 60 * 60 * 1000);
+    const atndDt = new Date(Date.UTC(vnNow.getUTCFullYear(), vnNow.getUTCMonth(), vnNow.getUTCDate()));
 
     const attendance = await this.prisma.attendance.findUnique({
       where: { emplId_atndDt: { emplId: employee.id, atndDt } },
@@ -395,8 +395,8 @@ export class AttendanceService {
     });
 
     const { start, end } = getTodayRange();
-    const todayDate = new Date(start.getTime() + 7 * 60 * 60 * 1000);
-    const atndDt = new Date(Date.UTC(todayDate.getUTCFullYear(), todayDate.getUTCMonth(), todayDate.getUTCDate()));
+    const vnNow = new Date(start.getTime() + 7 * 60 * 60 * 1000);
+    const atndDt = new Date(Date.UTC(vnNow.getUTCFullYear(), vnNow.getUTCMonth(), vnNow.getUTCDate()));
 
     const todayAttendances = await this.prisma.attendance.findMany({
       where: { atndDt },

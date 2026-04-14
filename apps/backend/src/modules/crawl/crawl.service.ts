@@ -1,5 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import logger from '../../common/logger';
 
@@ -17,21 +16,7 @@ interface RandomUser {
 
 @Injectable()
 export class CrawlService {
-  private readonly cronSecret: string | undefined;
-
-  constructor(
-    private prisma: PrismaService,
-    private configService: ConfigService,
-  ) {
-    this.cronSecret = this.configService.get('CRON_SECRET');
-  }
-
-  validateAuth(authHeader?: string) {
-    const token = authHeader?.replace('Bearer ', '');
-    if (!this.cronSecret || token !== this.cronSecret) {
-      throw new UnauthorizedException('Unauthorized');
-    }
-  }
+  constructor(private prisma: PrismaService) {}
 
   async crawlRandomUsers(count: number) {
     logger.info(`[Crawl] Bắt đầu crawl ${count} người dùng từ randomuser.me`);

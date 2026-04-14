@@ -60,10 +60,10 @@ import { HealthModule } from './modules/health/health.module';
     HealthModule,
   ],
   providers: [
-    // Global guards — order matters: Auth → Roles → Throttler
+    // Global guards — order: Throttler → Auth → Roles
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: FirebaseAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
-    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
 export class AppModule {}

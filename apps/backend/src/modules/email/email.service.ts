@@ -58,7 +58,7 @@ export class EmailService {
       to: data.employeeEmail,
       subject: `[HRLite] Yêu cầu nghỉ phép đã được duyệt — ${data.leaveType}`,
       html,
-    }).catch(() => {});
+    }).catch((err) => logger.error('[Email] Fire-and-forget failed', { error: err?.message }));
   }
 
   sendLeaveRejectedEmail(data: {
@@ -77,6 +77,6 @@ export class EmailService {
       to: data.employeeEmail,
       subject: `[HRLite] Yêu cầu nghỉ phép bị từ chối — ${data.leaveType}`,
       html,
-    }).catch(() => {});
+    }).catch((err) => logger.error('[Email] Fire-and-forget failed', { error: err?.message }));
   }
 }

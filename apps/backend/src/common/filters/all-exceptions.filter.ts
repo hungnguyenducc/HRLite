@@ -26,12 +26,16 @@ export class AllExceptionsFilter implements ExceptionFilter {
         message = exceptionResponse;
       } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
         const resp = exceptionResponse as Record<string, unknown>;
-        // class-validator trả về mảng message
         if (Array.isArray(resp.message)) {
           message = resp.message.join(', ');
         } else if (typeof resp.message === 'string') {
           message = resp.message;
         }
+      }
+
+      // Log 4xx nghiệp vụ để hỗ trợ debug
+      if (status >= 400 && status < 500) {
+        logger.warn(`HTTP ${status} ${request.method} ${request.url}`, { message });
       }
     } else if (exception instanceof Error) {
       logger.error('Unhandled exception', {

@@ -11,6 +11,7 @@ import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { ResponseTransformInterceptor } from './common/interceptors/response-transform.interceptor';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import logger from './common/logger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -49,7 +50,6 @@ async function bootstrap() {
   const port = process.env.BACKEND_PORT || 3001;
   await app.listen(port);
 
-  // eslint-disable-next-line no-console
-  console.log(`🚀 NestJS backend running on http://localhost:${port}/api`);
+  logger.info(`NestJS backend running on http://localhost:${port}/api`);
 }
 bootstrap();

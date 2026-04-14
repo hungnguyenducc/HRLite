@@ -1,5 +1,5 @@
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.js
 .yarn/install-state.gz
@@ -8,11 +8,15 @@
 /coverage
 
 # next.js
-/.next/
+.next/
 /out/
 
 # production
 /build
+dist/
+
+# turbo
+.turbo/
 
 # misc
 .DS_Store
@@ -36,8 +40,8 @@ yarn-error.log*
 next-env.d.ts
 
 # prisma
-prisma/*.db
-prisma/*.db-journal
+*.db
+*.db-journal
 
 # IDE
 .idea/

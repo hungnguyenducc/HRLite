@@ -9,9 +9,23 @@
 - Các định danh kỹ thuật (tên công cụ, đường dẫn file, tên lệnh, comment trong code) giữ nguyên ngôn ngữ gốc.
 
 ## Kiến trúc
-- Backend: NestJS
-- Frontend: Next.js 15
-- Database: PostgreSQL 16
+- **Monorepo**: Turborepo (npm workspaces)
+- **Backend**: NestJS (`apps/backend/`) — port 3001
+- **Frontend**: Next.js 15 (`apps/frontend/`) — port 3002, proxy `/api/*` sang backend
+- **Database**: PostgreSQL 16 — Prisma ORM (`packages/database/`)
+- **Shared**: Types, constants, utils (`packages/shared/`)
+
+### Cấu trúc Monorepo
+```
+HRLite/
+├── apps/
+│   ├── frontend/    # Next.js 15 (UI only, proxy API sang backend)
+│   └── backend/     # NestJS (REST API, business logic)
+├── packages/
+│   ├── database/    # @hrlite/database — Prisma schema + client
+│   └── shared/      # @hrlite/shared — types, constants, pure utils
+└── turbo.json
+```
 
 ## Các module chính
 - Quản lý nhân viên
@@ -115,8 +129,8 @@ Viết blueprint → Thiết kế DB → Viết sprint → Triển khai → Kị
 - Xử lý lỗi: Phân biệt exception nghiệp vụ và exception hệ thống
 - Convention viết code theo ngôn ngữ được `coding-convention` skill tự động áp dụng (Java/TypeScript/React Native/Python/CSS/SCSS)
 - Dùng `/check-convention src/` để kiểm tra convention thủ công
-- **NestJS**: `ExceptionFilter` xử lý exception toàn cục, `class-validator` kiểm tra DTO, Prisma ORM
-- **Next.js**: App Router mặc định, Server Components ưu tiên, Server Actions
+- **NestJS** (`apps/backend/`): `AllExceptionsFilter` xử lý exception toàn cục, `class-validator` + `ValidationPipe` kiểm tra DTO, Prisma ORM, `FirebaseAuthGuard` + `RolesGuard` global, `ResponseTransformInterceptor` auto-wrap response
+- **Next.js** (`apps/frontend/`): App Router mặc định, Server Components ưu tiên, KHÔNG có API routes — tất cả API proxy sang NestJS backend qua `next.config.ts` rewrites
 
 ## Quy tắc thiết kế (DSA định nghĩa)
 - Design token: Bắt buộc tham chiếu src/styles/design-tokens.css

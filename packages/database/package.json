@@ -1,0 +1,26 @@
+{
+  "name": "@hrlite/database",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:seed": "npx tsx prisma/seed.ts",
+    "db:seed:crawl": "npx tsx prisma/seed-crawl.ts",
+    "db:seed:customers": "npx tsx prisma/seed-customers.ts",
+    "db:seed:orders": "npx tsx prisma/seed-orders.ts",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.1.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.1.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.7.0"
+  }
+}
